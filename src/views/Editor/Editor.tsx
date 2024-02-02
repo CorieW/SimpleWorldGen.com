@@ -138,70 +138,30 @@ function Editor() {
             let data = tileData.getData();
             let dataSize = tile.getSize() / tileDataSize;
 
-            drawChunk(new paper.Point(tile.getX(), tile.getY()), dataSize, data);
+            for (let x = 0; x < tileDataSize; x++) {
+                for (let y = 0; y < tileDataSize; y++) {
+                    const point = new paper.Point(
+                        tile.getX() + x * dataSize,
+                        tile.getY() + y * dataSize
+                    );
+                    // console.log(dataSize);
 
-            // for (let x = 0; x < tileDataSize; x++) {
-            //     for (let y = 0; y < tileDataSize; y++) {
-            //         const point = new paper.Point(
-            //             tile.getX() + x * dataSize,
-            //             tile.getY() + y * dataSize
-            //         );
-            //         // console.log(dataSize);
+                    let color = null;
+                    if (data[x][y] <= 0.6) {
+                        color = new paper.Color(0, 0, 1);
+                    } else {
+                        color = new paper.Color(0, 1, 0);
+                    }
 
-            //         let color = null;
-            //         if (data[x][y] <= 0.6) {
-            //             color = new paper.Color(0, 0, 1);
-            //         } else {
-            //             color = new paper.Color(0, 1, 0);
-            //         }
-
-            //         new paper.Path.Rectangle({
-            //             point: point,
-            //             size: new paper.Size(dataSize, dataSize),
-            //             strokeColor: color,
-            //             fillColor: color,
-            //         });
-            //     }
-            // }
+                    new paper.Path.Rectangle({
+                        point: point,
+                        size: new paper.Size(dataSize, dataSize),
+                        strokeColor: color,
+                        fillColor: color,
+                    });
+                }
+            }
         });
-    }
-
-    function drawChunk(pos: paper.Point, tileSize: number, data: number[][]) {
-        const seaColor = new paper.Color('#4dbedf');
-        const deepSeaColor = new paper.Color('#2b8cb3');
-        const grassColor = new paper.Color('#41980a');
-        const sandColor = new paper.Color('#f7d08a');
-
-        // Fill the background
-        // const background = new paper.Path.Rectangle(
-        //     new paper.Point(pos.x * tileSize, pos.y * tileSize),
-        //     new paper.Size(
-        //         tileSize * data.length,
-        //         tileSize * data[0].length
-        //     )
-        // );
-        // background.fillColor = deepSeaColor;
-
-        // Draw the map
-        drawForThreshold(0.25, seaColor);
-        drawForThreshold(0.49, sandColor);
-        drawForThreshold(0.5, grassColor);
-
-        function drawForThreshold(threshold: number, color: paper.Color) {
-            const marchingSquares = new MarchingSquares(data, threshold);
-            const shapes = marchingSquares.getShapes();
-            shapes.forEach((shape) => {
-                const points = shape.map((point) => {
-                    return new paper.Point(point.x * tileSize, point.y * tileSize);
-                });
-
-                const path = new paper.Path(points);
-                path.strokeWidth = 1;
-                path.strokeColor = color;
-                path.fillColor = color;
-                path.closed = true;
-            });
-        }
     }
 
     return (
