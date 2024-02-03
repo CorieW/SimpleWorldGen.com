@@ -1,14 +1,26 @@
 export default class ChunkData {
-    private _size: number; // If the size is 200, then the tile is 200x200.
+    private _x: number;
+    private _y: number;
+    private _size: number;
     private _data: number[][];
 
-    constructor(detail: number) {
-        this._size = detail;
+    constructor(x: number, y: number, size: number) {
+        this._x = x;
+        this._y = y;
+        this._size = size;
         this._data = [];
     }
 
     addData(data: number[][]) {
         this._data = data;
+    }
+
+    getX(): number {
+        return this._x;
+    }
+
+    getY(): number {
+        return this._y;
     }
 
     getSize(): number {

@@ -1,53 +1,69 @@
 import { useRef, useEffect } from 'react';
 import './Editor3.scss';
 import paper from 'paper';
-import WorldGenerator2 from '../../ts/obsolete/WorldGenerator2';
+import WorldGenerator from '../../ts/WorldGenerator';
 import WorldDimensions from '../../ts/data/WorldDimensions';
 import Vector2 from '../../ts/utils/Vector2';
 import MarchingSquares from '../../ts/utils/MarchingSquares';
+import Bounds from '../../ts/data/Bounds';
+import ChunkData from '../../ts/data/ChunkData';
 
 function Editor3() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const dragStart = useRef<paper.Point | null>(null);
-    const world = useRef<WorldGenerator2 | null>(null);
+    const world = useRef<WorldGenerator | null>(null);
 
     const maxZoom = 1000;
-    const minZoom = 1;
-    const tileSize = 20;
+    const minZoom = 0.01;
+
+    const worldKMWidth = 1000;
+    const worldKMHeight = 1000;
 
     let globalOffset = new paper.Point(0, 0);
     let globalZoom = 0;
 
+    const initialZoom = (): number => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const worldWidth = worldKMWidth;
+        const worldHeight = worldKMHeight;
+
+        const zoomX = width / worldWidth;
+        const zoomY = height / worldHeight;
+
+        return Math.min(zoomX, zoomY);
+    }
+
     useEffect(() => {
-        const screenDimensions = new Vector2(
-            window.innerWidth,
-            window.innerHeight
-        );
         const worldDimensions = new WorldDimensions(
-            screenDimensions.x / tileSize,
-            screenDimensions.y / tileSize
+            worldKMWidth,
+            worldKMHeight
         );
-        const worldGenerator = new WorldGenerator2(worldDimensions, Date.now());
+        const worldGenerator = new WorldGenerator(worldDimensions, Date.now());
         world.current = worldGenerator;
-        globalZoom = minZoom;
+        globalZoom = initialZoom();
+
+        console.log(globalZoom);
 
         // Attach Paper.js to the canvas and setup
         paper.setup(canvasRef.current!);
         paper.view.viewSize.width = window.innerWidth;
         paper.view.viewSize.height = window.innerHeight;
+        paper.view.zoom = globalZoom;
+        paper.view.center = new paper.Point(worldKMWidth / 2, worldKMHeight / 2);
 
-        paper.view.scale(minZoom, new paper.Point(0, 0));
-        // paper.view.setCenter(0, 0);
-
-        const data = worldGenerator.update(
-            new Vector2(
-                window.innerWidth / tileSize,
-                window.innerHeight / tileSize
+        let bounds = paper.view.bounds;
+        worldGenerator.update(
+            new Bounds(
+                bounds.x,
+                bounds.y,
+                bounds.width,
+                bounds.height
             ),
-            globalOffset,
-            globalZoom
+            (chunkData: ChunkData) => {
+                draw(chunkData);
+            }
         );
-        draw(data);
     }, []);
 
     useEffect(() => {
@@ -62,41 +78,21 @@ function Editor3() {
         }
 
         function onDrag(event: paper.MouseEvent) {
-            // clear the canvas
-            paper.project.clear();
-
+            const view = paper.view;
             if (dragStart.current) {
-                let mouseDiff = event.point.subtract(dragStart.current);
-                dragStart.current = event.point;
-
-                // Delta is the amount the mouse has moved
-                let delta = mouseDiff.multiply(1 / (globalZoom * tileSize));
-                globalOffset = globalOffset.subtract(delta);
-
-                const data = world.current!.update(
-                    new Vector2(
-                        window.innerWidth / tileSize,
-                        window.innerHeight / tileSize
-                    ),
-                    globalOffset,
-                    globalZoom
-                );
-                draw(data);
+                const delta = event.point.subtract(dragStart.current);
+                console.log(delta);
+                view.center = view.center.subtract(delta);
             }
         }
 
         function zoom(event: WheelEvent) {
-            console.log(paper.project.layers.length)
-            const oldLayer = paper.project.activeLayer;
-
-            // Create a new layer
-            const layer = new paper.Layer();
-            paper.project.addLayer(layer);
-            layer.activate();
+            // clear the canvas
+            paper.project.activeLayer.removeChildren();
 
             const view = paper.view;
 
-            const oldZoom = globalZoom;
+            const oldZoom = view.zoom;
             let newZoom = oldZoom * (1 + event.deltaY * -0.001);
             // Limit zoom to reasonable values
             newZoom = Math.max(minZoom, Math.min(newZoom, maxZoom));
@@ -107,57 +103,23 @@ function Editor3() {
             const viewPosition = view.viewToProject(mousePosition);
             let move = viewPosition.subtract(view.center);
             move = move.multiply(1 - beta);
-            globalZoom = newZoom;
+            const newCenter = view.center.add(move);
 
-            const data = world.current!.update(
-                new Vector2(
-                    window.innerWidth / tileSize,
-                    window.innerHeight / tileSize
+            view.zoom = newZoom;
+            view.center = newCenter;
+
+            let bounds = paper.view.bounds;
+            world.current!.update(
+                new Bounds(
+                    bounds.x,
+                    bounds.y,
+                    bounds.width,
+                    bounds.height
                 ),
-                globalOffset,
-                newZoom
-            );
-
-            // Zoom in
-            // view.zoom = newZoom;
-            requestAnimationFrame(() => {
-                draw(data);
-
-                // Delte the underlying layer
-                // if (paper.project.layers.length > 0)
-                    // paper.project.layers[0].remove();
-            });
-
-            // smoothZoomIntoLayer(oldLayer, beta);
-
-            function smoothZoomIntoLayer(layer: paper.Layer, beta: number) {
-                // TODO: Calculate the target scale based on width and height
-
-                const scale = layer.scaling;
-                const targetScale = scale.multiply(1 + (1 - beta)); // 1 + (1 - beta)
-                const step = 0.05;
-
-                function animate() {
-                    // Next scale
-                    const nextScaleX = scale.x + (targetScale.x - scale.x) * step;
-                    const nextScaleY = scale.y + (targetScale.y - scale.y) * step;
-
-                    console.log({ scale, targetScale, nextScaleX, nextScaleY });
-                    if (scale >= targetScale) {
-                        scale.set(targetScale);
-
-                        requestAnimationFrame(() => {
-                            draw(data);
-                        });
-                    } else {
-                        scale.x = nextScaleX;
-                        scale.y = nextScaleY;
-                        requestAnimationFrame(animate);
-                    }
+                (chunkData: ChunkData) => {
+                    draw(chunkData);
                 }
-
-                animate();
-            }
+            );
         }
 
         // window.addEventListener('resize', onResize);
@@ -175,43 +137,19 @@ function Editor3() {
         };
     }, []);
 
-    function draw(data: number[][]) {
-        const worldDimensions = world.current!.getWorldDimensions();
-
-        const seaColor = new paper.Color('#4dbedf');
-        const deepSeaColor = new paper.Color('#2b8cb3');
-        const grassColor = new paper.Color('#41980a');
-        const sandColor = new paper.Color('#f7d08a');
-
+    function draw(chunkData: ChunkData) {
+        console.log(chunkData)
         // Fill the background
         const background = new paper.Path.Rectangle(
-            new paper.Point(0, 0),
+            new paper.Point(chunkData.getX(), chunkData.getY()),
             new paper.Size(
-                worldDimensions.xKM * tileSize,
-                worldDimensions.yKM * tileSize
+                chunkData.getSize(),
+                chunkData.getSize()
             )
         );
-        background.fillColor = deepSeaColor;
-
-        // Draw the map
-        drawForThreshold(0.25, seaColor);
-        drawForThreshold(0.49, sandColor);
-        drawForThreshold(0.5, grassColor);
-
-        function drawForThreshold(threshold: number, color: paper.Color) {
-            const marchingSquares = new MarchingSquares(data, threshold);
-            const shapes = marchingSquares.getShapes();
-            shapes.forEach((shape) => {
-                const points = shape.map((point) => {
-                    return new paper.Point(point.x * tileSize, point.y * tileSize);
-                });
-
-                const path = new paper.Path(points);
-                path.strokeColor = color;
-                path.fillColor = color;
-                path.closed = true;
-            });
-        }
+        background.fillColor = new paper.Color('#2b8cb3')
+        background.strokeColor = new paper.Color('black');
+        background.strokeWidth = chunkData.getSize() / 100;
     }
 
     return (

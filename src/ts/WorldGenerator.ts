@@ -29,7 +29,9 @@ export default class WorldGenerator {
 
     update(bounds: Bounds, drawChunkData: (chunkData: ChunkData) => void) {
         this._gridSystem.update(bounds, (quadNode) => {
-            drawChunkData(quadNode.getData());
+            let bounds = quadNode.getBounds();
+            let newChunkData = new ChunkData(bounds.x, bounds.y, bounds.width);
+            drawChunkData(newChunkData);
         });
     }
 
@@ -49,18 +51,4 @@ export default class WorldGenerator {
             }
         });
     }
-
-    // /**
-    //  * @param quality Should be in the range of 0 to 1.
-    //  * @returns The detail, which is the number of points on a single axis in the tile.
-    //  */
-    // private getDetail(quality: number): number {
-    //     if (quality < 0 || quality > 1)
-    //         throw new Error('Quality must be in the range of 0 to 1.');
-    //     let detail = Math.max(
-    //         this._tilingSettings.detail * quality,
-    //         this._tilingSettings.lowestDetail
-    //     );
-    //     return detail;
-    // }
 }

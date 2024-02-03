@@ -17,16 +17,21 @@ export default class GridSystem<T> {
         bounds: Bounds,
         leafCallback: (quadNode: QuadTreeNode<T>) => void
     ) {
+        console.log('quadNode', bounds);
         // Split the displaying quads once the quads are larger than the screen.
         iterativelySplitQuad(this._quadTreeNode, bounds);
 
         function iterativelySplitQuad(quadNode: QuadTreeNode<T>, bounds: Bounds) {
             if (GridSystem.shouldSplitQuad<T>(quadNode, bounds)) {
-                quadNode.split(1);
+                console.log('quadNode', quadNode);
+
+                if (!quadNode.hasChildren()) quadNode.split(4);
+
                 quadNode.getChildrenFlat().forEach((child) =>
                     iterativelySplitQuad(child, bounds)
                 );
             } else {
+                console.log('quadNode', quadNode);
                 leafCallback(quadNode);
             }
         }
@@ -36,7 +41,6 @@ export default class GridSystem<T> {
         quadNode: QuadTreeNode<T>,
         bounds: Bounds
     ): boolean {
-        // TODO
         let x = quadNode.getX();
         let y = quadNode.getY();
         let size = quadNode.getSize();
@@ -45,12 +49,9 @@ export default class GridSystem<T> {
             new Bounds(x, y, size, size)
         );
 
-        let smallestBoundsDimension = Math.min(bounds.width, bounds.height);
-        let smallestQuadDimension = size;
-
         return (
             isOverlappingBounds &&
-            smallestBoundsDimension < smallestQuadDimension
+            (bounds.width < size || bounds.height < size)
         );
     }
 
