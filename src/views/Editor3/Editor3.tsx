@@ -138,7 +138,14 @@ function Editor3() {
     }, []);
 
     function draw(chunkData: ChunkData) {
-        console.log(chunkData)
+        const tileSize = chunkData.getSize() / (chunkData.getData().length - 1);
+        console.log(chunkData.getSize());
+
+        const seaColor = new paper.Color('#4dbedf');
+        const deepSeaColor = new paper.Color('#2b8cb3');
+        const grassColor = new paper.Color('#41980a');
+        const sandColor = new paper.Color('#f7d08a');
+
         // Fill the background
         const background = new paper.Path.Rectangle(
             new paper.Point(chunkData.getX(), chunkData.getY()),
@@ -147,9 +154,42 @@ function Editor3() {
                 chunkData.getSize()
             )
         );
-        background.fillColor = new paper.Color('#2b8cb3')
-        background.strokeColor = new paper.Color('black');
-        background.strokeWidth = chunkData.getSize() / 100;
+        background.strokeWidth = 0;
+        background.fillColor = deepSeaColor;
+
+        // Draw the map
+        drawForThreshold(0.25, seaColor);
+        drawForThreshold(0.49, sandColor);
+        drawForThreshold(0.5, grassColor);
+
+        function drawForThreshold(threshold: number, color: paper.Color) {
+            const marchingSquares = new MarchingSquares(chunkData.getData(), threshold);
+            const shapes = marchingSquares.getShapes();
+            shapes.forEach((shape) => {
+                const points = shape.map((point) => {
+                    return new paper.Point(chunkData.getX() + (point.x * tileSize), chunkData.getY() + (point.y * tileSize));
+                });
+
+                const path = new paper.Path(points);
+                path.strokeWidth = 0;
+                path.fillColor = color;
+                path.closed = true;
+            });
+
+            // for (let x = 0; x < chunkData.getData().length; x++) {
+            //     for (let y = 0; y < chunkData.getData()[x].length; y++) {
+            //         const value = chunkData.getData()[x][y];
+            //         if (value >= threshold) {
+            //             const path = new paper.Path.Rectangle(
+            //                 new paper.Point(chunkData.getX() + (x * tileSize), chunkData.getY() + (y * tileSize)),
+            //                 new paper.Size(tileSize, tileSize)
+            //             );
+            //             path.strokeColor = color;
+            //             path.fillColor = color;
+            //         }
+            //     }
+            // }
+        }
     }
 
     return (

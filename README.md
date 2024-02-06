@@ -1,6 +1,9 @@
+# Changes
+- Applied improved chunking system to basic noise generation.
+
 # Todo
-- Apply improved chunking system to noise map generation.
 - When repositioning, update chunking system of change.
+- Fix gaps between chunks.
 
 # Existing Limitations
 - Impractical for extremely large maps. This is because as zoom increases, precision decreases in the drawing of the map. Meaning, it's better suited for maps small to large, as a lower zoom level is necessary to view close-up details. [Example](https://gyazo.com/69aa0be214b873100d41c36e17d735fb)
@@ -21,3 +24,4 @@
 
 [v0.2.0: Added improved chunking system](https://gyazo.com/a40b173106a4ad1f92829ef01dbfc36b)
 
+[v0.2.1: Using improved chunking system with basic noise](https://gyazo.com/bdc23ecca555e06deb557d2f0e83dfe2)
