@@ -1,94 +1,90 @@
 import { useRef, useEffect } from 'react';
 import './Editor.scss';
 import paper from 'paper';
-import WorldGenerator from '../../ts/obsolete/WorldGenerator';
-import NoiseSettings from '../../ts/data/NoiseSettings';
-import TilingSettings from '../../ts/obsolete/TilingSettings';
+import WorldGenerator from '../../ts/WorldGenerator';
 import WorldDimensions from '../../ts/data/WorldDimensions';
-import Vector2 from '../../ts/utils/Vector2';
-import Bounds from '../../ts/data/Bounds';
 import MarchingSquares from '../../ts/utils/MarchingSquares';
+import Bounds from '../../ts/data/Bounds';
+import ChunkData from '../../ts/data/ChunkData';
+import EditorOverlay from './components/EditorOverlay/EditorOverlay';
+import useStore from './editorStore';
+import { NodeValueCalculator } from '../../ts/utils/LayerValueCalculator';
+import { ILayer } from '../../ts/interfaces/ILayer';
+import { VisualizationConditionalOperatorEnum } from '../../ts/enums/VisualizationConditionalOperatorEnum';
+import { IVisualizationCondition } from '../../ts/interfaces/visualization/IVisualizationCondition';
+import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
 
 function Editor() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const dragStart = useRef<paper.Point | null>(null);
-    const world = useRef<WorldGenerator | null>(null);
+    const { worldSettings, visualizationSettings, layers } = useStore();
 
-    const maxZoom = 10;
-    const minZoom = 1;
+    const { worldWidth, worldHeight, fadeOff, xFadeOffPercentage, yFadeOffPercentage } = worldSettings;
+
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const positionRef = useRef<paper.Point>(new paper.Point(worldWidth / 2, worldHeight / 2));
+    const zoomRef = useRef<number>(1);
+    const dragStartRef = useRef<paper.Point | null>(null);
+    const worldRef = useRef<WorldGenerator | null>(null);
+
+    const maxZoom = 1000;
+    const minZoom = 0.01;
 
     useEffect(() => {
-        const worldDimensions = new WorldDimensions(1024, 1024);
-        const tilingSettings = new TilingSettings(256, 64, 2, 2, 0.01);
-        const noiseSettings = new NoiseSettings(
-            Date.now(),
-            120,
-            1,
-            0.5,
-            0.5,
-            0.5,
-            0.5
+        console.log('Initializing editor');
+        const worldDimensions = new WorldDimensions(
+            worldWidth,
+            worldHeight
         );
-        const worldGenerator = new WorldGenerator(
-            worldDimensions,
-            tilingSettings,
-            noiseSettings
-        );
-        worldGenerator.init();
-        world.current = worldGenerator;
+        const worldGenerator = new WorldGenerator(worldDimensions, generateNoiseValueFunc);
+        worldGenerator.xFadeOffRange = fadeOff ? xFadeOffPercentage : 1;
+        worldGenerator.yFadeOffRange = fadeOff ? yFadeOffPercentage : 1;
+        worldRef.current = worldGenerator;
 
         // Attach Paper.js to the canvas and setup
         paper.setup(canvasRef.current!);
         paper.view.viewSize.width = window.innerWidth;
         paper.view.viewSize.height = window.innerHeight;
+        paper.view.center = positionRef.current;
+        paper.view.zoom = zoomRef.current;
 
-        paper.view.zoom = minZoom;
-        paper.view.center = new paper.Point(0, 0);
+        dragStartRef.current = null;
 
-        let viewCenter = new Vector2(paper.view.center.x, paper.view.center.y);
-        let viewBottomLeft = new Vector2(
-            -paper.view.viewSize.width / 2,
-            -paper.view.viewSize.height / 2
-        );
-        worldGenerator.update(
-            minZoom / maxZoom,
-            new Bounds(
-                viewBottomLeft.x + viewCenter.x,
-                viewBottomLeft.y + viewCenter.y,
-                paper.view.viewSize.width,
-                paper.view.viewSize.height
-            )
-        );
-        draw(worldGenerator.getTile().getFurthestTileDescendants());
-    }, []);
+        updateWorld();
+
+        function generateNoiseValueFunc(globalX: number, globalY: number) {
+            return new NodeValueCalculator(layers[0].beginningNode).calculateValue(globalX, globalY);
+        }
+    }, [worldSettings, layers.map((layer) => layer.beginningNode)]);
 
     useEffect(() => {
-        function onResize(event: UIEvent) {
+        function onResize(event: Event) {
             // Resize the canvas to fill browser window dynamically
             paper.view.viewSize.width = window.innerWidth;
             paper.view.viewSize.height = window.innerHeight;
         }
 
         function onMouseDown(event: paper.MouseEvent) {
-            dragStart.current = event.point;
+            dragStartRef.current = event.point;
         }
 
         function onDrag(event: paper.MouseEvent) {
-            const view = paper.view;
-            if (dragStart.current) {
-                const delta = event.point.subtract(dragStart.current);
-                console.log(delta);
-                view.center = view.center.subtract(delta);
+            if (dragStartRef.current) {
+                const delta = event.point.subtract(dragStartRef.current);
+                setPosition(positionRef.current.subtract(delta));
             }
+
+            updateWorld();
         }
 
         function zoom(event: WheelEvent) {
-            // clear the canvas
-            paper.project.activeLayer.removeChildren();
+            // If not over the canvas, do nothing
+            if (event.target !== canvasRef.current) {
+                return;
+            }
 
+            // clear the canvas
             const view = paper.view;
 
-            const oldZoom = view.zoom;
+            const oldZoom = zoomRef.current;
             let newZoom = oldZoom * (1 + event.deltaY * -0.001);
             // Limit zoom to reasonable values
             newZoom = Math.max(minZoom, Math.min(newZoom, maxZoom));
@@ -97,22 +93,26 @@ function Editor() {
 
             const mousePosition = new paper.Point(event.offsetX, event.offsetY);
             const viewPosition = view.viewToProject(mousePosition);
-            let move = viewPosition.subtract(view.center);
+            let move = viewPosition.subtract(positionRef.current);
             move = move.multiply(1 - beta);
-            const newCenter = view.center.add(move);
+            const newCenter = positionRef.current.add(move);
 
-            view.zoom = newZoom;
-            view.center = newCenter;
+            setZoom(newZoom);
+            setPosition(newCenter);
 
-            let bounds = paper.view.bounds;
-            let zoom = Math.min(newZoom / maxZoom, 1 - minZoom / maxZoom);
-            world.current!.update(zoom, Bounds.fromPaperRect(bounds));
-            // renderWorld(view.center, view.zoom);
-
-            // Display the world
-            let tiles = world.current!.getTile().getFurthestTileDescendants();
-            draw(tiles);
+            updateWorld();
         }
+
+        function setPosition(point: paper.Point) {
+            positionRef.current = point;
+            paper.view.center = point;
+        }
+
+        function setZoom(zoom: number) {
+            zoomRef.current = zoom;
+            paper.view.zoom = zoom;
+        }
+
 
         window.addEventListener('resize', onResize);
         window.addEventListener('wheel', zoom);
@@ -127,47 +127,135 @@ function Editor() {
             paper.view.onMouseDown = null;
             paper.view.onMouseDrag = null;
         };
-    }, []);
+    });
 
-    function draw(tiles: any[]) {
-        console.log(tiles);
-        tiles.forEach((tile) => {
-            let tileData = tile.getTileData();
-            let tileDataSize = tileData.getSize();
-            console.log(tileDataSize);
-            let data = tileData.getData();
-            let dataSize = tile.getSize() / tileDataSize;
+    function updateWorld() {
+        let bounds = paper.view.bounds;
+        let boundsData = new Bounds(bounds.x, bounds.y, bounds.width, bounds.height);
 
-            for (let x = 0; x < tileDataSize; x++) {
-                for (let y = 0; y < tileDataSize; y++) {
-                    const point = new paper.Point(
-                        tile.getX() + x * dataSize,
-                        tile.getY() + y * dataSize
+        if (!worldRef.current!.shouldUpdate(boundsData)) return;
+
+        paper.project.activeLayer.removeChildren();
+
+        // Draw background
+        const deepSeaColor = new paper.Color('#2b8cb3');
+        // Use world dimensions to draw the background
+        const background = new paper.Path.Rectangle(
+            new paper.Point(0, 0),
+            new paper.Point(worldWidth, worldHeight)
+        );
+        background.fillColor = deepSeaColor;
+
+        worldRef.current!.update(
+            boundsData,
+            (chunkData: ChunkData) => {
+                draw(chunkData);
+            }
+        );
+    }
+
+    function draw(chunkData: ChunkData) {
+        const tileSize = chunkData.getSize() / (chunkData.getData().length - 1);
+
+        // visualizationSettings.forEach((setting) => {
+        //     const shapes = new MarchingSquares(chunkData.getData(), (values) => evaluationFunction(setting, values)).getShapes();
+        //     shapes.forEach((shape) => {
+        //         const points = shape.map((point) => {
+        //             return new paper.Point(
+        //                 chunkData.getX() + point.x * tileSize,
+        //                 chunkData.getY() + point.y * tileSize
+        //             );
+        //         });
+
+        //         const path = new paper.Path(points);
+        //         path.strokeWidth = 0;
+        //         path.fillColor = new paper.Color(setting.color);
+        //         path.closed = true;
+        //     });
+        // }
+
+        const seaColor = new paper.Color('#4dbedf');
+        const grassColor = new paper.Color('#41980a');
+        const sandColor = new paper.Color('#f7d08a');
+
+        // Draw the map
+        drawForThreshold(0.25, seaColor);
+        drawForThreshold(0.49, sandColor);
+        drawForThreshold(0.5, grassColor);
+
+        function drawForThreshold(threshold: number, color: paper.Color) {
+            const marchingSquares = new MarchingSquares(
+                chunkData.getData(),
+                threshold
+            );
+            const shapes = marchingSquares.getShapes();
+            shapes.forEach((shape) => {
+                const points = shape.map((point) => {
+                    return new paper.Point(
+                        chunkData.getX() + point.x * tileSize,
+                        chunkData.getY() + point.y * tileSize
                     );
-                    // console.log(dataSize);
+                });
 
-                    let color = null;
-                    if (data[x][y] <= 0.6) {
-                        color = new paper.Color(0, 0, 1);
-                    } else {
-                        color = new paper.Color(0, 1, 0);
-                    }
+                const path = new paper.Path(points);
+                path.strokeWidth = 0;
+                path.fillColor = color;
+                path.closed = true;
+            });
+        }
+    }
 
-                    new paper.Path.Rectangle({
-                        point: point,
-                        size: new paper.Size(dataSize, dataSize),
-                        strokeColor: color,
-                        fillColor: color,
-                    });
+    function getColorForValues(values: number[]): paper.Color {
+        visualizationSettings.forEach((setting) => {
+            const conditions = setting.conditions;
+
+            let meetsConditions = true;
+            conditions.forEach((condition) => {
+                const value = values[condition.layerId];
+
+                if (!meetsCondition(condition, value)) {
+                    meetsConditions = false;
+                    return;
                 }
+            });
+
+            if (meetsConditions) {
+                return new paper.Color(setting.color);
             }
         });
+
+        return new paper.Color('#000000');
     }
+
+    function evaluationFunction(setting: IVisualizationSetting, values: number[]): boolean {
+        const conditions = setting.conditions;
+
+        let meetsConditions = true;
+        conditions.forEach((condition) => {
+            const value = values[condition.layerId];
+
+            if (!meetsCondition(condition, value)) {
+                meetsConditions = false;
+                return;
+            }
+        });
+
+        return meetsConditions;
+    }
+
+    function meetsCondition(condition: IVisualizationCondition, value: number): boolean {
+        const { min, minInclusive, max, maxInclusive } = condition;
+        return (
+            (minInclusive ? value >= min : value > min) &&
+            (maxInclusive ? value <= max : value < max)
+        );
+    }
+
 
     return (
         <div id='editor'>
             <canvas id='worldCanvas' ref={canvasRef} />
-            <div className='overlay'></div>
+            <EditorOverlay />
         </div>
     );
 }

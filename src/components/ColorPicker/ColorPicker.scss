@@ -1,0 +1,8 @@
+.color-picker-container {
+  max-width: fit-content;
+
+  .color-picker {
+    z-index: 1000;
+    position: absolute;
+  }
+}

@@ -1,0 +1,92 @@
+.notification-container {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    width: fit-content;
+    max-width: 400px;
+    height: fit-content;
+    min-height: 40px;
+    opacity: 1;
+
+    border-radius: 10px;
+
+    transition: opacity 0.5s;
+
+    &:hover, &:active {
+        .close-container .close-btn {
+            opacity: 1;
+            transition: opacity 0s;
+            // animation: fadeIn 0.5s;
+
+            // @keyframes fadeIn {
+            //     from {
+            //         opacity: 0;
+            //     }
+            //     to {
+            //         opacity: 1;
+            //     }
+            // }
+        }
+    }
+
+    &.fading {
+        opacity: 0;
+    }
+
+    .content-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 5px 15px;
+        box-sizing: border-box;
+
+        p {
+            flex: 1;
+        }
+    }
+
+    .close-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        width: 40px;
+
+        .close-btn {
+            width: 30px;
+            height: 30px;
+            padding: 5px;
+            border-radius: 50%;
+            font-size: 15px;
+            opacity: 0;
+
+            transition: opacity 3s;
+
+            &:hover, &:active {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+
+    &.info {
+        background-color: darkcyan;
+        color: white;
+    }
+
+    &.warning {
+        background-color: orange;
+        color: white;
+    }
+
+    &.error {
+        background-color: orangered;
+        color: white;
+    }
+
+    &.success {
+        background-color: limegreen;
+        color: white;
+    }
+}

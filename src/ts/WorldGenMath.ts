@@ -14,7 +14,7 @@ export default class WorldGenMath {
     }
 
     static invLerp(min: number, max: number, val: number): number {
-        return (val - min) / (max - min);
+        return Math.min((val - min) / (max - min), 1)
     }
 
     static advNoise(settings: {

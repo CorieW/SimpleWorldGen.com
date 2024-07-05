@@ -1,0 +1,54 @@
+.horizontal-scroll-container, .vertical-scroll-container {
+    --scroll-bar-height: 10px;
+
+    width: 100%;
+    height: 100%;
+
+    .horizontal-scroll, .vertical-scroll {
+        position: relative;
+        background-color: white;
+
+        border-radius: 5px;
+
+        .scroll-bar {
+            position: absolute;
+            background-color: gray;
+            border-radius: 5px;
+            pointer-events: all;
+        }
+    }
+}
+
+.horizontal-scroll-container {
+    .content-container {
+        overflow-x: hidden;
+    }
+
+    .horizontal-scroll {
+        width: 100%;
+        height: var(--scroll-bar-height);
+        overflow-x: hidden;
+
+        .scroll-bar {
+            width: 50px;
+            height: var(--scroll-bar-height);
+        }
+    }
+}
+
+.vertical-scroll-container {
+    .content-container {
+        overflow-y: hidden;
+    }
+
+    .vertical-scroll {
+        width: var(--scroll-bar-width);
+        height: 100%;
+        overflow-y: hidden;
+
+        .scroll-bar {
+            width: var(--scroll-bar-width);
+            height: 50px;
+        }
+    }
+}

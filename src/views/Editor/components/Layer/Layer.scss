@@ -1,0 +1,64 @@
+.layer-container {
+    --node-size: 150px;
+
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    border-radius: 15px;
+    pointer-events: all;
+
+    width: var(--node-size);
+
+    // disable highlighting
+    user-select: none;
+
+    .inner-layer-container {
+        width: 100%;
+        max-height: 300px;
+        overflow: hidden;
+
+        .node-list {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 10px;
+
+
+            transition: max-height 1s;
+
+            &.expanded {
+                max-height: 1000px; // A little hacky, but it works
+            }
+        }
+    }
+
+    .expand-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+
+        &:hover, &:active {
+            color: gold;
+        }
+    }
+
+    .btns-container {
+        display: none;
+    }
+
+    * &:hover {
+        .nodes-container {
+            max-height: 500px; // A little hacky, but it works
+        }
+
+        .btns-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
