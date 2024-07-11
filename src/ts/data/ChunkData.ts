@@ -1,8 +1,10 @@
+import IDictionary from '../utils/IDictionary';
+
 export default class ChunkData {
     private _x: number;
     private _y: number;
     private _size: number;
-    private _data: number[][];
+    private _data: IDictionary<number>[][];
 
     constructor(x: number, y: number, size: number) {
         this._x = x;
@@ -11,7 +13,7 @@ export default class ChunkData {
         this._data = [];
     }
 
-    addData(data: number[][]) {
+    addData(data: IDictionary<number>[][]) {
         this._data = data;
     }
 
@@ -27,7 +29,7 @@ export default class ChunkData {
         return this._size;
     }
 
-    getData(): number[][] {
+    getData(): IDictionary<number>[][] {
         return this._data;
     }
 }

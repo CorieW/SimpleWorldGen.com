@@ -9,10 +9,10 @@ import ChunkData from '../../ts/data/ChunkData';
 import EditorOverlay from './components/EditorOverlay/EditorOverlay';
 import useStore from './editorStore';
 import { NodeValueCalculator } from '../../ts/utils/LayerValueCalculator';
-import { ILayer } from '../../ts/interfaces/ILayer';
-import { VisualizationConditionalOperatorEnum } from '../../ts/enums/VisualizationConditionalOperatorEnum';
 import { IVisualizationCondition } from '../../ts/interfaces/visualization/IVisualizationCondition';
 import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
+import IDictionary from '../../ts/utils/IDictionary';
+import WorldGenMath from '../../ts/WorldGenMath';
 
 function Editor() {
     const { worldSettings, visualizationSettings, layers } = useStore();
@@ -35,8 +35,8 @@ function Editor() {
             worldHeight
         );
         const worldGenerator = new WorldGenerator(worldDimensions, generateNoiseValueFunc);
-        worldGenerator.xFadeOffRange = fadeOff ? xFadeOffPercentage : 1;
-        worldGenerator.yFadeOffRange = fadeOff ? yFadeOffPercentage : 1;
+        worldGenerator.xFadeOffEndRange = fadeOff ? WorldGenMath.lerp(-1, 1, xFadeOffPercentage) : 1;
+        worldGenerator.yFadeOffEndRange = fadeOff ? WorldGenMath.lerp(-1, 1, yFadeOffPercentage) : 1;
         worldRef.current = worldGenerator;
 
         // Attach Paper.js to the canvas and setup
@@ -50,13 +50,20 @@ function Editor() {
 
         updateWorld();
 
-        function generateNoiseValueFunc(globalX: number, globalY: number) {
-            return new NodeValueCalculator(layers[0].beginningNode).calculateValue(globalX, globalY);
+        function generateNoiseValueFunc(globalX: number, globalY: number): IDictionary<number> {
+            const values: IDictionary<number> = {};
+
+            layers.forEach((layer) => {
+                const calculator = new NodeValueCalculator(layer.beginningNode)
+                values[layer.id] = calculator.calculateValue(globalX, globalY);
+            });
+
+            return values;
         }
     }, [worldSettings, layers.map((layer) => layer.beginningNode)]);
 
     useEffect(() => {
-        function onResize(event: Event) {
+        function onResize() {
             // Resize the canvas to fill browser window dynamically
             paper.view.viewSize.width = window.innerWidth;
             paper.view.viewSize.height = window.innerHeight;
@@ -71,8 +78,6 @@ function Editor() {
                 const delta = event.point.subtract(dragStartRef.current);
                 setPosition(positionRef.current.subtract(delta));
             }
-
-            updateWorld();
         }
 
         function zoom(event: WheelEvent) {
@@ -99,20 +104,7 @@ function Editor() {
 
             setZoom(newZoom);
             setPosition(newCenter);
-
-            updateWorld();
         }
-
-        function setPosition(point: paper.Point) {
-            positionRef.current = point;
-            paper.view.center = point;
-        }
-
-        function setZoom(zoom: number) {
-            zoomRef.current = zoom;
-            paper.view.zoom = zoom;
-        }
-
 
         window.addEventListener('resize', onResize);
         window.addEventListener('wheel', zoom);
@@ -137,15 +129,6 @@ function Editor() {
 
         paper.project.activeLayer.removeChildren();
 
-        // Draw background
-        const deepSeaColor = new paper.Color('#2b8cb3');
-        // Use world dimensions to draw the background
-        const background = new paper.Path.Rectangle(
-            new paper.Point(0, 0),
-            new paper.Point(worldWidth, worldHeight)
-        );
-        background.fillColor = deepSeaColor;
-
         worldRef.current!.update(
             boundsData,
             (chunkData: ChunkData) => {
@@ -154,41 +137,88 @@ function Editor() {
         );
     }
 
+    function setZoom(zoom: number) {
+        zoomRef.current = zoom;
+        paper.view.zoom = zoom;
+        updateWorld();
+    }
+
+    function setPosition(point: paper.Point) {
+        positionRef.current = point;
+        paper.view.center = point;
+        updateWorld();
+    }
+
+    function zoomIn() {
+        setZoom(zoomRef.current * 1.1);
+    }
+
+    function zoomOut() {
+        setZoom(zoomRef.current * 0.9);
+    }
+
+    function resetView() {
+        setZoom(1);
+        setPosition(new paper.Point(worldWidth / 2, worldHeight / 2));
+    }
+
     function draw(chunkData: ChunkData) {
-        const tileSize = chunkData.getSize() / (chunkData.getData().length - 1);
+        const tileSize = (chunkData.getSize()) / (chunkData.getData().length - 1);
 
-        // visualizationSettings.forEach((setting) => {
-        //     const shapes = new MarchingSquares(chunkData.getData(), (values) => evaluationFunction(setting, values)).getShapes();
-        //     shapes.forEach((shape) => {
-        //         const points = shape.map((point) => {
-        //             return new paper.Point(
-        //                 chunkData.getX() + point.x * tileSize,
-        //                 chunkData.getY() + point.y * tileSize
-        //             );
-        //         });
+        // draw squares
+        // chunkData.getData().forEach((row, x) => {
+        //     row.forEach((value, y) => {
+        //         const point = new paper.Point(
+        //             chunkData.getX() + x * tileSize,
+        //             chunkData.getY() + y * tileSize
+        //         );
 
-        //         const path = new paper.Path(points);
-        //         path.strokeWidth = 0;
-        //         path.fillColor = new paper.Color(setting.color);
-        //         path.closed = true;
+        //         const rect = new paper.Path.Circle(point, (tileSize + (1 / zoomRef.current)) / 2);
+        //         rect.strokeWidth = 0;
+        //         rect.fillColor = new paper.Color(WorldGenMath.lerp(0, 1, value[0]));
         //     });
-        // }
+        // });
 
-        const seaColor = new paper.Color('#4dbedf');
-        const grassColor = new paper.Color('#41980a');
-        const sandColor = new paper.Color('#f7d08a');
+        // return;
 
-        // Draw the map
-        drawForThreshold(0.25, seaColor);
-        drawForThreshold(0.49, sandColor);
-        drawForThreshold(0.5, grassColor);
+        visualizationSettings.forEach((setting) => {
+            let avgCenter = 0;
+            setting.conditions.forEach((condition) => {
+                avgCenter += (condition.min + condition.max) / 2;
+            });
+            avgCenter = 0;
 
-        function drawForThreshold(threshold: number, color: paper.Color) {
-            const marchingSquares = new MarchingSquares(
-                chunkData.getData(),
-                threshold
-            );
-            const shapes = marchingSquares.getShapes();
+            const shapes = new MarchingSquares(chunkData.getData().length, chunkData.getData().length,
+                (x, y) => {
+                    const values = chunkData.getData()[x][y];
+                    return evaluationFunction(setting, values);
+                },
+                (x, y) => {
+                    let closestValue = Number.MAX_VALUE;
+                    let outputValue = 0;
+                    setting.conditions.forEach((condition) => {
+                        let center = (condition.min + condition.max) / 2;
+                        let border = Math.abs(condition.max - condition.min) / 2;
+                        let value = chunkData.getData()[x][y][condition.layerId];
+
+                        let dist = Math.abs(center - value) / border;
+                        let distRev = dist - 1;
+
+                        if (dist < closestValue) {
+                            closestValue = dist;
+                            outputValue = distRev;
+                        }
+                    });
+                    return outputValue;
+                },
+                (aVal, bVal) => {
+                    let val = (avgCenter - aVal) / (bVal - aVal);
+                    val = Math.max(0, val);
+                    val = Math.min(1, val);
+                    return val;
+                }
+            ).getShapes();
+
             shapes.forEach((shape) => {
                 const points = shape.map((point) => {
                     return new paper.Point(
@@ -199,35 +229,13 @@ function Editor() {
 
                 const path = new paper.Path(points);
                 path.strokeWidth = 0;
-                path.fillColor = color;
+                path.fillColor = new paper.Color(setting.color);
                 path.closed = true;
             });
-        }
-    }
-
-    function getColorForValues(values: number[]): paper.Color {
-        visualizationSettings.forEach((setting) => {
-            const conditions = setting.conditions;
-
-            let meetsConditions = true;
-            conditions.forEach((condition) => {
-                const value = values[condition.layerId];
-
-                if (!meetsCondition(condition, value)) {
-                    meetsConditions = false;
-                    return;
-                }
-            });
-
-            if (meetsConditions) {
-                return new paper.Color(setting.color);
-            }
         });
-
-        return new paper.Color('#000000');
     }
 
-    function evaluationFunction(setting: IVisualizationSetting, values: number[]): boolean {
+    function evaluationFunction(setting: IVisualizationSetting, values: IDictionary<number>): boolean {
         const conditions = setting.conditions;
 
         let meetsConditions = true;
@@ -255,7 +263,7 @@ function Editor() {
     return (
         <div id='editor'>
             <canvas id='worldCanvas' ref={canvasRef} />
-            <EditorOverlay />
+            <EditorOverlay zoomIn={zoomIn} zoomOut={zoomOut} resetView={resetView} />
         </div>
     );
 }

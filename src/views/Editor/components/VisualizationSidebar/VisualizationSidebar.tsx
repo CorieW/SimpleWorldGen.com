@@ -5,6 +5,7 @@ import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/I
 import useStore from '../../editorStore';
 import VisualizationSetting from '../VisualizationSetting/VisualizationSetting';
 import Sidebar from '../../../../components/Sidebar/Sidebar';
+import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
 
 type Props = {
     sidebarOpen: boolean;
@@ -28,6 +29,7 @@ export default function VisualizationSidebar(props: Props) {
     function addSetting() {
         const newSettings = [...currentSettings];
         newSettings.push({
+            type: VisualizationTypeEnum.Color,
             color: '#000000',
             conditions: [],
         });

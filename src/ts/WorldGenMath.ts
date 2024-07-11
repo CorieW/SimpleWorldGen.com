@@ -17,6 +17,10 @@ export default class WorldGenMath {
         return Math.min((val - min) / (max - min), 1)
     }
 
+    static invLerpWithoutMin(min: number, max: number, val: number): number {
+        return (val - min) / (max - min);
+    }
+
     static advNoise(settings: {
         seed: number;
         width: number;

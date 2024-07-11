@@ -26,11 +26,11 @@ import { NodeValueCalculator } from '../../../../ts/utils/LayerValueCalculator';
 export default function NodeEditorModal() {
     const {
         activeFormNodeId,
+        setActiveFormNodeId,
         removeNode,
         getNode,
         isNodeFirstInLayer,
         modifyNode,
-        closeForm,
         canMoveNode,
         moveNode,
     } = useStore();
@@ -41,13 +41,22 @@ export default function NodeEditorModal() {
     const nodeFirstInLayer = isNodeFirstInLayer(activeFormNodeId);
 
     useEffect(() => {
-        console.log('activeFormNodeId:', activeFormNodeId);
         if (activeFormNodeId === -1) return;
 
         // Copy the node to prevent modifying the original node
         const nodeCopy = JSON.parse(JSON.stringify(getNode(activeFormNodeId))) as INode;
         console.log(nodeCopy)
         setCurrentNode(nodeCopy);
+
+        // Clear the canvas when the node changes
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        console.log('Clearing canvas')
     }, [activeFormNodeId]);
 
     useEffect(() => {
@@ -82,6 +91,10 @@ export default function NodeEditorModal() {
 
         modifyNode(activeFormNodeId, currentNode);
         closeForm();
+    }
+
+    function closeForm() {
+        setActiveFormNodeId(-1);
     }
 
     const nodeEffectSelectJSX = () => (
@@ -122,7 +135,6 @@ export default function NodeEditorModal() {
         <div id='node-editor-modal-content-container'>
             <div className='display-container'>
                 <div className='inner-container'>
-                    {/* <p>Display</p> */}
                     <canvas id='editor-form-canvas' ref={canvasRef}></canvas>
                 </div>
             </div>

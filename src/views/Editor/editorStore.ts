@@ -19,12 +19,14 @@ type EditorStore = {
     getNewLayerId: () => number;
     getNewNodeId: () => number;
 
+    activeFormLayerId: number;
+    setActiveFormLayerId: (layerId: number) => void;
     activeFormNodeId: number;
-    openForm: (nodeId: number) => void;
-    closeForm: () => void;
+    setActiveFormNodeId: (nodeId: number) => void;
 
     layers: ILayer[];
     setLayers: (layers: ILayer[]) => void;
+    getLayer(id: number): ILayer | null;
     addLayer: (layer: ILayer) => void;
     removeLayer: (layerId: number) => void;
     modifyLayer: (layerId: number, layer: ILayer) => void;
@@ -33,7 +35,7 @@ type EditorStore = {
     randomizeSeeds: () => void;
 
     getNode: (nodeId: number) => INode | null;
-    addNode: (node: INode, layerId: number) => void;
+    addNode: (node: INode | null, layerId: number) => void;
     removeNode: (nodeId: number) => void;
     modifyNode: (nodeId: number, node: INode) => void;
     moveNode: (nodeId: number, direction: 'up' | 'down') => void;
@@ -68,9 +70,10 @@ const useStore = create<EditorStore>((set) => ({
         return useStore.getState().nodeIdCounter;
     },
 
+    activeFormLayerId: -1,
     activeFormNodeId: -1,
-    openForm: (nodeId) => set({ activeFormNodeId: nodeId }),
-    closeForm: () => set({ activeFormNodeId: -1 }),
+    setActiveFormLayerId: (layerId) => set({ activeFormLayerId: layerId }),
+    setActiveFormNodeId: (nodeId) => set({ activeFormNodeId: nodeId }),
 
     layers: [
         {
@@ -129,52 +132,16 @@ const useStore = create<EditorStore>((set) => ({
             } as ISimplexNoiseNode,
         },
     ],
-    // layers: [
-    //     {
-    //         id: 0,
-    //         name: 'Layer 1',
-    //         beginningNode: new SimplexNoiseNode(
-    //             1,
-    //             NodeEffectEnum.Add,
-    //             new SimplexNoiseNode(
-    //                 1,
-    //                 null,
-    //                 null,
-    //                 100,
-    //                 1,
-    //                 0.5,
-    //                 2,
-    //                 1,
-    //                 0,
-    //                 0
-    //             ),
-    //             100,
-    //             4,
-    //             0.5,
-    //             2,
-    //             1,
-    //             0,
-    //             0,
-    //         )
-    //     },
-    //     {
-    //         id: 1,
-    //         name: 'Layer 2',
-    //         beginningNode: new SimplexNoiseNode(
-    //             1,
-    //             null,
-    //             null,
-    //             1,
-    //             0.5,
-    //             2,
-    //             1,
-    //             0,
-    //             0,
-    //             0
-    //         ),
-    //     },
-    // ],
     setLayers: (layers) => set({ layers }),
+    getLayer: (id: number): ILayer | null => {
+        for (let i = 0; i < useStore.getState().layers.length; i++) {
+            if (useStore.getState().layers[i].id === id) {
+                return useStore.getState().layers[i];
+            }
+        }
+
+        return null;
+    },
     addLayer: (layer) =>
         set({ layers: [...useStore.getState().layers, layer] }),
     removeLayer: (layerId) => {
@@ -279,7 +246,14 @@ const useStore = create<EditorStore>((set) => ({
 
         return null;
     },
-    addNode: (node: INode, layerId: number) => {
+    addNode: (node: INode | null, layerId: number) => {
+        if (!node) {
+            node = {
+                id: useStore.getState().getNewNodeId(),
+                effect: NodeEffectEnum.Add
+            } as INode;
+        }
+
         const layers = useStore.getState().layers;
         const layer = findLayerById(layers, layerId);
 
@@ -294,8 +268,6 @@ const useStore = create<EditorStore>((set) => ({
         }
 
         topNode.nextNode = node;
-
-        console.log(layer);
 
         set({ layers: [...layers] });
     },
@@ -407,8 +379,6 @@ const useStore = create<EditorStore>((set) => ({
             previousNode = currentNode;
             currentNode = currentNode.nextNode;
         }
-
-        console.log(layer.beginningNode);
 
         set({ layers: [...useStore.getState().layers] });
     },

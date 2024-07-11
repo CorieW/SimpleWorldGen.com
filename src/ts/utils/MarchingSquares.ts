@@ -1,36 +1,41 @@
 import Point from '../data/Point';
 
 class MarchingSquares {
-    private map: number[][];
     private rows: number;
     private cols: number;
-    private threshold: number;
+    private evaluationFunction: (x: number, y: number) => boolean;
+    private valueFunction: (x: number, y: number) => number;
+    private differenceFunction: (aVal: number, bVal: number) => number;
 
-    constructor(map: number[][], threshold = 0.5) {
-        this.map = map;
-        this.rows = map.length;
-        this.cols = map[0].length;
-        this.threshold = threshold;
+    constructor(rows: number, cols: number, evaluationFunction: (x: number, y: number) => boolean, valueFunction: (x: number, y: number) => number, differenceFunction: (aVal: number, bVal: number) => number) {
+        this.rows = rows;
+        this.cols = cols;
+        this.evaluationFunction = evaluationFunction;
+        this.valueFunction = valueFunction;
+        this.differenceFunction = differenceFunction;
     }
 
     private getCellState(x: number, y: number): number {
         let state = 0;
-        if (this.map[x][y] > this.threshold) state |= 1;
-        if (this.map[x + 1][y] > this.threshold) state |= 2;
-        if (this.map[x + 1][y + 1] > this.threshold) state |= 4;
-        if (this.map[x][y + 1] > this.threshold) state |= 8;
+        if (this.evaluationFunction(x, y)) state |= 1;
+        if (this.evaluationFunction(x + 1, y)) state |= 2;
+        if (this.evaluationFunction(x + 1, y + 1)) state |= 4;
+        if (this.evaluationFunction(x, y + 1)) state |= 8;
         return state;
     }
 
     private interpolate(a: Point, b: Point, aVal: number, bVal: number): Point {
-        const t = (this.threshold - aVal) / (bVal - aVal);
+        // const t = (this.threshold - aVal) / (bVal - aVal);
+        const t = this.differenceFunction(aVal, bVal);
         return new Point(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y));
+        // const valDiff = (bVal - aVal);
+        // return new Point((valDiff * (b.x - a.x)) + a.x, (valDiff * (b.y - a.y)) + a.y);
     }
 
     private valueAt(x: number, y: number): number {
         // Assuming x and y are integer coordinates
         // and within the bounds of the map array
-        return this.map[x][y];
+        return this.valueFunction(x, y);
     }
 
     private getPointsForState(x: number, y: number, state: number): Point[] {
@@ -252,10 +257,6 @@ class MarchingSquares {
         }
 
         return shapes;
-    }
-
-    private distance(a: Point, b: Point): number {
-        return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
     }
 }
 

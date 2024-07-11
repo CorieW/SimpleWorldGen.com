@@ -1,37 +1,24 @@
 # Changes
-- Added layer name changing
-- Added layer expanding
-- Added ability to add nodes
-- Added ability to add layers
-- Added ability to remove layers
-- Added ability to remove nodes
-- Added ability to hide/show layers
-- Added ability to move node up/down
-- Added ability to move layers right/left
-- Added visualization menu
-  - Added ability to add conditions (add, edit, remove)
-  - Added modifying colour of met conditions
-    - Added colour picker
-- Added map settings menu
-  - Added changing of map dimensions
-  - Added changing map's fadeoff
-  - Added randomize seeds action button
-- Added scrolling large amounts of layers
-- Added notification popups
-  - Added notification for duplicate layer names
-- No longer re-generates noise map when unnecessary during movement and zooming
-- Can no longer have duplicate layer names
-- Fixed window resizing causing canvas to stretch/squash
-- Improved responsiveness
+- Added '+' and '-' zoom buttons
+- Added reset view button
+- Added temporary resolution restriction until responsiveness is improved
+- Added viewing layers with any number of layers
+- Added moving up/down visualization settings
+- World map now uses the visualization settings to determine how to draw the map
+- Improved map fadeoff
+- Fixed rgb picker opening in wrong position when visualization menu scrolled
+- Fixed bug where new visualization setting doesn't have a layer, but doesn't notify user
+- Fix bug with prior noise map showing up on node editor modal
 
 # Todo
-- When repositioning, update chunking system of change.
 - Fix gaps between chunks.
-- [Fix terrain overlapping world border.](https://gyazo.com/c7a39a09e91fb1032082ac4ec3175b7e)
-  - [Not caused by Marching Squares Algorithm.](https://gyazo.com/9c17127afa3e9ca8712c5410f1a182f5)
 - [Fix splitting. Splits too soon with unequal world widths and heights.](https://gyazo.com/03908767ee0e62ce41744b46108223d5)
+- Add asynchronous loading of world map and noise maps.
+- Improve responsiveness.
+- Add more visualization settings.
+- Add saving and loading of world maps.
 
-# Existing Limitations
+# Hard Limitations
 - [Impractical for extremely large maps. This is because as zoom increases, precision decreases in the drawing of the map. Meaning, it's better suited for maps small to large, as a lower zoom level is necessary to view close-up details.](https://gyazo.com/69aa0be214b873100d41c36e17d735fb)
 
 # Screenshots
@@ -51,3 +38,5 @@
 [v0.2.0: Added improved chunking system](https://gyazo.com/a40b173106a4ad1f92829ef01dbfc36b)
 
 [v0.2.1: Using improved chunking system with basic noise](https://gyazo.com/bdc23ecca555e06deb557d2f0e83dfe2)
+
+[v0.3.0: Added UI and customization](https://gyazo.com/bb5ba9ddf3790571e857bc8839ce7fec)

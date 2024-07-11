@@ -17,12 +17,26 @@ export default function VisualizationSetting(props: Props) {
 
     const setting = settings[index];
 
-    const { layers } = useStore();
+    const {
+        layers,
+    } = useStore();
 
     function setSetting(newSetting: IVisualizationSetting) {
         const newSettings = [...settings];
         newSettings[index] = newSetting;
         setSettings(newSettings);
+    }
+
+    function moveVisualizationSetting(index: number, direction: 'up' | 'down') {
+        const newSettings = [...settings];
+        const temp = newSettings[index];
+        newSettings[index] = newSettings[index + (direction === 'up' ? -1 : 1)];
+        newSettings[index + (direction === 'up' ? -1 : 1)] = temp;
+        setSettings(newSettings);
+    }
+
+    function canMoveVisualizationSetting(index: number, direction: 'up' | 'down') {
+        return direction === 'up' ? index !== 0 : index !== settings.length - 1;
     }
 
     function addCondition() {
@@ -184,6 +198,7 @@ export default function VisualizationSetting(props: Props) {
                                         })
                                     }
                                 >
+                                    <option value={-1}>Select Layer</option>
                                     {layers.map((layer) => (
                                         <option key={layer.id} value={layer.id}>
                                             {layer.name}
@@ -205,12 +220,32 @@ export default function VisualizationSetting(props: Props) {
                 </div>
             </div>
             <div className='setting-actions'>
-                <Button id='add-condition-btn' onClick={addCondition}>
-                    <i className='fa-solid fa-plus'></i>
-                </Button>
-                <Button id='delete-setting-btn' onClick={deleteSetting}>
-                    <i className='fa-solid fa-trash'></i>
-                </Button>
+                <div>
+                    <Button id='add-condition-btn' onClick={addCondition}>
+                        <i className='fa-solid fa-plus'></i>
+                    </Button>
+                    <Button
+                        id='delete-setting-btn'
+                        onClick={deleteSetting}>
+                        <i className='fa-solid fa-trash'></i>
+                    </Button>
+                    <Button
+                        id='up-setting-btn'
+                        onClick={() => moveVisualizationSetting(index, 'up')}
+                        isDisabled={!canMoveVisualizationSetting(index, 'up')}
+                    >
+                        <i className='fa-solid fa-arrow-up'></i>
+                    </Button>
+                    <Button
+                        id='down-setting-btn'
+                        onClick={() => moveVisualizationSetting(index, 'down')}
+                        isDisabled={!canMoveVisualizationSetting(index, 'down')}
+                    >
+                        <i className='fa-solid fa-arrow-down'></i>
+                    </Button>
+                </div>
+                <div>
+                </div>
             </div>
         </div>
     );

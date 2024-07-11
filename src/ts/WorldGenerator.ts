@@ -5,17 +5,19 @@ import GridSystem from './data/GridSystem';
 import ChunkData from './data/ChunkData';
 import QuadTreeNode from './data/QuadTreeNode';
 import WorldGenMath from './WorldGenMath';
+import IDictionary from './utils/IDictionary';
 
 export default class WorldGenerator {
     private _worldDimensions: WorldDimensions;
     private _halfWorldWidth: number;
     private _halfWorldHeight: number;
 
-    private generateNoiseValueFunc: (globalX: number, globalY: number) => number;
+    private generateValueFunc: (globalX: number, globalY: number) => IDictionary<number>;
     private _gridSystem: GridSystem<ChunkData>;
     private _maxDisplayableTiles: number = 5000;
     private _sizeSignificance: number = 2;
 
+    // State for determining if the world should be updated
     private _previousDistributedShares: number[] = [];
 
     /**
@@ -23,17 +25,17 @@ export default class WorldGenerator {
      * fades off the edges of the world.
      *
      * For example, if the fade off range is 0.5, then the fade off effect will
-     * start half way between the center of the world and the edge of the world.
+     * end half way between the center of the world and the edge of the world.
      */
-    public xFadeOffRange: number = 0.5;
-    public yFadeOffRange: number = 0.5;
+    public xFadeOffEndRange: number = 0.5;
+    public yFadeOffEndRange: number = 0.5;
 
-    constructor(worldDimensions: WorldDimensions, generateNoiseValueFunc: (globalX: number, globalY: number) => number) {
+    constructor(worldDimensions: WorldDimensions, generateNoiseValueFunc: (globalX: number, globalY: number) => IDictionary<number>) {
         this._worldDimensions = worldDimensions;
         this._halfWorldWidth = worldDimensions.xKM / 2;
         this._halfWorldHeight = worldDimensions.yKM / 2;
 
-        this.generateNoiseValueFunc = generateNoiseValueFunc;
+        this.generateValueFunc = generateNoiseValueFunc;
 
         let largestDimension = Math.max(worldDimensions.xKM, worldDimensions.yKM);
         this._gridSystem = new GridSystem(largestDimension);
@@ -73,14 +75,13 @@ export default class WorldGenerator {
         this._previousDistributedShares = distributedShares;
     }
 
-    generateChunkData(bounds: Bounds, detail: number): number[][] {
+    generateChunkData(bounds: Bounds, detail: number): IDictionary<number>[][] {
         detail = Math.round(Math.sqrt(detail));
         let halfWorldWidth = this._worldDimensions.xKM / 2;
         let halfWorldHeight = this._worldDimensions.yKM / 2;
         let sizePerTile = bounds.width / detail;
-        // let sizePerTile = 1;
 
-        let points: number[][] = [];
+        let points: IDictionary<number>[][] = [];
         for (let x = 0; x <= detail; x++) {
             let totalX = (bounds.x + (x * sizePerTile)) - halfWorldWidth;
             points.push([]);
@@ -89,32 +90,40 @@ export default class WorldGenerator {
                 let totalY = (bounds.y + (y * sizePerTile)) - halfWorldHeight;
                 let worldPos = new Vector2(totalX, totalY);
 
-                let noiseVal = this.generateNoiseValue(worldPos.x, worldPos.y);
-                points[x].push(noiseVal);
+                let noiseVals = this.generateValues(worldPos.x, worldPos.y);
+                points[x].push(noiseVals);
             }
         }
 
         return points;
     }
 
-    generateNoiseValue(globalX: number, globalY: number): number {
-        let val = this.generateNoiseValueFunc(globalX, globalY);
+    generateValues(globalX: number, globalY: number): IDictionary<number> {
+        let vals = this.generateValueFunc(globalX, globalY);
 
         let scaledXDistFromCenter = Math.abs(globalX) / this._halfWorldWidth;
-        let xFadeOffMultiplier = WorldGenMath.invLerp(1, this.xFadeOffRange, scaledXDistFromCenter);
-        if (this.xFadeOffRange == 1) {
+        let xFadeOffMultiplier = WorldGenMath.invLerp(1, this.xFadeOffEndRange, scaledXDistFromCenter);
+        if (this.xFadeOffEndRange == 1) {
             xFadeOffMultiplier = 1;
         }
 
         let scaledYDistFromCenter = Math.abs(globalY) / this._halfWorldHeight;
-        let yFadeOffMultiplier = WorldGenMath.invLerp(1, this.yFadeOffRange, scaledYDistFromCenter);
-        if (this.yFadeOffRange == 1) {
+        let yFadeOffMultiplier = WorldGenMath.invLerp(1, this.yFadeOffEndRange, scaledYDistFromCenter);
+        if (this.yFadeOffEndRange == 1) {
             yFadeOffMultiplier = 1;
         }
 
-        let combinedFadeOffMultiplier = (xFadeOffMultiplier + yFadeOffMultiplier) / 2;
+        let combinedFadeOffMultiplier = Math.sqrt(xFadeOffMultiplier * yFadeOffMultiplier);
 
-        return val * combinedFadeOffMultiplier;
+        const fadedValsDict: IDictionary<number> = {};
+        for (let key in vals) {
+            const val = vals[key];
+
+            let valWithFade = val * combinedFadeOffMultiplier;
+            fadedValsDict[key] = Math.min(1, Math.max(0, valWithFade));
+        }
+
+        return fadedValsDict;
     }
 
     private distributeInverseShares(shares: number[], totalValue: number): number[] {

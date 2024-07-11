@@ -14,7 +14,6 @@ import {
     NumberDecrementStepper,
 } from '@chakra-ui/react';
 import useStore from '../../editorStore';
-import { IWorldSettings } from '../../../../ts/interfaces/IWorldSettings';
 
 type Props = {
     sidebarOpen: boolean;
@@ -38,7 +37,6 @@ export default function SettingsSidebar(props: Props) {
     }, [worldSettings]);
 
     function apply() {
-        console.log('Applying settings');
         setWorldSettings(currentSettings);
     }
 
@@ -51,7 +49,6 @@ export default function SettingsSidebar(props: Props) {
         <>
             <NumberInput
                 value={xFadeOffPercentage}
-                precision={2}
                 step={0.05}
                 min={0}
                 max={1}
@@ -70,7 +67,6 @@ export default function SettingsSidebar(props: Props) {
             </NumberInput>
             <NumberInput
                 value={yFadeOffPercentage}
-                precision={2}
                 step={0.05}
                 min={0}
                 max={1}
@@ -102,7 +98,8 @@ export default function SettingsSidebar(props: Props) {
                     onChange={(val) =>
                         setCurrentSettings({
                             ...currentSettings,
-                            worldWidth: val
+                            worldWidth: val,
+                            worldHeight: val // TODO: Remove this line when world supports different width and height
                         })
                     }
                 >
@@ -118,7 +115,8 @@ export default function SettingsSidebar(props: Props) {
                     onChange={(val) =>
                         setCurrentSettings({
                             ...currentSettings,
-                            worldHeight: val
+                            worldHeight: val,
+                            worldWidth: val // TODO: Remove this line when world supports different width and height
                         })
                     }
                 >
