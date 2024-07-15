@@ -55,8 +55,8 @@ export default function Layer(props: ILayer) {
     function changeLayerName(value: string) {
         // Check if name is unique (don't include the current layer in the check)
         const layerIsUnique = layers
-            .filter((layer) => layer.id !== id)
-            .every((layer) => layer.name !== value);
+            .filter((layer: ILayer) => layer.id !== id)
+            .every((layer: ILayer) => layer.name !== value);
 
         let layerCount = 0;
         if (!layerIsUnique) {

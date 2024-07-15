@@ -1,14 +1,5 @@
 # Changes
-- Added '+' and '-' zoom buttons
-- Added reset view button
-- Added temporary resolution restriction until responsiveness is improved
-- Added viewing layers with any number of layers
-- Added moving up/down visualization settings
-- World map now uses the visualization settings to determine how to draw the map
-- Improved map fadeoff
-- Fixed rgb picker opening in wrong position when visualization menu scrolled
-- Fixed bug where new visualization setting doesn't have a layer, but doesn't notify user
-- Fix bug with prior noise map showing up on node editor modal
+- 
 
 # Todo
 - Fix gaps between chunks.

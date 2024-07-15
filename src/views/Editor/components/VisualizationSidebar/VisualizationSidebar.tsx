@@ -48,7 +48,7 @@ export default function VisualizationSidebar(props: Props) {
     const contentJSX = (
         <>
             {currentSettings.map(
-                (setting: IVisualizationSetting, index: number) => {
+                (_: IVisualizationSetting, index: number) => {
                     return (
                         <VisualizationSetting
                             key={index}

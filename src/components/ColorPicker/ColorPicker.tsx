@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SketchPicker } from 'react-color';
+import { SketchPicker } from 'react-color'
 import './ColorPicker.scss'
 import { Button } from '@chakra-ui/react';
 
@@ -18,7 +18,7 @@ export default function ColorPicker(props: Props) {
             <Button onClick={() => setDisplayColorPicker(!displayColorPicker)} style={{backgroundColor: color}}></Button>
             {displayColorPicker && (
                 <div className="color-picker">
-                    <SketchPicker color={color} onChange={(color) => setColor(color.hex)}/>
+                    <SketchPicker color={color} onChange={(color: any) => setColor(color.hex)} />
                 </div>
             )}
         </div>

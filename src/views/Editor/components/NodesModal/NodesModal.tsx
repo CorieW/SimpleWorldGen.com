@@ -1,4 +1,3 @@
-import React from 'react'
 import './NodesModal.scss'
 import Modal from '../../../../components/Modal/Modal'
 import useStore from '../../editorStore'
@@ -18,7 +17,6 @@ export default function NodesModal({}: Props) {
         moveLayer,
         addNode,
         getLayer,
-        layers
     } = useStore()
 
     const layer = getLayer(activeFormLayerId)

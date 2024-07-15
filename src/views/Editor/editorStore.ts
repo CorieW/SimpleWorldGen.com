@@ -47,7 +47,7 @@ type EditorStore = {
     setVisualizationSettings: (settings: IVisualizationSetting[]) => void;
 };
 
-const useStore = create<EditorStore>((set) => ({
+const useStore: any = create<EditorStore>((set) => ({
     worldSettings: {
         worldWidth: 1000,
         worldHeight: 1000,
@@ -146,7 +146,7 @@ const useStore = create<EditorStore>((set) => ({
         set({ layers: [...useStore.getState().layers, layer] }),
     removeLayer: (layerId) => {
         const currentLayers = useStore.getState().layers;
-        const layerIndex = currentLayers.findIndex((l) => l.id === layerId);
+        const layerIndex = currentLayers.findIndex((l: ILayer) => l.id === layerId);
 
         if (layerIndex === -1) {
             return;
@@ -157,7 +157,7 @@ const useStore = create<EditorStore>((set) => ({
     },
     modifyLayer: (layerId, layer) => {
         const currentLayers = useStore.getState().layers;
-        const layerIndex = currentLayers.findIndex((l) => l.id === layerId);
+        const layerIndex = currentLayers.findIndex((l: ILayer) => l.id === layerId);
 
         if (layerIndex === -1) {
             return;
@@ -168,7 +168,7 @@ const useStore = create<EditorStore>((set) => ({
     },
     moveLayer: (layerId: number, direction: 'left' | 'right') => {
         const currentLayers = useStore.getState().layers;
-        const layerIndex = currentLayers.findIndex((l) => l.id === layerId);
+        const layerIndex = currentLayers.findIndex((l: ILayer) => l.id === layerId);
 
         if (layerIndex === -1) {
             return;

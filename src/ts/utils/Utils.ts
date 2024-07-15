@@ -1,5 +1,4 @@
 import WorldGenMath from '../WorldGenMath';
-import Point from '../data/Point';
 
 export default class Utils {
     static setPixel(

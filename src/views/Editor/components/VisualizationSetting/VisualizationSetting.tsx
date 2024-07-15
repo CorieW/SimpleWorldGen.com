@@ -5,6 +5,7 @@ import { Input, Checkbox, Button, Text, Select } from '@chakra-ui/react';
 import useStore from '../../editorStore';
 import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
+import { ILayer } from '../../../../ts/interfaces/ILayer';
 
 type Props = {
     index: number;
@@ -199,7 +200,7 @@ export default function VisualizationSetting(props: Props) {
                                     }
                                 >
                                     <option value={-1}>Select Layer</option>
-                                    {layers.map((layer) => (
+                                    {layers.map((layer: ILayer) => (
                                         <option key={layer.id} value={layer.id}>
                                             {layer.name}
                                         </option>

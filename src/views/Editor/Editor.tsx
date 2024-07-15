@@ -13,6 +13,7 @@ import { IVisualizationCondition } from '../../ts/interfaces/visualization/IVisu
 import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
 import IDictionary from '../../ts/utils/IDictionary';
 import WorldGenMath from '../../ts/WorldGenMath';
+import { ILayer } from '../../ts/interfaces/ILayer';
 
 function Editor() {
     const { worldSettings, visualizationSettings, layers } = useStore();
@@ -53,14 +54,14 @@ function Editor() {
         function generateNoiseValueFunc(globalX: number, globalY: number): IDictionary<number> {
             const values: IDictionary<number> = {};
 
-            layers.forEach((layer) => {
+            layers.forEach((layer: ILayer) => {
                 const calculator = new NodeValueCalculator(layer.beginningNode)
                 values[layer.id] = calculator.calculateValue(globalX, globalY);
             });
 
             return values;
         }
-    }, [worldSettings, layers.map((layer) => layer.beginningNode)]);
+    }, [worldSettings, layers.map((layer: ILayer) => layer.beginningNode)]);
 
     useEffect(() => {
         function onResize() {
@@ -181,9 +182,9 @@ function Editor() {
 
         // return;
 
-        visualizationSettings.forEach((setting) => {
+        visualizationSettings.forEach((setting: IVisualizationSetting) => {
             let avgCenter = 0;
-            setting.conditions.forEach((condition) => {
+            setting.conditions.forEach((condition: IVisualizationCondition) => {
                 avgCenter += (condition.min + condition.max) / 2;
             });
             avgCenter = 0;
@@ -196,7 +197,7 @@ function Editor() {
                 (x, y) => {
                     let closestValue = Number.MAX_VALUE;
                     let outputValue = 0;
-                    setting.conditions.forEach((condition) => {
+                    setting.conditions.forEach((condition: IVisualizationCondition) => {
                         let center = (condition.min + condition.max) / 2;
                         let border = Math.abs(condition.max - condition.min) / 2;
                         let value = chunkData.getData()[x][y][condition.layerId];
@@ -239,7 +240,7 @@ function Editor() {
         const conditions = setting.conditions;
 
         let meetsConditions = true;
-        conditions.forEach((condition) => {
+        conditions.forEach((condition: IVisualizationCondition) => {
             const value = values[condition.layerId];
 
             if (!meetsCondition(condition, value)) {
