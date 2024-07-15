@@ -1,3 +1,6 @@
+# Information
+Available at: https://simpleworldgen.com
+
 # Changes
 - 
 
