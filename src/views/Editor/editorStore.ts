@@ -222,8 +222,6 @@ const useStore: any = create<EditorStore>((set) => ({
             }
         }
 
-        console.log(currentLayers);
-
         set({ layers: [...currentLayers] });
     },
 

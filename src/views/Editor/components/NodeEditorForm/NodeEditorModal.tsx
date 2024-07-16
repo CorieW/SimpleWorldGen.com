@@ -45,7 +45,6 @@ export default function NodeEditorModal() {
 
         // Copy the node to prevent modifying the original node
         const nodeCopy = JSON.parse(JSON.stringify(getNode(activeFormNodeId))) as INode;
-        console.log(nodeCopy)
         setCurrentNode(nodeCopy);
 
         // Clear the canvas when the node changes
@@ -56,7 +55,6 @@ export default function NodeEditorModal() {
         if (!ctx) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        console.log('Clearing canvas')
     }, [activeFormNodeId]);
 
     useEffect(() => {

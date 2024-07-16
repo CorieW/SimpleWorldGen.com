@@ -80,9 +80,6 @@ export default function Layer(props: ILayer) {
 
         // If there is more than one layer with the same name, add a number to the end of the name
         const newName = layerCount >= 1 ? `${value} (${layerCount})` : value;
-
-        console.log(newName);
-
         modifyLayer(id, { ...props, name: newName });
     }
 

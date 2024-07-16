@@ -30,7 +30,6 @@ function Editor() {
     const minZoom = 0.01;
 
     useEffect(() => {
-        console.log('Initializing editor');
         const worldDimensions = new WorldDimensions(
             worldWidth,
             worldHeight

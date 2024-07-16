@@ -28,7 +28,6 @@ export default function ConfirmableInput(props: Props) {
     }
 
     function updateInput() {
-        console.log('updateInput');
         changeValue(unconfirmedValue);
     }
 
