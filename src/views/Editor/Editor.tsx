@@ -166,22 +166,6 @@ function Editor() {
     function draw(chunkData: ChunkData) {
         const tileSize = (chunkData.getSize()) / (chunkData.getData().length - 1);
 
-        // draw squares
-        // chunkData.getData().forEach((row, x) => {
-        //     row.forEach((value, y) => {
-        //         const point = new paper.Point(
-        //             chunkData.getX() + x * tileSize,
-        //             chunkData.getY() + y * tileSize
-        //         );
-
-        //         const rect = new paper.Path.Circle(point, (tileSize + (1 / zoomRef.current)) / 2);
-        //         rect.strokeWidth = 0;
-        //         rect.fillColor = new paper.Color(WorldGenMath.lerp(0, 1, value[0]));
-        //     });
-        // });
-
-        // return;
-
         visualizationSettings.forEach((setting: IVisualizationSetting) => {
             switch (setting.type) {
                 case VisualizationTypeEnum.Poly:
