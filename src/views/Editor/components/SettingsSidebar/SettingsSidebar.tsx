@@ -12,8 +12,11 @@ import {
     NumberInputStepper,
     NumberIncrementStepper,
     NumberDecrementStepper,
+    Input,
+    HStack,
 } from '@chakra-ui/react';
 import useStore from '../../editorStore';
+import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
 
 type Props = {
     sidebarOpen: boolean;
@@ -126,6 +129,25 @@ export default function SettingsSidebar(props: Props) {
                         <NumberDecrementStepper />
                     </NumberInputStepper>
                 </NumberInput>
+            </Stack>
+            <Stack spacing={1}>
+                <Text fontSize={'lg'} fontWeight={600}>
+                    General
+                </Text>
+                <HStack>
+                <ColorPicker color={currentSettings.backgroundColor} setColor={(color) => setCurrentSettings({...currentSettings, backgroundColor: color})} />
+                    <Input
+                        className='color-input'
+                        value={currentSettings.backgroundColor}
+                        placeholder='Hex Color'
+                        onChange={(e) =>
+                            setCurrentSettings({
+                                ...currentSettings,
+                                backgroundColor: e.target.value,
+                            })
+                        }
+                    />
+                </HStack>
             </Stack>
             <Stack spacing={1}>
                 <FormControl

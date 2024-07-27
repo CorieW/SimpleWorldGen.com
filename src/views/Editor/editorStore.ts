@@ -51,6 +51,7 @@ const useStore: any = create<EditorStore>((set) => ({
     worldSettings: {
         worldWidth: 1000,
         worldHeight: 1000,
+        backgroundColor: '#4a90e2',
         fadeOff: true,
         xFadeOffPercentage: 0.5,
         yFadeOffPercentage: 0.5,

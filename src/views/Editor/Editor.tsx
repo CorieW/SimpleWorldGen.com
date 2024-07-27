@@ -47,6 +47,9 @@ function Editor() {
         paper.view.center = positionRef.current;
         paper.view.zoom = zoomRef.current;
 
+        // Set background color
+        canvasRef.current!.style.backgroundColor = worldSettings.backgroundColor;
+
         dragStartRef.current = null;
 
         updateWorld();

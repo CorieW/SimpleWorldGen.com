@@ -1,7 +1,7 @@
 import './VisualizationSetting.scss';
 import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
 import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
-import { Input, Checkbox, Button, Text, Select } from '@chakra-ui/react';
+import { Input, Checkbox, Button, Text, Select, HStack } from '@chakra-ui/react';
 import useStore from '../../editorStore';
 import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
@@ -184,7 +184,7 @@ export default function VisualizationSetting(props: Props) {
                         ))}
                     </Select>
                 </div>
-                <div className='color-picker'>
+                <HStack>
                     <ColorPicker color={setting.color} setColor={(color) => setSetting({ ...setting, color })} />
                     <Input
                         className='color-input'
@@ -194,7 +194,7 @@ export default function VisualizationSetting(props: Props) {
                             setSetting({ ...setting, color: e.target.value })
                         }
                     />
-                </div>
+                </HStack>
                 <div className='conditions'>
                     <Text size='sm' fontWeight={600}>
                         Conditions
