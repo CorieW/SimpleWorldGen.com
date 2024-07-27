@@ -1,5 +1,5 @@
 export enum NoiseTypeEnum {
     Simplex = 'Simplex',
-    Voronoi = 'Voronoi',
-    Random = 'Random',
+    // Voronoi = 'Voronoi',
+    // Random = 'Random',
 }

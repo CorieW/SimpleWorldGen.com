@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { ILayer } from '../../ts/interfaces/ILayer';
 import { NoiseTypeEnum } from '../../ts/enums/NoiseTypeEnum';
 import { NodeTypeEnum } from '../../ts/enums/NodeTypeEnum';
-import { ISimplexNoiseNode } from '../../ts/interfaces/ISimplexNoiseNode';
 import { NodeEffectEnum } from '../../ts/enums/NodeEffectEnum';
 import { INode } from '../../ts/interfaces/INode';
 import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
@@ -77,60 +76,64 @@ const useStore: any = create<EditorStore>((set) => ({
 
     layers: [
         {
-            id: 0,
-            name: 'Layer 1',
-            beginningNode: {
-                id: 0,
-                type: NodeTypeEnum.Noise,
-                noiseType: NoiseTypeEnum.Simplex,
-                multiplier: 1,
-                frequency: 0.01,
-                amplitude: 1,
-                octaves: 1,
-                persistence: 0.5,
-                lacunarity: 2,
-                seed: 1000,
-                offsetX: 0,
-                offsetY: 0,
-                effect: NodeEffectEnum.Add,
-                nextNode: {
-                    id: 2,
-                    type: NodeTypeEnum.Noise,
-                    noiseType: NoiseTypeEnum.Simplex,
-                    multiplier: 0.01,
-                    frequency: 1,
-                    amplitude: 1,
-                    octaves: 1,
-                    persistence: 0.5,
-                    lacunarity: 2,
-                    seed: 0,
-                    offsetX: 0,
-                    offsetY: 0,
-                    effect: NodeEffectEnum.Add,
-                    nextNode: null,
-                } as ISimplexNoiseNode,
-            } as ISimplexNoiseNode,
+          "id": 0,
+          "name": "Layer 1",
+          "beginningNode": {
+            "id": 0,
+            "type": NodeTypeEnum.Noise,
+            "noiseType": "Simplex",
+            "multiplier": 1,
+            "frequency": 0.01,
+            "amplitude": 1,
+            "octaves": 1,
+            "persistence": 0.5,
+            "lacunarity": 2,
+            "seed": 1000,
+            "offsetX": 0,
+            "offsetY": 0,
+            "effect": NodeEffectEnum.Add,
+            "nextNode": null
+          }
         },
         {
-            id: 1,
-            name: 'Layer 2',
-            beginningNode: {
-                id: 1,
-                type: NodeTypeEnum.Noise,
-                noiseType: NoiseTypeEnum.Simplex,
-                multiplier: 1,
-                frequency: 1,
-                amplitude: 1,
-                octaves: 1,
-                persistence: 0.5,
-                lacunarity: 2,
-                seed: 0,
-                offsetX: 0,
-                offsetY: 0,
-                effect: NodeEffectEnum.Add,
-                nextNode: null,
-            } as ISimplexNoiseNode,
+          "id": 1,
+          "name": "Layer 2",
+          "beginningNode": {
+            "id": 1,
+            "type": NodeTypeEnum.Noise,
+            "noiseType": NoiseTypeEnum.Simplex,
+            "multiplier": 1,
+            "frequency": "0.03",
+            "amplitude": 1,
+            "octaves": 1,
+            "persistence": "0.5",
+            "lacunarity": 2,
+            "seed": "0",
+            "offsetX": 0,
+            "offsetY": 0,
+            "effect": NodeEffectEnum.Add,
+            "nextNode": null
+          }
         },
+        {
+          "id": 3,
+          "name": "Layer 3",
+          "beginningNode": {
+            "id": 4,
+            "type": NodeTypeEnum.Noise,
+            "effect": NodeEffectEnum.Add,
+            "nextNode": null,
+            "noiseType": NoiseTypeEnum.Simplex,
+            "octaves": "1",
+            "seed": "1",
+            "multiplier": "1.0",
+            "persistence": "0.5",
+            "lacunarity": "2.0",
+            "frequency": "0.02",
+            "offsetX": "0",
+            "offsetY": "0"
+          }
+        }
     ],
     setLayers: (layers) => set({ layers }),
     getLayer: (id: number): ILayer | null => {
@@ -410,33 +413,99 @@ const useStore: any = create<EditorStore>((set) => ({
 
     visualizationSettings: [
         {
-            type: VisualizationTypeEnum.Color,
-            color: 'darkblue',
-            conditions: [
-                {
-                    condOperator: null,
-                    layerId: 0,
-                    min: 0,
-                    max: 0.5,
-                    minInclusive: true,
-                    maxInclusive: false,
-                },
-            ],
+          "type": VisualizationTypeEnum.Color,
+          "color": "#4a90e2",
+          "conditions": [
+            {
+              "condOperator": null,
+              "layerId": 0,
+              "min": 0,
+              "max": 0.5,
+              "minInclusive": true,
+              "maxInclusive": false
+            }
+          ]
         },
         {
-            type: VisualizationTypeEnum.Color,
-            color: 'green',
-            conditions: [
-                {
-                    condOperator: null,
-                    layerId: 0,
-                    min: 0.5,
-                    max: 1,
-                    minInclusive: false,
-                    maxInclusive: true,
-                },
-            ],
+          "type": VisualizationTypeEnum.Color,
+          "color": "#fff694",
+          "conditions": [
+            {
+              "layerId": 0,
+              "condOperator": null,
+              "min": 0.49,
+              "max": 1,
+              "minInclusive": true,
+              "maxInclusive": false
+            },
+            {
+              "layerId": 1,
+              "condOperator": null,
+              "min": 0.4,
+              "max": 1,
+              "minInclusive": false,
+              "maxInclusive": false
+            }
+          ]
         },
+        {
+          "type": VisualizationTypeEnum.Color,
+          "color": "#7ed321",
+          "conditions": [
+            {
+              "condOperator": null,
+              "layerId": 0,
+              "min": 0.5,
+              "max": 1,
+              "minInclusive": false,
+              "maxInclusive": true
+            }
+          ]
+        },
+        {
+          "type": VisualizationTypeEnum.Color,
+          "color": "#fff694",
+          "conditions": [
+            {
+              "layerId": 3,
+              "condOperator": null,
+              "min": 0.6,
+              "max": 1,
+              "minInclusive": false,
+              "maxInclusive": false
+            },
+            {
+              "layerId": 0,
+              "condOperator": null,
+              "min": 0,
+              "max": 0.2,
+              "minInclusive": false,
+              "maxInclusive": false
+            }
+          ]
+        },
+        {
+          "type": VisualizationTypeEnum.Color,
+          "color": "#7ed321",
+          "conditions": [
+            {
+              "layerId": 3,
+              "condOperator": null,
+              "min": 0.61,
+              "max": 1,
+              "minInclusive": false,
+              "maxInclusive": false
+            },
+            {
+              "layerId": 0,
+              "condOperator": null,
+              "min": 0,
+              "max": 0.2,
+              "minInclusive": false,
+              "maxInclusive": false
+            }
+          ]
+        }
     ],
     setVisualizationSettings: (settings) =>
         set({ visualizationSettings: settings }),

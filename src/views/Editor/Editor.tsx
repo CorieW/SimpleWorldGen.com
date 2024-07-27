@@ -30,6 +30,8 @@ function Editor() {
     const minZoom = 0.01;
 
     useEffect(() => {
+        console.log(layers);
+        console.log(visualizationSettings);
         const worldDimensions = new WorldDimensions(
             worldWidth,
             worldHeight
