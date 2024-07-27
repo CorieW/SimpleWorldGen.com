@@ -1,4 +1,9 @@
 export enum VisualizationTypeEnum {
-    Color = "Color",
-    Gradient = "Gradient",
+    Poly = "Poly",
+    Circle = "Circle",
+    Triangle = "Triangle",
+    Square = "Square",
+    ScalingCircle = "ScalingCircle",
+    ScalingTriangle = "ScalingTriangle",
+    ScalingSquare = "ScalingSquare",
 }

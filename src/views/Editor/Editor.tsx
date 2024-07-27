@@ -14,6 +14,7 @@ import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisual
 import IDictionary from '../../ts/utils/IDictionary';
 import WorldGenMath from '../../ts/WorldGenMath';
 import { ILayer } from '../../ts/interfaces/ILayer';
+import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
 
 function Editor() {
     const { worldSettings, visualizationSettings, layers } = useStore();
@@ -30,8 +31,6 @@ function Editor() {
     const minZoom = 0.01;
 
     useEffect(() => {
-        console.log(layers);
-        console.log(visualizationSettings);
         const worldDimensions = new WorldDimensions(
             worldWidth,
             worldHeight
@@ -184,6 +183,32 @@ function Editor() {
         // return;
 
         visualizationSettings.forEach((setting: IVisualizationSetting) => {
+            switch (setting.type) {
+                case VisualizationTypeEnum.Poly:
+                    drawPolygons(setting);
+                    break;
+                case VisualizationTypeEnum.Square:
+                    drawSquares(setting);
+                    break;
+                case VisualizationTypeEnum.Circle:
+                    drawSquares(setting, 'Circle');
+                    break;
+                case VisualizationTypeEnum.Triangle:
+                    drawSquares(setting, 'Triangle');
+                    break;
+                case VisualizationTypeEnum.ScalingSquare:
+                    drawSquares(setting, 'Square', true);
+                    break;
+                case VisualizationTypeEnum.ScalingCircle:
+                    drawSquares(setting, 'Circle', true);
+                    break;
+                case VisualizationTypeEnum.ScalingTriangle:
+                    drawSquares(setting, 'Triangle', true);
+                    break;
+            }
+        });
+
+        function drawPolygons(setting: IVisualizationSetting) {
             let avgCenter = 0;
             setting.conditions.forEach((condition: IVisualizationCondition) => {
                 avgCenter += (condition.min + condition.max) / 2;
@@ -234,7 +259,64 @@ function Editor() {
                 path.fillColor = new paper.Color(setting.color);
                 path.closed = true;
             });
-        });
+        }
+
+        function drawSquares(setting: IVisualizationSetting, shape: 'Square' | 'Circle' | 'Triangle' = 'Square', scale: boolean = false) {
+            let avgMin = 0;
+            let avgMax = 0;
+            setting.conditions.forEach((condition: IVisualizationCondition) => {
+                avgMin += condition.min;
+                avgMax += condition.max;
+            });
+            avgMin /= setting.conditions.length;
+            avgMax /= setting.conditions.length;
+
+            for (let x = 0; x < chunkData.getData().length; x++) {
+                for (let y = 0; y < chunkData.getData().length; y++) {
+                    const values = chunkData.getData()[x][y];
+                    if (evaluationFunction(setting, values)) {
+                        const point = new paper.Point(
+                            chunkData.getX() + x * tileSize,
+                            chunkData.getY() + y * tileSize
+                        );
+
+                        let rect: paper.Path | null = null;
+                        if (shape === 'Square') {
+                            rect = new paper.Path.Rectangle(
+                                point,
+                                new paper.Size(tileSize, tileSize)
+                            );
+                        } else if (shape === 'Circle') {
+                            rect = new paper.Path.Circle(
+                                point,
+                                tileSize / 2
+                            );
+                        } else if (shape === 'Triangle') {
+                            rect = new paper.Path.RegularPolygon(
+                                point,
+                                3,
+                                tileSize / 2
+                            );
+                        }
+
+                        if (rect === null) return;
+
+                        if (scale) {
+                            let avg = 0;
+                            setting.conditions.forEach((condition: IVisualizationCondition) => {
+                                avg += values[condition.layerId];
+                            });
+                            avg /= setting.conditions.length;
+
+                            rect.scale(WorldGenMath.invLerp(avgMin, avgMax, avg));
+                        }
+
+                        rect.strokeWidth = 0;
+                        rect.fillColor = new paper.Color(setting.color);
+                    }
+                }
+            }
+        }
     }
 
     function evaluationFunction(setting: IVisualizationSetting, values: IDictionary<number>): boolean {

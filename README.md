@@ -2,7 +2,7 @@
 Available at: https://simpleworldgen.com
 
 # Changes
-- 
+- Added visualization types, such as: Poly, Square, Circle, Triangle, ScalingSquare...
 
 # Todo
 - Fix gaps between chunks.

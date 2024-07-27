@@ -5,9 +5,10 @@ import { NodeTypeEnum } from '../../ts/enums/NodeTypeEnum';
 import { NodeEffectEnum } from '../../ts/enums/NodeEffectEnum';
 import { INode } from '../../ts/interfaces/INode';
 import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
-import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
+import { VisualizationColorTypeEnum } from '../../ts/enums/VisualizationColorTypeEnum';
 import { IWorldSettings } from '../../ts/interfaces/IWorldSettings';
 import { INoiseNode } from '../../ts/interfaces/INoiseNode';
+import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
 
 type EditorStore = {
     worldSettings: IWorldSettings;
@@ -413,98 +414,126 @@ const useStore: any = create<EditorStore>((set) => ({
 
     visualizationSettings: [
         {
-          "type": VisualizationTypeEnum.Color,
-          "color": "#4a90e2",
-          "conditions": [
-            {
-              "condOperator": null,
-              "layerId": 0,
-              "min": 0,
-              "max": 0.5,
-              "minInclusive": true,
-              "maxInclusive": false
-            }
-          ]
+            "type": VisualizationTypeEnum.Square,
+            "colorType": VisualizationColorTypeEnum.Color,
+            "color": "#4a90e2",
+            "conditions": [
+                {
+                "condOperator": null,
+                "layerId": 0,
+                "min": 0,
+                "max": 0.5,
+                "minInclusive": true,
+                "maxInclusive": false
+                }
+            ]
         },
         {
-          "type": VisualizationTypeEnum.Color,
-          "color": "#fff694",
-          "conditions": [
-            {
-              "layerId": 0,
-              "condOperator": null,
-              "min": 0.49,
-              "max": 1,
-              "minInclusive": true,
-              "maxInclusive": false
-            },
-            {
-              "layerId": 1,
-              "condOperator": null,
-              "min": 0.4,
-              "max": 1,
-              "minInclusive": false,
-              "maxInclusive": false
-            }
-          ]
+            "type": VisualizationTypeEnum.Square,
+            "colorType": VisualizationColorTypeEnum.Color,
+            "color": "#fff694",
+            "conditions": [
+                {
+                    "layerId": 0,
+                    "condOperator": null,
+                    "min": 0.49,
+                    "max": 1,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                },
+                {
+                    "layerId": 1,
+                    "condOperator": null,
+                    "min": 0.4,
+                    "max": 1,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                }
+            ]
         },
         {
-          "type": VisualizationTypeEnum.Color,
-          "color": "#7ed321",
-          "conditions": [
-            {
-              "condOperator": null,
-              "layerId": 0,
-              "min": 0.5,
-              "max": 1,
-              "minInclusive": false,
-              "maxInclusive": true
-            }
-          ]
+            "type": VisualizationTypeEnum.Square,
+            "colorType": VisualizationColorTypeEnum.Color,
+            "color": "#7ed321",
+            "conditions": [
+                {
+                    "condOperator": null,
+                    "layerId": 0,
+                    "min": 0.5,
+                    "max": 1,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                }
+            ]
         },
         {
-          "type": VisualizationTypeEnum.Color,
-          "color": "#fff694",
-          "conditions": [
-            {
-              "layerId": 3,
-              "condOperator": null,
-              "min": 0.6,
-              "max": 1,
-              "minInclusive": false,
-              "maxInclusive": false
-            },
-            {
-              "layerId": 0,
-              "condOperator": null,
-              "min": 0,
-              "max": 0.2,
-              "minInclusive": false,
-              "maxInclusive": false
-            }
-          ]
+            "type": VisualizationTypeEnum.ScalingTriangle,
+            "colorType": VisualizationColorTypeEnum.Color,
+            "color": "#5ea60e",
+            "conditions": [
+                {
+                    "condOperator": null,
+                    "layerId": 0,
+                    "min": 0.5,
+                    "max": 1,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                },
+                {
+                    "condOperator": null,
+                    "layerId": 1,
+                    "min": 0.5,
+                    "max": 1,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                }
+            ]
         },
         {
-          "type": VisualizationTypeEnum.Color,
-          "color": "#7ed321",
-          "conditions": [
-            {
-              "layerId": 3,
-              "condOperator": null,
-              "min": 0.61,
-              "max": 1,
-              "minInclusive": false,
-              "maxInclusive": false
-            },
-            {
-              "layerId": 0,
-              "condOperator": null,
-              "min": 0,
-              "max": 0.2,
-              "minInclusive": false,
-              "maxInclusive": false
-            }
-          ]
+            "type": VisualizationTypeEnum.Square,
+            "colorType": VisualizationColorTypeEnum.Color,
+            "color": "#fff694",
+            "conditions": [
+                {
+                    "layerId": 3,
+                    "condOperator": null,
+                    "min": 0.6,
+                    "max": 1,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                },
+                {
+                    "layerId": 0,
+                    "condOperator": null,
+                    "min": 0,
+                    "max": 0.2,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                }
+            ]
+        },
+        {
+            "type": VisualizationTypeEnum.Square,
+            "colorType": VisualizationColorTypeEnum.Color,
+            "color": "#7ed321",
+            "conditions": [
+                {
+                    "layerId": 3,
+                    "condOperator": null,
+                    "min": 0.61,
+                    "max": 1,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                },
+                {
+                    "layerId": 0,
+                    "condOperator": null,
+                    "min": 0,
+                    "max": 0.2,
+                    "minInclusive": true,
+                    "maxInclusive": false
+                }
+            ]
         }
     ],
     setVisualizationSettings: (settings) =>

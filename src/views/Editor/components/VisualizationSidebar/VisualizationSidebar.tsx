@@ -5,6 +5,7 @@ import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/I
 import useStore from '../../editorStore';
 import VisualizationSetting from '../VisualizationSetting/VisualizationSetting';
 import Sidebar from '../../../../components/Sidebar/Sidebar';
+import { VisualizationColorTypeEnum } from '../../../../ts/enums/VisualizationColorTypeEnum';
 import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
 
 type Props = {
@@ -28,8 +29,10 @@ export default function VisualizationSidebar(props: Props) {
 
     function addSetting() {
         const newSettings = [...currentSettings];
+        // Add a default setting
         newSettings.push({
-            type: VisualizationTypeEnum.Color,
+            type: VisualizationTypeEnum.Poly,
+            colorType: VisualizationColorTypeEnum.Color,
             color: '#000000',
             conditions: [],
         });

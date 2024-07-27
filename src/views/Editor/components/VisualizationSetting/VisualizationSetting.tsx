@@ -6,6 +6,7 @@ import useStore from '../../editorStore';
 import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
+import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
 
 type Props = {
     index: number;
@@ -85,8 +86,7 @@ export default function VisualizationSetting(props: Props) {
                 onChange={(e) =>
                     setCondition(index, {
                         ...condition,
-                        condOperator: e.target
-                            .value as VisualizationConditionalOperatorEnum,
+                        condOperator: e.target.value as VisualizationConditionalOperatorEnum,
                     })
                 }
             >
@@ -169,6 +169,21 @@ export default function VisualizationSetting(props: Props) {
     return (
         <div className='visualization-setting'>
             <div className='setting-content'>
+                <div className='visualization-type'>
+                    <Select
+                        className='visualization-type-input'
+                        value={setting.type}
+                        onChange={(e) =>
+                            setSetting({ ...setting, type: e.target.value as VisualizationTypeEnum })
+                        }
+                    >
+                        {Object.values(VisualizationTypeEnum).map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                    </Select>
+                </div>
                 <div className='color-picker'>
                     <ColorPicker color={setting.color} setColor={(color) => setSetting({ ...setting, color })} />
                     <Input
