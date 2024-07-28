@@ -7,6 +7,8 @@ import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/Visua
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
 import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
+import Shapes from '../../../../ts/utils/Shapes';
+import { ScalingTypeEnum } from '../../../../ts/enums/ScalingTypeEnum';
 
 type Props = {
     index: number;
@@ -184,6 +186,25 @@ export default function VisualizationSetting(props: Props) {
                         ))}
                     </Select>
                 </div>
+                {
+                    Shapes.getShape(setting.type).canScale && (
+                        <div className='scaling-type'>
+                            <Select
+                                className='scaling-type-input'
+                                value={setting.scalingType}
+                                onChange={(e) =>
+                                    setSetting({ ...setting, scalingType: e.target.value as ScalingTypeEnum })
+                                }
+                            >
+                                {Object.values(ScalingTypeEnum).map((type) => (
+                                    <option key={type} value={type}>
+                                        {type}
+                                    </option>
+                                ))}
+                            </Select>
+                        </div>
+                    )
+                }
                 <HStack>
                     <ColorPicker color={setting.color} setColor={(color) => setSetting({ ...setting, color })} />
                     <Input

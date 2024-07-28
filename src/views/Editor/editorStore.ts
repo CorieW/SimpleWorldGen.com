@@ -9,6 +9,7 @@ import { VisualizationColorTypeEnum } from '../../ts/enums/VisualizationColorTyp
 import { IWorldSettings } from '../../ts/interfaces/IWorldSettings';
 import { INoiseNode } from '../../ts/interfaces/INoiseNode';
 import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
+import { ScalingTypeEnum } from '../../ts/enums/ScalingTypeEnum';
 
 type EditorStore = {
     worldSettings: IWorldSettings;
@@ -468,7 +469,8 @@ const useStore: any = create<EditorStore>((set) => ({
             ]
         },
         {
-            "type": VisualizationTypeEnum.ScalingTriangle,
+            "type": VisualizationTypeEnum.Triangle,
+            "scalingType": ScalingTypeEnum.BOTH,
             "colorType": VisualizationColorTypeEnum.Color,
             "color": "#5ea60e",
             "conditions": [

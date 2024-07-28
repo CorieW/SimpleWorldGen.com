@@ -3,7 +3,4 @@ export enum VisualizationTypeEnum {
     Circle = "Circle",
     Triangle = "Triangle",
     Square = "Square",
-    ScalingCircle = "ScalingCircle",
-    ScalingTriangle = "ScalingTriangle",
-    ScalingSquare = "ScalingSquare",
 }

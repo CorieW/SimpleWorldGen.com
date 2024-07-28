@@ -15,6 +15,8 @@ import IDictionary from '../../ts/utils/IDictionary';
 import WorldGenMath from '../../ts/WorldGenMath';
 import { ILayer } from '../../ts/interfaces/ILayer';
 import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
+import { ScalingTypeEnum } from '../../ts/enums/ScalingTypeEnum';
+import Utils from '../../ts/utils/Utils';
 
 function Editor() {
     const { worldSettings, visualizationSettings, layers } = useStore();
@@ -175,22 +177,13 @@ function Editor() {
                     drawPolygons(setting);
                     break;
                 case VisualizationTypeEnum.Square:
-                    drawSquares(setting);
+                    drawSquares(setting, 'Square', setting.scalingType);
                     break;
                 case VisualizationTypeEnum.Circle:
-                    drawSquares(setting, 'Circle');
+                    drawSquares(setting, 'Circle', setting.scalingType);
                     break;
                 case VisualizationTypeEnum.Triangle:
-                    drawSquares(setting, 'Triangle');
-                    break;
-                case VisualizationTypeEnum.ScalingSquare:
-                    drawSquares(setting, 'Square', true);
-                    break;
-                case VisualizationTypeEnum.ScalingCircle:
-                    drawSquares(setting, 'Circle', true);
-                    break;
-                case VisualizationTypeEnum.ScalingTriangle:
-                    drawSquares(setting, 'Triangle', true);
+                    drawSquares(setting, 'Triangle', setting.scalingType);
                     break;
             }
         });
@@ -248,7 +241,7 @@ function Editor() {
             });
         }
 
-        function drawSquares(setting: IVisualizationSetting, shape: 'Square' | 'Circle' | 'Triangle' = 'Square', scale: boolean = false) {
+        function drawSquares(setting: IVisualizationSetting, shape: 'Square' | 'Circle' | 'Triangle' = 'Square', scalingType: ScalingTypeEnum = ScalingTypeEnum.NONE) {
             let avgMin = 0;
             let avgMax = 0;
             setting.conditions.forEach((condition: IVisualizationCondition) => {
@@ -288,18 +281,27 @@ function Editor() {
 
                         if (rect === null) return;
 
-                        if (scale) {
+                        let maxScale = setting.maxScale || 1;
+                        let minScale = setting.minScale || 0;
+                        let valueScale = 1;
+                        if (scalingType === ScalingTypeEnum.VALUE || scalingType === ScalingTypeEnum.BOTH) {
                             let avg = 0;
                             setting.conditions.forEach((condition: IVisualizationCondition) => {
                                 avg += values[condition.layerId];
                             });
                             avg /= setting.conditions.length;
-
-                            rect.scale(WorldGenMath.invLerp(avgMin, avgMax, avg));
+                            valueScale = WorldGenMath.invLerp(avgMin, avgMax, avg);
                         }
+
+                        let zoomScale = 1;
+                        if (scalingType === ScalingTypeEnum.ZOOM || scalingType === ScalingTypeEnum.BOTH) {
+                            zoomScale = WorldGenMath.invLerp(minZoom, maxZoom, zoomRef.current);
+                        }
+                        let scale = Math.max(valueScale, zoomScale);
 
                         rect.strokeWidth = 0;
                         rect.fillColor = new paper.Color(setting.color);
+                        rect.scale(Utils.clamp(scale, minScale, maxScale));
                     }
                 }
             }

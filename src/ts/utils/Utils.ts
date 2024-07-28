@@ -35,4 +35,8 @@ export default class Utils {
     static lerp(a: number, b: number, t: number): number {
         return a + t * (b - a);
     }
+
+    static clamp(val: number, min: number, max: number): number {
+        return Math.min(Math.max(val, min), max);
+    }
 }
