@@ -1,6 +1,6 @@
 export enum ScalingTypeEnum {
-    NONE = "none",
-    VALUE = "value",
-    ZOOM = "zoom",
-    BOTH = "both"
+    NONE = "None",
+    VALUE = "Value",
+    ZOOM = "Zoom",
+    BOTH = "Both"
 }
