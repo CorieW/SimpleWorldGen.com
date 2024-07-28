@@ -267,11 +267,17 @@ function Editor() {
                                 new paper.Size(tileSize, tileSize)
                             );
                         } else if (shape === 'Circle') {
+                            point.x += tileSize / 2;
+                            point.y += tileSize / 2;
+
                             rect = new paper.Path.Circle(
                                 point,
                                 tileSize / 2
                             );
                         } else if (shape === 'Triangle') {
+                            point.x += tileSize / 2;
+                            point.y += tileSize / 1.6;
+
                             rect = new paper.Path.RegularPolygon(
                                 point,
                                 3,

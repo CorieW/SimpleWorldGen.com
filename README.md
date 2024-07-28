@@ -7,7 +7,6 @@ Available at: https://simpleworldgen.com
 # Todo
 - Fix gaps between chunks.
 - [Fix splitting. Splits too soon with unequal world widths and heights.](https://gyazo.com/03908767ee0e62ce41744b46108223d5)
-- [Center scaled shapes](https://gyazo.com/e642899896c8427f05d8f9811d1d8a4e)
 - Add asynchronous loading of world map and noise maps.
 - Improve responsiveness.
 - Add more visualization settings.
