@@ -1,7 +1,7 @@
 import './VisualizationSetting.scss';
 import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
 import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
-import { Checkbox, Button, Text, Select, HStack } from '@chakra-ui/react';
+import { Checkbox, Button, Text, HStack } from '@chakra-ui/react';
 import Input from '../../../../components/Input/Input';
 import useStore from '../../editorStore';
 import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';

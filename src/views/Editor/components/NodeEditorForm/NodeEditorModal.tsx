@@ -4,7 +4,6 @@ import useStore from '../../editorStore';
 import {
     Button,
     Divider,
-    Select,
     Stack,
     HStack
 } from '@chakra-ui/react';
@@ -92,37 +91,34 @@ export default function NodeEditorModal() {
     }
 
     const nodeEffectSelectJSX = () => (
-        <Select
+        <Input
+            label='Node Effect'
             placeholder='Select the node effect'
             size='md'
             value={currentNode && currentNode.effect || ''}
-            onChange={(e) =>
-                setCurrentNode({ ...currentNode, effect: e.target.value as NodeEffectEnum } as INode)
+            onChange={(val: any) =>
+                setCurrentNode({ ...currentNode, effect: val as NodeEffectEnum } as INode)
             }
-        >
-            {Object.values(NodeEffectEnum).map((effectType: any) => (
-                <option key={effectType} value={effectType}>
-                    {effectType}
-                </option>
-            ))}
-        </Select>
+            options={Object.values(NodeEffectEnum).map((effectType: any) => ({
+                value: effectType,
+                label: effectType,
+            }))}
+        />
     );
 
     const nodeTypeSelectJSX = () => (
-        <Select
-            placeholder='Select the node effect'
+        <Input
+            label='Node Type'
             size='md'
             value={currentNode && currentNode.type || ''}
-            onChange={(e) =>
-                setCurrentNode({ ...currentNode, type: e.target.value as NodeTypeEnum } as INode)
+            onChange={(val: any) =>
+                setCurrentNode({ ...currentNode, type: val as NodeTypeEnum } as INode)
             }
-        >
-            {Object.values(NodeTypeEnum).map((nodeType: any) => (
-                <option key={nodeType} value={nodeType}>
-                    {nodeType}
-                </option>
-            ))}
-        </Select>
+            options={Object.values(NodeTypeEnum).map((nodeType: any) => ({
+                value: nodeType,
+                label: nodeType,
+            }))}
+        />
     );
 
     const contentJSX = () => (
@@ -229,10 +225,10 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                         step={1}
                         min={1}
                         max={8}
-                        onChange={(valString: any) =>
+                        onChange={(val: any) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                octaves: valString,
+                                octaves: val,
                             })
                         }
                     />
@@ -241,10 +237,10 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                         label='Persistence'
                         value={persistence}
                         step={0.1}
-                        onChange={(valString: any) =>
+                        onChange={(val: any) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                persistence: valString,
+                                persistence: val,
                             })
                         }
                     />
@@ -253,10 +249,10 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                         label='Lacunarity'
                         value={lacunarity}
                         step={0.1}
-                        onChange={(valString: any) =>
+                        onChange={(val: any) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                lacunarity: valString,
+                                lacunarity: val,
                             })
                         }
                     />
@@ -265,10 +261,10 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                         label='Frequency'
                         value={frequency}
                         step={0.1}
-                        onChange={(valString: any) =>
+                        onChange={(val: any) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                frequency: valString,
+                                frequency: val,
                             })
                         }
                     />
@@ -278,10 +274,10 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                             label='Offset X'
                             value={offsetX}
                             step={1}
-                            onChange={(valString: any) =>
+                            onChange={(val: any) =>
                                 setNode({
                                     ...simplexNoiseNode,
-                                    offsetX: valString,
+                                    offsetX: val,
                                 })
                             }
                         />
@@ -290,10 +286,10 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                             label='Offset Y'
                             value={offsetY}
                             step={1}
-                            onChange={(valString: any) =>
+                            onChange={(val: any) =>
                                 setNode({
                                     ...simplexNoiseNode,
-                                    offsetY: valString,
+                                    offsetY: val,
                                 })
                             }
                         />
@@ -310,10 +306,11 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                 label='Seed'
                 value={node && node.seed}
                 step={1000}
-                onChange={(valString: any) =>
+                precision={0}
+                onChange={(val: any) =>
                     setNode({
                         ...node,
-                        seed: valString,
+                        seed: val,
                     })
                 }
             />
@@ -322,10 +319,10 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                 placeholder='Select noise type'
                 size='md'
                 value={noiseType || ''}
-                onChange={(valueString: any) =>
+                onChange={(val: any) =>
                     setNode({
                         ...node,
-                        noiseType: valueString as NoiseTypeEnum,
+                        noiseType: val as NoiseTypeEnum,
                     })
                 }
                 options={Object.values(NoiseTypeEnum).map((noiseType: any) => ({
@@ -338,10 +335,10 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
                 label='Multiplier'
                 value={node && node.multiplier}
                 step={0.1}
-                onChange={(valString: any) =>
+                onChange={(val: any) =>
                     setNode({
                         ...node,
-                        multiplier: valString,
+                        multiplier: val,
                     })
                 }
             />
