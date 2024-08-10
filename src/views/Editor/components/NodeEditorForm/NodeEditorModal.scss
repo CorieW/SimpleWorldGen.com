@@ -1,6 +1,7 @@
 #node-editor-modal-content-container{
     z-index: 101;
     display: flex;
+    height: 100%;
     flex-direction: column;
     overflow-y: hidden;
 
@@ -44,7 +45,7 @@
 
     .form-container {
         flex: 1;
-        overflow-y: scroll;
+        overflow-y: auto;
 
         .title {
             width: 100%;

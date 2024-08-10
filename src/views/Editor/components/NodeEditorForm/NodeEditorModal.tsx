@@ -93,6 +93,7 @@ export default function NodeEditorModal() {
     const nodeEffectSelectJSX = () => (
         <Input
             label='Node Effect'
+            type='select'
             placeholder='Select the node effect'
             size='md'
             value={currentNode && currentNode.effect || ''}
@@ -109,6 +110,7 @@ export default function NodeEditorModal() {
     const nodeTypeSelectJSX = () => (
         <Input
             label='Node Type'
+            type='select'
             size='md'
             value={currentNode && currentNode.type || ''}
             onChange={(val: any) =>
@@ -120,6 +122,8 @@ export default function NodeEditorModal() {
             }))}
         />
     );
+
+    console.log(nodeFirstInLayer);
 
     const contentJSX = () => (
         <div id='node-editor-modal-content-container'>
@@ -316,6 +320,7 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
             />
             <Input
                 label='Noise Type'
+                type='select'
                 placeholder='Select noise type'
                 size='md'
                 value={noiseType || ''}

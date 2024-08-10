@@ -76,6 +76,9 @@ export default function Input(props: Props) {
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             >
+                <option value='' disabled hidden>
+                    Select an option
+                </option>
                 {options.map((type) => (
                     <option key={type.value} value={type.value}>
                         {type.label}
