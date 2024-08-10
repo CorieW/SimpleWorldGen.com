@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "QVQC1mU2/wPfwortDBygDRzxPJQXSPwJQmv3NmYrOtDLNojGSKfbwQ9a1TT+Bfb+nO1Qinvtpxb50bODoI/ldQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\watso\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "C:\\Users\\watso\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\watso\\.nuget\\packages\\swashbuckle.aspnetcore\\6.2.3\\swashbuckle.aspnetcore.6.2.3.nupkg.sha512",
+    "C:\\Users\\watso\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.2.3\\swashbuckle.aspnetcore.swagger.6.2.3.nupkg.sha512",
+    "C:\\Users\\watso\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.2.3\\swashbuckle.aspnetcore.swaggergen.6.2.3.nupkg.sha512",
+    "C:\\Users\\watso\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.2.3\\swashbuckle.aspnetcore.swaggerui.6.2.3.nupkg.sha512"
+  ],
+  "logs": []
+}
