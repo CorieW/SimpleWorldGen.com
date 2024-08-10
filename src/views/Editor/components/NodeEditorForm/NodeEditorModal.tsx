@@ -6,13 +6,9 @@ import {
     Divider,
     Select,
     Stack,
-    InputGroup,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    NumberIncrementStepper,
-    NumberDecrementStepper,
+    HStack
 } from '@chakra-ui/react';
+import Input from '../../../../components/Input/Input';
 import { INode } from '../../../../ts/interfaces/INode';
 import { NodeTypeEnum } from '../../../../ts/enums/NodeTypeEnum';
 import { NodeEffectEnum } from '../../../../ts/enums/NodeEffectEnum';
@@ -225,107 +221,83 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
         return (
             <>
                 <Stack spacing={3}>
-                    <NumberInput
+                    <Input
+                        type='number'
+                        label='Octaves'
                         value={octaves}
                         precision={0}
                         step={1}
                         min={1}
                         max={8}
-                        onChange={(val) =>
+                        onChange={(valString: any) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                octaves: val,
+                                octaves: valString,
                             })
                         }
-                    >
-                        <NumberInputField placeholder='Enter number of octaves' />
-                        <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                        </NumberInputStepper>
-                    </NumberInput>
-                    <NumberInput
+                    />
+                    <Input
+                        type='number'
+                        label='Persistence'
                         value={persistence}
                         step={0.1}
-                        onChange={(val) =>
+                        onChange={(valString: any) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                persistence: val,
+                                persistence: valString,
                             })
                         }
-                    >
-                        <NumberInputField placeholder='Enter a persistence' />
-                        <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                        </NumberInputStepper>
-                    </NumberInput>
-                    <NumberInput
+                    />
+                    <Input
+                        type='number'
+                        label='Lacunarity'
                         value={lacunarity}
                         step={0.1}
-                        onChange={(val) =>
+                        onChange={(valString: any) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                lacunarity: val,
+                                lacunarity: valString,
                             })
                         }
-                    >
-                        <NumberInputField placeholder='Enter a lacunarity' />
-                        <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                        </NumberInputStepper>
-                    </NumberInput>
-                    <NumberInput
+                    />
+                    <Input
+                        type='number'
+                        label='Frequency'
                         value={frequency}
                         step={0.1}
-                        onChange={(val) =>
+                        onChange={(valString: any) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                frequency: val,
+                                frequency: valString,
                             })
                         }
-                    >
-                        <NumberInputField placeholder='Enter a frequency' />
-                        <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                        </NumberInputStepper>
-                    </NumberInput>
-                    <InputGroup gap={3}>
-                        <NumberInput
+                    />
+                    <HStack gap={3}>
+                        <Input
+                            type='number'
+                            label='Offset X'
                             value={offsetX}
                             step={1}
-                            onChange={(val) =>
+                            onChange={(valString: any) =>
                                 setNode({
                                     ...simplexNoiseNode,
-                                    offsetX: val,
+                                    offsetX: valString,
                                 })
                             }
-                        >
-                            <NumberInputField placeholder='Enter an X offset' />
-                            <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                            </NumberInputStepper>
-                        </NumberInput>
-                        <NumberInput
+                        />
+                        <Input
+                            type='number'
+                            label='Offset Y'
                             value={offsetY}
                             step={1}
-                            onChange={(val) =>
+                            onChange={(valString: any) =>
                                 setNode({
                                     ...simplexNoiseNode,
-                                    offsetY: val,
+                                    offsetY: valString,
                                 })
                             }
-                        >
-                            <NumberInputField placeholder='Enter a Y offset' />
-                            <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                            </NumberInputStepper>
-                        </NumberInput>
-                    </InputGroup>
+                        />
+                    </HStack>
                 </Stack>
             </>
         );
@@ -333,56 +305,46 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
 
     return (
         <>
-            <NumberInput
+            <Input
+                type='number'
+                label='Seed'
                 value={node && node.seed}
-                precision={0}
                 step={1000}
-                onChange={(val) =>
+                onChange={(valString: any) =>
                     setNode({
                         ...node,
-                        seed: val,
+                        seed: valString,
                     })
                 }
-            >
-                <NumberInputField placeholder='Enter a seed' />
-                <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                </NumberInputStepper>
-            </NumberInput>
-            <Select
+            />
+            <Input
+                label='Noise Type'
                 placeholder='Select noise type'
                 size='md'
                 value={noiseType || ''}
-                onChange={(e) =>
+                onChange={(valueString: any) =>
                     setNode({
                         ...node,
-                        noiseType: e.target.value as NoiseTypeEnum,
+                        noiseType: valueString as NoiseTypeEnum,
                     })
                 }
-            >
-                {Object.values(NoiseTypeEnum).map((noiseType: any) => (
-                    <option key={noiseType} value={noiseType}>
-                        {noiseType}
-                    </option>
-                ))}
-            </Select>
-            <NumberInput
+                options={Object.values(NoiseTypeEnum).map((noiseType: any) => ({
+                    value: noiseType,
+                    label: noiseType,
+                }))}
+            />
+            <Input
+                type='number'
+                label='Multiplier'
                 value={node && node.multiplier}
                 step={0.1}
-                onChange={(val) =>
+                onChange={(valString: any) =>
                     setNode({
                         ...node,
-                        multiplier: val
+                        multiplier: valString,
                     })
                 }
-            >
-                <NumberInputField placeholder='Enter a multiplier' />
-                <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                </NumberInputStepper>
-            </NumberInput>
+            />
             {noiseType === NoiseTypeEnum.Simplex && simplexNoiseJSX()}
         </>
     );

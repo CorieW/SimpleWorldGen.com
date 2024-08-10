@@ -1,7 +1,8 @@
 import './VisualizationSetting.scss';
 import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
 import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
-import { Input, Checkbox, Button, Text, Select, HStack } from '@chakra-ui/react';
+import { Checkbox, Button, Text, Select, HStack } from '@chakra-ui/react';
+import Input from '../../../../components/Input/Input';
 import useStore from '../../editorStore';
 import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
@@ -82,24 +83,22 @@ export default function VisualizationSetting(props: Props) {
         condition: IVisualizationCondition
     ) {
         return (
-            <Select
+            <Input
+                label='Operator'
                 className='condition-operator'
+                type='select'
                 value={condition.condOperator?.toString()}
-                onChange={(e) =>
+                onChange={(valueString: any) =>
                     setCondition(index, {
                         ...condition,
-                        condOperator: e.target.value as VisualizationConditionalOperatorEnum,
+                        condOperator: valueString as VisualizationConditionalOperatorEnum,
                     })
                 }
-            >
-                {Object.values(VisualizationConditionalOperatorEnum).map(
-                    (operator) => (
-                        <option key={operator} value={operator}>
-                            {operator}
-                        </option>
-                    )
-                )}
-            </Select>
+                options={Object.values(VisualizationConditionalOperatorEnum).map((operator) => ({
+                    label: operator,
+                    value: operator,
+                }))}
+            />
         );
     };
 
@@ -111,30 +110,36 @@ export default function VisualizationSetting(props: Props) {
             <>
                 <div className='condition-range'>
                     <Input
+                        label='Min Value'
                         className='min-input'
                         type='number'
                         value={condition.min.toString()}
                         min={0}
-                        onChange={(e) =>
+                        max={1}
+                        step={0.01}
+                        onChange={(valueString: any) =>
                             setCondition(index, {
                                 ...condition,
                                 min: adjustConditionRangeInput(
-                                    parseFloat(e.target.value)
+                                    parseFloat(valueString)
                                 ),
                             })
                         }
                     />
                     <span className='condition-separator'>-</span>
                     <Input
+                        label='Max Value'
                         className='max-input'
                         type='number'
                         value={condition.max.toString()}
+                        min={0}
                         max={1}
-                        onChange={(e) =>
+                        step={0.01}
+                        onChange={(valueString: any) =>
                             setCondition(index, {
                                 ...condition,
                                 max: adjustConditionRangeInput(
-                                    parseFloat(e.target.value)
+                                    parseFloat(valueString)
                                 ),
                             })
                         }
@@ -143,7 +148,7 @@ export default function VisualizationSetting(props: Props) {
                 <Checkbox
                     className='condition-min-inclusive'
                     defaultChecked={condition.minInclusive}
-                    onChange={(e) =>
+                    onChange={(e: any) =>
                         setCondition(index, {
                             ...condition,
                             minInclusive: e.target.checked,
@@ -155,7 +160,7 @@ export default function VisualizationSetting(props: Props) {
                 <Checkbox
                     className='condition-max-inclusive'
                     defaultChecked={condition.maxInclusive}
-                    onChange={(e) =>
+                    onChange={(e: any) =>
                         setCondition(index, {
                             ...condition,
                             maxInclusive: e.target.checked,
@@ -172,36 +177,36 @@ export default function VisualizationSetting(props: Props) {
         <div className='visualization-setting'>
             <div className='setting-content'>
                 <div className='visualization-type'>
-                    <Select
+                    <Input
+                        label='Visualization Type'
+                        type='select'
                         className='visualization-type-input'
                         value={setting.type}
-                        onChange={(e) =>
-                            setSetting({ ...setting, type: e.target.value as VisualizationTypeEnum })
+                        onChange={(valueString: any) =>
+                            setSetting({ ...setting, type: valueString as VisualizationTypeEnum })
                         }
-                    >
-                        {Object.values(VisualizationTypeEnum).map((type) => (
-                            <option key={type} value={type}>
-                                {type}
-                            </option>
-                        ))}
-                    </Select>
+                        options={Object.values(VisualizationTypeEnum).map((type) => ({
+                            label: type,
+                            value: type,
+                        }))}
+                    />
                 </div>
                 {
                     Shapes.getShape(setting.type).canScale && (
                         <div className='scaling-type'>
-                            <Select
+                            <Input
+                                label='Scaling Type'
                                 className='scaling-type-input'
+                                type='select'
                                 value={setting.scalingType}
-                                onChange={(e) =>
-                                    setSetting({ ...setting, scalingType: e.target.value as ScalingTypeEnum })
+                                onChange={(valueString: any) =>
+                                    setSetting({ ...setting, scalingType: valueString as ScalingTypeEnum })
                                 }
-                            >
-                                {Object.values(ScalingTypeEnum).map((type) => (
-                                    <option key={type} value={type}>
-                                        {type}
-                                    </option>
-                                ))}
-                            </Select>
+                                options={Object.values(ScalingTypeEnum).map((type) => ({
+                                    label: type,
+                                    value: type,
+                                }))}
+                            />
                         </div>
                     )
                 }
@@ -211,8 +216,8 @@ export default function VisualizationSetting(props: Props) {
                         className='color-input'
                         value={setting.color}
                         placeholder='Hex Color'
-                        onChange={(e) =>
-                            setSetting({ ...setting, color: e.target.value })
+                        onChange={(valueString: any) =>
+                            setSetting({ ...setting, color: valueString })
                         }
                     />
                 </HStack>
@@ -225,23 +230,22 @@ export default function VisualizationSetting(props: Props) {
                             <div key={index} className='condition'>
                                 {index != 0 &&
                                     conditionalOperatorSelectJSX(condition)}
-                                <Select
+                                <Input
+                                    label='Select Layer'
                                     className='condition-field'
+                                    type='select'
                                     value={condition.layerId}
-                                    onChange={(e) =>
+                                    onChange={(valueString: any) =>
                                         setCondition(index, {
                                             ...condition,
-                                            layerId: parseInt(e.target.value),
+                                            layerId: parseInt(valueString),
                                         })
                                     }
-                                >
-                                    <option value={-1}>Select Layer</option>
-                                    {layers.map((layer: ILayer) => (
-                                        <option key={layer.id} value={layer.id}>
-                                            {layer.name}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    options={layers.map((layer: ILayer) => ({
+                                        label: layer.name,
+                                        value: layer.id,
+                                    }))}
+                                />
                                 {rangeJSX(condition, index)}
                                 <div className='condition-actions'>
                                     <Button

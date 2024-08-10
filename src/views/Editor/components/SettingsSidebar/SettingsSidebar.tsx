@@ -7,14 +7,9 @@ import {
     FormControl,
     FormLabel,
     Switch,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    NumberIncrementStepper,
-    NumberDecrementStepper,
-    Input,
     HStack,
 } from '@chakra-ui/react';
+import Input from '../../../../components/Input/Input';
 import useStore from '../../editorStore';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
 
@@ -49,44 +44,36 @@ export default function SettingsSidebar(props: Props) {
     }
 
     const fadeOffOptionsJSX = (
-        <>
-            <NumberInput
+        <HStack>
+            <Input
+                label='X'
+                type='number'
                 value={xFadeOffPercentage}
                 step={0.05}
                 min={0}
                 max={1}
-                onChange={(valueString) =>
+                onChange={(valueString: any) =>
                     setCurrentSettings({
                         ...currentSettings,
                         xFadeOffPercentage: parseFloat(valueString),
                     })
                 }
-            >
-                <NumberInputField placeholder='Fade Off Percentage' />
-                <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                </NumberInputStepper>
-            </NumberInput>
-            <NumberInput
+            />
+            <Input
+                label='Y'
+                type='number'
                 value={yFadeOffPercentage}
                 step={0.05}
                 min={0}
                 max={1}
-                onChange={(valueString) =>
+                onChange={(valueString: any) =>
                     setCurrentSettings({
                         ...currentSettings,
                         yFadeOffPercentage: parseFloat(valueString),
                     })
                 }
-            >
-                <NumberInputField placeholder='Fade Off Percentage' />
-                <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                </NumberInputStepper>
-            </NumberInput>
-        </>
+            />
+        </HStack>
     );
 
     const contentJSX = (
@@ -95,40 +82,32 @@ export default function SettingsSidebar(props: Props) {
                 <Text fontSize={'lg'} fontWeight={600}>
                     World Dimensions
                 </Text>
-                <NumberInput
+                <Input
+                    label='Width'
+                    type='number'
                     value={worldWidth}
                     step={100}
-                    onChange={(val) =>
+                    onChange={(valueString: any) =>
                         setCurrentSettings({
                             ...currentSettings,
-                            worldWidth: val,
-                            worldHeight: val // TODO: Remove this line when world supports different width and height
+                            worldWidth: parseFloat(valueString),
+                            worldHeight: parseFloat(valueString) // TODO: Remove this line when world supports different width and height
                         })
                     }
-                >
-                    <NumberInputField placeholder='Width'/>
-                    <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                    </NumberInputStepper>
-                </NumberInput>
-                <NumberInput
+                />
+                <Input
+                    label='Height'
+                    type='number'
                     value={worldHeight}
                     step={100}
-                    onChange={(val) =>
+                    onChange={(valueString: any) =>
                         setCurrentSettings({
                             ...currentSettings,
-                            worldHeight: val,
-                            worldWidth: val // TODO: Remove this line when world supports different width and height
+                            worldHeight: parseFloat(valueString),
+                            worldWidth: parseFloat(valueString) // TODO: Remove this line when world supports different width and height
                         })
                     }
-                >
-                    <NumberInputField placeholder='Height'/>
-                    <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                    </NumberInputStepper>
-                </NumberInput>
+                />
             </Stack>
             <Stack spacing={1}>
                 <Text fontSize={'lg'} fontWeight={600}>
@@ -140,7 +119,7 @@ export default function SettingsSidebar(props: Props) {
                         className='color-input'
                         value={currentSettings.backgroundColor}
                         placeholder='Hex Color'
-                        onChange={(e) =>
+                        onChange={(e: any) =>
                             setCurrentSettings({
                                 ...currentSettings,
                                 backgroundColor: e.target.value,
