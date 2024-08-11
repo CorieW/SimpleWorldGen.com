@@ -4,38 +4,46 @@
     height: 100vh;
     width: 100vw;
     overflow-x: hidden;
-}
 
-#content {
-    flex: 1;
-}
+    a {
+        color: var(--primary-color);
 
-#notification-bar {
-    z-index: 1000;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    height: fit-content;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.move-btn:hover, .move-btn:active {
-    &:not(:disabled) {
-        color: gold;
+        &:hover {
+            text-decoration: underline;
+        }
     }
 
-    &:disabled {
-        cursor: default;
+    #content {
+        flex: 1;
     }
-}
 
-.delete-btn:hover, .delete-btn:active {
-    color: red;
-}
+    #notification-bar {
+        z-index: 1000;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        height: fit-content;
+    }
 
-.add-btn:hover, .add-btn:active {
-    color: limegreen;
+    .hidden {
+        display: none !important;
+    }
+
+    .move-btn:hover, .move-btn:active {
+        &:not(:disabled) {
+            color: gold;
+        }
+
+        &:disabled {
+            cursor: default;
+        }
+    }
+
+    .delete-btn:hover, .delete-btn:active {
+        color: red;
+    }
+
+    .add-btn:hover, .add-btn:active {
+        color: limegreen;
+    }
 }
