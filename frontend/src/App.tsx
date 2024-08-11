@@ -10,6 +10,7 @@ import NotFound404 from './views/NotFound404/NotFound404';
 import Nav from './components/Nav/Nav';
 import Footer from './components/Footer/Footer';
 import routing from './ts/routing';
+import SignUpModal from './components/SignUpModal/SignUpModal';
 
 function App(): ReactElement {
     const { notifications, removeNotification } = useStore();

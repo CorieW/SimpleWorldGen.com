@@ -1,0 +1,42 @@
+.custom-btn {
+    position: relative;
+    width: 100%;
+    border-radius: 10px;
+
+    &:disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    &:hover {
+        .tint {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &:active {
+        .tint {
+            background-color: rgba(0, 0, 0, 0);
+        }
+    }
+
+    .tint {
+        z-index: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+    }
+
+    .content {
+        z-index: 1;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

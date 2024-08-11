@@ -1,0 +1,49 @@
+#login-modal-container {
+    #login-modal-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+
+        >* {
+            width: 100%;
+        }
+
+        h2 {
+            width: 100%;
+            text-align: center;
+            font-size: 30px;
+            font-weight: 600;
+        }
+
+        .input-container {
+            flex: 1;
+
+            label {
+                display: block;
+                margin-top: 10px;
+                font-size: 20px;
+                font-weight: 500;
+            }
+        }
+
+        .btns-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 50px;
+
+            button {
+                width: 100%;
+                padding: 10px;
+                font-size: 20px;
+                font-weight: 500;
+            }
+        }
+
+        br {
+            padding: 5px 0;
+        }
+    }
+}

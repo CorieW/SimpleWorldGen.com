@@ -4,14 +4,20 @@ type Props = {
     modalOpen: boolean
     setModalOpen: (modalOpen: boolean) => void
     contentJSX: JSX.Element
-    bottomBarJSX: JSX.Element
+    bottomBarJSX?: JSX.Element
 }
 
 export default function Modal(props: Props) {
     const { modalOpen, setModalOpen, contentJSX, bottomBarJSX } = props
 
+    const bottomBarContainerJSX = (
+        <div className='bottom-bar'>
+            {bottomBarJSX}
+        </div>
+    )
+
     return (
-            <div
+        <div
             id='outer-modal-container'
             className={!modalOpen ? 'hidden' : ''}
         >
@@ -28,9 +34,7 @@ export default function Modal(props: Props) {
                 <div className='content-container'>
                     {contentJSX}
                 </div>
-                <div className='bottom-bar'>
-                    {bottomBarJSX}
-                </div>
+                { bottomBarJSX ? bottomBarContainerJSX : null }
             </div>
         </div>
     )
