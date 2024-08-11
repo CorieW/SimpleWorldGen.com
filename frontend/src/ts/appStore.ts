@@ -1,7 +1,11 @@
 import { create } from 'zustand';
-import { INotification } from './components/NotificationBar/Notification/INotification';
+import { INotification } from '../components/NotificationBar/Notification/INotification';
+import IAccount from './interfaces/generation/IAccount';
 
 type AppStore = {
+    account: IAccount | null;
+    setAccount: (account: IAccount) => void;
+
     notifications: INotification[];
     addNotification: (notification: { text: string; type: string }) => void;
     removeNotification: (notification: INotification) => void;
@@ -9,6 +13,9 @@ type AppStore = {
 };
 
 const useStore = create<AppStore>((set) => ({
+    account: null,
+    setAccount: (account) => set({ account }),
+
     notifications: [],
     addNotification: (notification) =>
         set((state) => ({

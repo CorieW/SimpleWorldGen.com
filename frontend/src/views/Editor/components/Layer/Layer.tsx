@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import './Layer.scss';
-import { ILayer } from '../../../../ts/interfaces/ILayer';
+import { ILayer } from '../../../../ts/interfaces/generation/ILayer';
 import editorStore from '../../editorStore';
-import appStore from '../../../../appStore';
+import appStore from '../../../../ts/appStore';
 import { Button } from '@chakra-ui/react';
-import { Drawer } from '../../../../ts/utils/Drawer';
-import { NodeValueCalculator } from '../../../../ts/utils/LayerValueCalculator';
+import { Drawer } from '../../ts/utils/Drawer';
+import { NodeValueCalculator } from '../../ts/utils/LayerValueCalculator';
 import ConfirmableInput from '../../../../components/Basic/ConfirmableInput/ConfirmableInput';
 
 export default function Layer(props: ILayer) {

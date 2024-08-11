@@ -1,22 +1,22 @@
 import { useRef, useEffect } from 'react';
 import './Editor.scss';
 import paper from 'paper';
-import WorldGenerator from '../../ts/WorldGenerator';
-import WorldDimensions from '../../ts/data/WorldDimensions';
-import MarchingSquares from '../../ts/utils/MarchingSquares';
-import Bounds from '../../ts/data/Bounds';
-import ChunkData from '../../ts/data/ChunkData';
+import WorldGenerator from './ts/WorldGenerator';
+import WorldDimensions from './ts/data/WorldDimensions';
+import MarchingSquares from './ts/utils/MarchingSquares';
+import Bounds from './ts/data/Bounds';
+import ChunkData from './ts/data/ChunkData';
 import EditorOverlay from './components/EditorOverlay/EditorOverlay';
 import useStore from './editorStore';
-import { NodeValueCalculator } from '../../ts/utils/LayerValueCalculator';
+import { NodeValueCalculator } from './ts/utils/LayerValueCalculator';
 import { IVisualizationCondition } from '../../ts/interfaces/visualization/IVisualizationCondition';
 import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
-import IDictionary from '../../ts/utils/IDictionary';
-import WorldGenMath from '../../ts/WorldGenMath';
-import { ILayer } from '../../ts/interfaces/ILayer';
+import IDictionary from './ts/utils/IDictionary';
+import WorldGenMath from './ts/WorldGenMath';
+import { ILayer } from '../../ts/interfaces/generation/ILayer';
 import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
 import { ScalingTypeEnum } from '../../ts/enums/ScalingTypeEnum';
-import Utils from '../../ts/utils/Utils';
+import Utils from './ts/utils/Utils';
 
 function Editor() {
     const { worldSettings, visualizationSettings, layers } = useStore();

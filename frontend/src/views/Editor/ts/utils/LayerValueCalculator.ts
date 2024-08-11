@@ -1,9 +1,9 @@
-import { NodeEffectEnum } from "../enums/NodeEffectEnum";
-import { NodeTypeEnum } from "../enums/NodeTypeEnum";
-import { NoiseTypeEnum } from "../enums/NoiseTypeEnum";
-import { INode } from "../interfaces/INode"
-import { INoiseNode } from "../interfaces/INoiseNode";
-import { ISimplexNoiseNode } from "../interfaces/ISimplexNoiseNode";
+import { NodeEffectEnum } from "../../../../ts/enums/NodeEffectEnum";
+import { NodeTypeEnum } from "../../../../ts/enums/NodeTypeEnum";
+import { NoiseTypeEnum } from "../../../../ts/enums/NoiseTypeEnum";
+import { INode } from "../../../../ts/interfaces/generation/INode"
+import { INoiseNode } from "../../../../ts/interfaces/generation/INoiseNode";
+import { ISimplexNoiseNode } from "../../../../ts/interfaces/generation/ISimplexNoiseNode";
 import Noise from "./Noise";
 
 export class NodeValueCalculator {

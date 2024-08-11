@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import './Node.scss';
-import { INode } from '../../../../../ts/interfaces/INode';
+import { INode } from '../../../../../ts/interfaces/generation/INode';
 import useStore from '../../../editorStore';
-import { Drawer } from '../../../../../ts/utils/Drawer';
-import { NodeValueCalculator } from '../../../../../ts/utils/LayerValueCalculator';
+import { Drawer } from '../../../ts/utils/Drawer';
+import { NodeValueCalculator } from '../../../ts/utils/LayerValueCalculator';
 
 export default function Node(props: INode) {
     const { id } = props;

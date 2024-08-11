@@ -1,4 +1,4 @@
-import noise from '../libs/noise';
+import noise from '../../../libs/noise';
 
 export default class WorldGenMath {
     static clamp(min: number, max: number, val: number): number {

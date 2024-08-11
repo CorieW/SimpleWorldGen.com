@@ -1,5 +1,5 @@
-import { VisualizationTypeEnum } from "../enums/VisualizationTypeEnum";
-import IShape from "../interfaces/IShape";
+import { VisualizationTypeEnum } from "../../../../ts/enums/VisualizationTypeEnum";
+import IShape from "../../../../ts/interfaces/generation/IShape";
 
 export default class Shapes {
     static shapes: IShape[] = [

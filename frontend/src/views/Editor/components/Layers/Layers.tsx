@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './Layers.scss';
-import { ILayer } from '../../../../ts/interfaces/ILayer';
+import { ILayer } from '../../../../ts/interfaces/generation/ILayer';
 import useStore from '../../editorStore';
 import Layer from '../Layer/Layer';
 import { Button } from '@chakra-ui/react';

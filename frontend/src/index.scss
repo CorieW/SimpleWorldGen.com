@@ -1,10 +1,15 @@
 body {
+  --bg-color: white;
+  --text-color: black;
+
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh !important;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 @tailwind base;

@@ -5,7 +5,9 @@ public class User {
 
     // Navigation Properties
     public UserData CurrentUserData;
+    public List<BannedUser> Bans;
     public List<UserData> UserDataHistory;
+    public List<UserModerationNote> UserModerationNotes;
     public List<PasswordResetRequest> PasswordResetRequests;
     public List<AccountDeletion> AccountDeletions;
     public List<World> Worlds;

@@ -1,5 +1,5 @@
-import { NodeEffectEnum } from "../enums/NodeEffectEnum";
-import { NodeTypeEnum } from "../enums/NodeTypeEnum";
+import { NodeEffectEnum } from "../../enums/NodeEffectEnum";
+import { NodeTypeEnum } from "../../enums/NodeTypeEnum";
 
 export interface INode {
     id: number,

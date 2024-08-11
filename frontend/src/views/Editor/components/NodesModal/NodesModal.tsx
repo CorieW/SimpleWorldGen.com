@@ -2,7 +2,7 @@ import './NodesModal.scss'
 import Modal from '../../../../components/Basic/Modal/Modal'
 import useStore from '../../editorStore'
 import { Button } from '@chakra-ui/react'
-import { INode } from '../../../../ts/interfaces/INode'
+import { INode } from '../../../../ts/interfaces/generation/INode'
 import Node from './Node/Node'
 import { NodeEffectEnum } from '../../../../ts/enums/NodeEffectEnum'
 

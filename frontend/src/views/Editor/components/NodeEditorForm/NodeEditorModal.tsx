@@ -8,15 +8,15 @@ import {
     HStack
 } from '@chakra-ui/react';
 import Input from '../../../../components/Basic/Input/Input';
-import { INode } from '../../../../ts/interfaces/INode';
+import { INode } from '../../../../ts/interfaces/generation/INode';
 import { NodeTypeEnum } from '../../../../ts/enums/NodeTypeEnum';
 import { NodeEffectEnum } from '../../../../ts/enums/NodeEffectEnum';
 import { NoiseTypeEnum } from '../../../../ts/enums/NoiseTypeEnum';
-import { INoiseNode } from '../../../../ts/interfaces/INoiseNode';
-import { ISimplexNoiseNode } from '../../../../ts/interfaces/ISimplexNoiseNode';
+import { INoiseNode } from '../../../../ts/interfaces/generation/INoiseNode';
+import { ISimplexNoiseNode } from '../../../../ts/interfaces/generation/ISimplexNoiseNode';
 import Modal from '../../../../components/Basic/Modal/Modal';
-import { Drawer } from '../../../../ts/utils/Drawer';
-import { NodeValueCalculator } from '../../../../ts/utils/LayerValueCalculator';
+import { Drawer } from '../../ts/utils/Drawer';
+import { NodeValueCalculator } from '../../ts/utils/LayerValueCalculator';
 
 export default function NodeEditorModal() {
     const {

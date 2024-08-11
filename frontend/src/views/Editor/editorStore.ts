@@ -1,13 +1,13 @@
 import { create } from 'zustand';
-import { ILayer } from '../../ts/interfaces/ILayer';
+import { ILayer } from '../../ts/interfaces/generation/ILayer';
 import { NoiseTypeEnum } from '../../ts/enums/NoiseTypeEnum';
 import { NodeTypeEnum } from '../../ts/enums/NodeTypeEnum';
 import { NodeEffectEnum } from '../../ts/enums/NodeEffectEnum';
-import { INode } from '../../ts/interfaces/INode';
+import { INode } from '../../ts/interfaces/generation/INode';
 import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
 import { VisualizationColorTypeEnum } from '../../ts/enums/VisualizationColorTypeEnum';
-import { IWorldSettings } from '../../ts/interfaces/IWorldSettings';
-import { INoiseNode } from '../../ts/interfaces/INoiseNode';
+import { IWorldSettings } from '../../ts/interfaces/generation/IWorldSettings';
+import { INoiseNode } from '../../ts/interfaces/generation/INoiseNode';
 import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
 import { ScalingTypeEnum } from '../../ts/enums/ScalingTypeEnum';
 

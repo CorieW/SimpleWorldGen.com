@@ -6,9 +6,9 @@ import Input from '../../../../components/Basic/Input/Input';
 import useStore from '../../editorStore';
 import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';
 import ColorPicker from '../../../../components/Basic/ColorPicker/ColorPicker';
-import { ILayer } from '../../../../ts/interfaces/ILayer';
+import { ILayer } from '../../../../ts/interfaces/generation/ILayer';
 import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
-import Shapes from '../../../../ts/utils/Shapes';
+import Shapes from '../../ts/utils/Shapes';
 import { ScalingTypeEnum } from '../../../../ts/enums/ScalingTypeEnum';
 
 type Props = {

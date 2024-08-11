@@ -10,4 +10,5 @@ public class Layer {
     // Navigation Properties
     public World World { get; set; }
     public Node BeginningNode { get; set; }
+    public List<Node> Nodes { get; set; }
 }
