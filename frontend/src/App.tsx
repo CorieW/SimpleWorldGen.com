@@ -9,6 +9,7 @@ import Settings from './views/Settings/Settings';
 import NotFound404 from './views/NotFound404/NotFound404';
 import Nav from './components/Nav/Nav';
 import Footer from './components/Footer/Footer';
+import routing from './ts/routing';
 
 function App(): ReactElement {
     const { notifications, removeNotification } = useStore();
@@ -25,10 +26,9 @@ function App(): ReactElement {
             <div id='content'>
                 <Router>
                     <Routes>
-                        <Route path='/' element={<Home />} />
-                        <Route path='/editor' element={<Editor />} />
-                        <Route path='/editor/:id' element={<Editor />} />
-                        <Route path='/settings' element={<Settings />} />
+                        <Route path={routing.HOME_ROOT} element={<Home />} />
+                        <Route path={routing.EDITOR_ROOT} element={<Editor />} />
+                        <Route path={routing.SETTINGS_ROOT} element={<Settings />} />
                         <Route path='*' element={<NotFound404 />} />
                     </Routes>
                 </Router>
