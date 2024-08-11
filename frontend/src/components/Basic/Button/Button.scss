@@ -40,3 +40,13 @@
         align-items: center;
     }
 }
+
+a.custom-btn {
+    cursor: pointer;
+    text-decoration: none;
+    user-select: none;
+
+    &:hover {
+        text-decoration: none !important;
+    }
+}

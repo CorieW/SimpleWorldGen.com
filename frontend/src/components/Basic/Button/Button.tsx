@@ -3,14 +3,19 @@ import './Button.scss';
 
 type Props = {
     children: React.ReactNode;
+    className?: string;
     onClick?: () => void;
     color?: "primary" | "green" | "red" | "default";
     size?: "small" | "medium" | "large";
     style?: React.CSSProperties;
+    linkButton?: boolean;
+    href?: string;
+    target?: string;
+    rel?: string;
 };
 
 const Button = (props: Props) => {
-    const { onClick, children, color, style } = props;
+    const { onClick, children, className, color, style, linkButton, href, target, rel } = props;
 
     const getColor = () => {
         switch (color) {
@@ -31,7 +36,7 @@ const Button = (props: Props) => {
                 };
             default:
                 return {
-                    backgroundColor: "#007bff",
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
                     color: "white",
                 };
         }
@@ -69,14 +74,25 @@ const Button = (props: Props) => {
 
     const combinedStyle = { ...defaultStyle, ...style };
 
-    return (
-        <button className={'custom-btn'} style={combinedStyle} onClick={onClick}>
+    const btnJsx = (
+        <button className={`custom-btn ${className}`} style={combinedStyle} onClick={onClick}>
             <div className='tint'></div>
             <div className='content'>
                 {children}
             </div>
         </button>
     );
+
+    const linkBtnJsx = (
+        <a className={`custom-btn ${className}`} style={combinedStyle} onClick={onClick} target={target} href={href} rel={rel}>
+            <div className='tint'></div>
+            <div className='content'>
+                {children}
+            </div>
+        </a>
+    );
+
+    return linkButton ? linkBtnJsx : btnJsx;
 };
 
 export default Button;
