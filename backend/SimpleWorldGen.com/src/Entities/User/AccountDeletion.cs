@@ -1,3 +1,5 @@
+namespace SimpleWorldGen.Entities;
+
 public class AccountDeletion {
     public int Id { get; set; }
     public int UserId { get; set; }

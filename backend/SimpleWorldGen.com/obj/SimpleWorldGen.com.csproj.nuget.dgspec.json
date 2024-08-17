@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj": {}
+    "c:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj": {}
   },
   "projects": {
-    "C:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj": {
+    "c:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj",
+        "projectUniqueName": "c:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj",
         "projectName": "SimpleWorldGen.com",
-        "projectPath": "C:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj",
+        "projectPath": "c:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\SimpleWorldGen.com.csproj",
         "packagesPath": "C:\\Users\\watso\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\obj\\",
+        "outputPath": "c:\\Users\\watso\\Documents\\Projects\\Projects\\SimpleWorldGen.com\\backend\\SimpleWorldGen.com\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\watso\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -38,6 +38,10 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Microsoft.Extensions.Identity.Core": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.2.3, )"

@@ -1,3 +1,5 @@
+namespace SimpleWorldGen.Entities;
+
 public class VisualizationSettingCondition {
     public int Id { get; set; }
     public int VisualizationSettingId { get; set; }

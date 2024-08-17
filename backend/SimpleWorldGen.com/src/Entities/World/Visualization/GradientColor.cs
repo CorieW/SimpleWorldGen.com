@@ -1,3 +1,5 @@
+namespace SimpleWorldGen.Entities;
+
 public class GradientColor {
     public int Id { get; set; }
     public int GradientId { get; set; }

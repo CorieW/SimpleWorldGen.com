@@ -1,3 +1,5 @@
+namespace SimpleWorldGen.Entities;
+
 public class PasswordReset {
     public int Id { get; set; }
     public int PasswordResetRequestId { get; set; }

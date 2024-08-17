@@ -1,3 +1,5 @@
+namespace SimpleWorldGen.Entities;
+
 public class Layer {
     public int Id { get; set; }
     public int WorldId { get; set; }

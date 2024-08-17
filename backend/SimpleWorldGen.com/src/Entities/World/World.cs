@@ -1,3 +1,5 @@
+namespace SimpleWorldGen.Entities;
+
 using System;
 
 public class World {
