@@ -3,23 +3,6 @@
     width: 100%;
     border-radius: 10px;
 
-    &:disabled {
-        pointer-events: none;
-        opacity: 0.5;
-    }
-
-    &:hover {
-        .tint {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-    }
-
-    &:active {
-        .tint {
-            background-color: rgba(0, 0, 0, 0);
-        }
-    }
-
     .tint {
         z-index: 0;
         position: absolute;
@@ -38,6 +21,23 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    &:disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    &:hover {
+        .tint {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &:active {
+        .tint {
+            background-color: rgba(0, 0, 0, 0);
+        }
     }
 }
 

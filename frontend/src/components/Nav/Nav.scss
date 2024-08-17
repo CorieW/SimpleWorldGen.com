@@ -1,14 +1,23 @@
 #nav {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    padding: 10px 50px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 50px;
-    margin-bottom: 20px;
-    width: 100%;
+    color: var(--primary-text-color);
+    background-color: rgba($color: #000000, $alpha: 0.2);
 
     h1 {
-        font-weight: bold;
         font-size: 20px;
+        font-weight: bold;
+
+        a {
+            color: var(--primary-text-color);
+        }
     }
 
     ul {
@@ -21,14 +30,5 @@
         li {
             border-radius: 15px;
         }
-    }
-
-    #editor-btn {
-        padding: 5px 15px;
-        background-color: var(--primary-color);
-        color: var(--primary-text-color);
-        border-radius: 10px;
-        font-size: 20px;
-        font-weight: 600;
     }
 }

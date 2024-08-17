@@ -1,8 +1,15 @@
 #footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    min-height: 50px;
-    margin-top: 50px;
-    font-size: 20px;
+    z-index: 1;
+    font-size: 14px;
+
+    p {
+        background-color: white;
+        padding: 5px;
+    }
 }

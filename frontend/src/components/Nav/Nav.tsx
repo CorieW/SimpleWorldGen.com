@@ -33,7 +33,6 @@ export default function Nav({}: Props) {
             <div id='nav'>
                 <h1><a href='/'>SimpleWorldGen.com</a></h1>
                 <ul>
-                    <li><a href={routing.EDITOR_ROOT} id='editor-btn'>Create a world</a></li>
                     {account ? userJSX : nonUserJSX}
                 </ul>
             </div>

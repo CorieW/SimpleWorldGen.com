@@ -23,6 +23,7 @@ export default function SignUpModal(props: Props) {
                 <div className='input-container'>
                   <Input label='Email' type='email' />
                   <Input label='Username' type='text' />
+                  <Input label='Display Name' type='text' />
                   <Input label='Password' type='password' />
                   <Input label='Confirm Password' type='password' />
                 </div>

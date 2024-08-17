@@ -5,14 +5,6 @@
     width: 100vw;
     overflow-x: hidden;
 
-    a {
-        color: var(--primary-color);
-
-        &:hover {
-            text-decoration: underline;
-        }
-    }
-
     #content {
         flex: 1;
     }
@@ -29,7 +21,8 @@
         display: none !important;
     }
 
-    .move-btn:hover, .move-btn:active {
+    .move-btn:hover,
+    .move-btn:active {
         &:not(:disabled) {
             color: gold;
         }
@@ -39,11 +32,33 @@
         }
     }
 
-    .delete-btn:hover, .delete-btn:active {
+    .delete-btn:hover,
+    .delete-btn:active {
         color: red;
     }
 
-    .add-btn:hover, .add-btn:active {
+    .add-btn:hover,
+    .add-btn:active {
         color: limegreen;
     }
+
+    a {
+        color: var(--primary-color);
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+#worldCanvas {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    background-color: #000;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    cursor: pointer;
 }

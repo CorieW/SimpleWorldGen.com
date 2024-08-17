@@ -1,23 +1,22 @@
 .horizontal-scroll-container, .vertical-scroll-container {
-    --scroll-bar-height: 10px;
-    --scroll-bar-width: 10px;
-
     display: flex;
     gap: 10px;
-
     width: 100%;
     height: 100%;
 
-    &>.content-container {
+    --scroll-bar-height: 10px;
+    --scroll-bar-width: 10px;
+
+    & > .content-container {
         overflow: hidden;
     }
 
-    &>.horizontal-scroll, &>.vertical-scroll {
+    & > .horizontal-scroll, & > .vertical-scroll {
         position: relative;
         background-color: white;
         border-radius: 5px;
 
-        &>.scroll-bar {
+        & > .scroll-bar {
             position: absolute;
             background-color: gray;
             border-radius: 5px;
@@ -29,12 +28,12 @@
 .horizontal-scroll-container {
     flex-direction: column;
 
-    &>.horizontal-scroll {
+    & > .horizontal-scroll {
         width: 100%;
         height: var(--scroll-bar-height);
         overflow-x: hidden;
 
-        &>.scroll-bar {
+        & > .scroll-bar {
             width: 50px;
             height: var(--scroll-bar-height);
         }
@@ -44,12 +43,12 @@
 .vertical-scroll-container {
     flex-direction: row;
 
-    &>.vertical-scroll {
+    & > .vertical-scroll {
         width: var(--scroll-bar-width);
         height: 100%;
         overflow-y: hidden;
 
-        &>.scroll-bar {
+        & > .scroll-bar {
             width: var(--scroll-bar-width);
             height: 50px;
         }

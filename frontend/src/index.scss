@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   --primary-color: rgb(0, 145, 255);
   --primary-text-color: white;
@@ -13,7 +17,3 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
