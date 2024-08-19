@@ -7,6 +7,7 @@ import { Button } from '@chakra-ui/react';
 import { Drawer } from '../../../ts/utils/Drawer';
 import { NodeValueCalculator } from '../../../ts/utils/LayerValueCalculator';
 import ConfirmableInput from '../../../../Basic/ConfirmableInput/ConfirmableInput';
+import NodesModal from '../NodesModal/NodesModal';
 
 export default function Layer(props: ILayer) {
     const { id, name, beginningNode } = props;
@@ -21,10 +22,10 @@ export default function Layer(props: ILayer) {
         getLayerWithNode,
         canMoveLayer,
         moveLayer,
-        setActiveFormLayerId,
     } = editorStore();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const nodesModalRef = useRef<any>(null);
 
     const node = getNode(beginningNode.id);
 
@@ -85,6 +86,7 @@ export default function Layer(props: ILayer) {
 
     return (
         <div className='layer-container'>
+            <NodesModal nodeId={beginningNode.id} ref={nodesModalRef} />
             <ConfirmableInput
                 value={name}
                 changeValue={(value: string) => changeLayerName(value)}
@@ -92,7 +94,7 @@ export default function Layer(props: ILayer) {
             <div className='inner-layer-container'>
                 <canvas width={100} height={100}
                 ref={canvasRef} className='node-canvas'></canvas>
-                <button className='edit-btn' onClick={() => setActiveFormLayerId(id)}>
+                <button className='edit-btn' onClick={() => nodesModalRef.current.openModal()}>
                     <i className='fa-solid fa-pen edit-node-icon'></i>
                 </button>
             </div>

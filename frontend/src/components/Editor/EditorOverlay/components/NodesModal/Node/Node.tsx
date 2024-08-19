@@ -4,18 +4,19 @@ import { INode } from '../../../../../../ts/interfaces/generation/INode';
 import useStore from '../../../../editorStore';
 import { Drawer } from '../../../../ts/utils/Drawer';
 import { NodeValueCalculator } from '../../../../ts/utils/LayerValueCalculator';
+import NodeEditorModal from '../../NodeEditorForm/NodeEditorModal';
 
 export default function Node(props: INode) {
     const { id } = props;
     const {
         getNode,
-        getLayerWithNode,
-        setActiveFormNodeId
+        getLayerWithNode
     } = useStore();
 
     const node = getNode(id);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const nodeEditorModalRef = useRef<any>(null);
 
     useEffect(() => {
         // Update the canvas when the node changes
@@ -51,8 +52,9 @@ export default function Node(props: INode) {
 
     return (
         <div className='node-container'>
+            <NodeEditorModal nodeId={id} ref={nodeEditorModalRef} />
             <canvas ref={canvasRef} className='node-canvas'></canvas>
-            <button className='edit-btn' onClick={() => setActiveFormNodeId(id)}></button>
+            <button className='edit-btn' onClick={() => nodeEditorModalRef.current.openModal()}></button>
         </div>
     );
 }

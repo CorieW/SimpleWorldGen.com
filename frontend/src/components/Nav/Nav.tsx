@@ -1,22 +1,27 @@
-import { useState } from 'react';
+import { useRef } from 'react'
 import './Nav.scss'
 import useStore from '../../ts/appStore'
-import SignUpModal from '../SignUpModal/SignUpModal'
-import LoginModal from '../LoginModal/LoginModal'
-import routing from '../../ts/routing';
+import LoginModal from '../Auth/LoginModal/LoginModal'
+import SignUpModal from '../Auth/SignUpModal/SignUpModal'
 
-type Props = {}
-
-export default function Nav({}: Props) {
+export default function Nav() {
     const { account } = useStore()
 
-    const [signUpModalOpen, setSignUpModalOpen] = useState(false);
-    const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const signUpModalRef = useRef<any>(null)
+    const loginModalRef = useRef<any>(null)
 
     const nonUserJSX = (
         <>
-            <li><button onClick={() => setSignUpModalOpen(!signUpModalOpen)}>Sign Up</button></li>
-            <li><button onClick={() => setLoginModalOpen(!loginModalOpen)}>Login</button></li>
+            <li>
+                <button onClick={() => signUpModalRef.current.openModal()}>
+                    Sign Up
+                </button>
+            </li>
+            <li>
+                <button onClick={() => loginModalRef.current.openModal()}>
+                    Login
+                </button>
+            </li>
         </>
     )
 
@@ -27,15 +32,13 @@ export default function Nav({}: Props) {
     )
 
     return (
-        <>
-            <SignUpModal open={signUpModalOpen} setOpen={setSignUpModalOpen} setLoginModalOpen={setLoginModalOpen} />
-            <LoginModal open={loginModalOpen} setOpen={setLoginModalOpen} setSignUpModalOpen={setSignUpModalOpen} />
-            <div id='nav'>
-                <h1><a href='/'>SimpleWorldGen.com</a></h1>
-                <ul>
-                    {account ? userJSX : nonUserJSX}
-                </ul>
-            </div>
-        </>
+        <div id='nav'>
+            {<SignUpModal ref={signUpModalRef} />}
+            {<LoginModal ref={loginModalRef} />}
+            <h1><a href='/'>SimpleWorldGen.com</a></h1>
+            <ul>
+                {account ? userJSX : nonUserJSX}
+            </ul>
+        </div>
     )
 }

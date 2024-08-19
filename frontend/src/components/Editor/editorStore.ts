@@ -27,11 +27,6 @@ type EditorStore = {
     getNewLayerId: () => number;
     getNewNodeId: () => number;
 
-    activeFormLayerId: number;
-    setActiveFormLayerId: (layerId: number) => void;
-    activeFormNodeId: number;
-    setActiveFormNodeId: (nodeId: number) => void;
-
     layers: ILayer[];
     setLayers: (layers: ILayer[]) => void;
     getLayer(id: number): ILayer | null;
@@ -85,11 +80,6 @@ const useStore: any = create<EditorStore>((set) => ({
         set((state) => ({ nodeIdCounter: state.nodeIdCounter + 1 }));
         return useStore.getState().nodeIdCounter;
     },
-
-    activeFormLayerId: -1,
-    activeFormNodeId: -1,
-    setActiveFormLayerId: (layerId) => set({ activeFormLayerId: layerId }),
-    setActiveFormNodeId: (nodeId) => set({ activeFormNodeId: nodeId }),
 
     layers: [
         {

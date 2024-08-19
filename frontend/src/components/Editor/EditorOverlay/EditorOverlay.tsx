@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import './EditorOverlay.scss';
 import Layers from './components/Layers/Layers';
-import NodeEditorModal from './components/NodeEditorForm/NodeEditorModal';
 import { Button } from '@chakra-ui/react';
 import VisualizationSidebar from './components/VisualizationSidebar/VisualizationSidebar';
 import SettingsSidebar from './components/SettingsSidebar/SettingsSidebar';
-import NodesModal from './components/NodesModal/NodesModal';
-import useStore from '../editorStore';
+import useEditorStore from '../editorStore';
 
 function EditorOverlay() {
     const [settingsSidebarOpen, setSettingsSidebarOpen] = useState(false);
-    const [visualizationSidebarOpen, setVisualizationSidebarOpen] =
-        useState(false);
+    const [visualizationSidebarOpen, setVisualizationSidebarOpen] = useState(false);
 
-    const { zoomIn, zoomOut, resetView } = useStore();
+    const { zoomIn, zoomOut, resetView } = useEditorStore();
 
     return (
         <div id='editor-overlay'>
@@ -22,14 +19,12 @@ function EditorOverlay() {
             </div>
 
             <Layers />
-            <NodesModal />
-            <NodeEditorModal />
             <div id='editor-overlay-btns'>
                 <div className='btn-group'>
                     <Button>
                         <i className="fa-solid fa-cloud"></i>
                     </Button>
-                    <Button>
+                    <Button onClick={() => {}}>
                         <i className="fa-solid fa-floppy-disk"></i>
                     </Button>
                 </div>

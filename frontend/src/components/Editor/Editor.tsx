@@ -38,6 +38,7 @@ function Editor() {
     }, []);
 
     useEffect(() => {
+        console.log('Editor mounted');
         const worldDimensions = new WorldDimensions(
             worldWidth,
             worldHeight
@@ -71,7 +72,7 @@ function Editor() {
 
             return values;
         }
-    }, [worldSettings, layers.map((layer: ILayer) => layer.beginningNode)]);
+    }, [worldSettings, layers]);
 
     useEffect(() => {
         function onResize() {

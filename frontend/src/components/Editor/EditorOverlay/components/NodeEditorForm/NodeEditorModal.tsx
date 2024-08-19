@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import './NodeEditorModal.scss';
-import useStore from '../../../editorStore';
+import appStore from '../../../../../ts/appStore';
+import useEditorStore from '../../../editorStore';
 import {
     Button,
     Divider,
@@ -14,32 +15,49 @@ import { NodeEffectEnum } from '../../../../../ts/enums/NodeEffectEnum';
 import { NoiseTypeEnum } from '../../../../../ts/enums/NoiseTypeEnum';
 import { INoiseNode } from '../../../../../ts/interfaces/generation/INoiseNode';
 import { ISimplexNoiseNode } from '../../../../../ts/interfaces/generation/ISimplexNoiseNode';
-import Modal from '../../../../Basic/Modal/Modal';
 import { Drawer } from '../../../ts/utils/Drawer';
 import { NodeValueCalculator } from '../../../ts/utils/LayerValueCalculator';
 
-export default function NodeEditorModal() {
+type Props = {
+    nodeId: number
+}
+
+const NodeEditorModal = forwardRef((props: Props, ref) => {
+    const { nodeId } = props;
+
     const {
-        activeFormNodeId,
-        setActiveFormNodeId,
+        openModalOnTop,
+        closeTopModal
+    } = appStore();
+
+    const {
         removeNode,
         getNode,
         isNodeFirstInLayer,
         modifyNode,
         canMoveNode,
         moveNode,
-    } = useStore();
+    } = useEditorStore();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [currentNode, setCurrentNode] = useState<INode | null>(null);
 
-    const nodeFirstInLayer = isNodeFirstInLayer(activeFormNodeId);
+    const nodeFirstInLayer = isNodeFirstInLayer(nodeId);
+
+    useImperativeHandle(ref, () => ({
+        openModal(): void {
+            openModalOnTop({
+                contentJSX: contentJSX(),
+                bottomBarJSX: bottomBarJSX(),
+            })
+        },
+    }));
 
     useEffect(() => {
-        if (activeFormNodeId === -1) return;
+        if (nodeId === -1) return;
 
         // Copy the node to prevent modifying the original node
-        const nodeCopy = JSON.parse(JSON.stringify(getNode(activeFormNodeId))) as INode;
+        const nodeCopy = JSON.parse(JSON.stringify(getNode(nodeId))) as INode;
         setCurrentNode(nodeCopy);
 
         // Clear the canvas when the node changes
@@ -50,7 +68,7 @@ export default function NodeEditorModal() {
         if (!ctx) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }, [activeFormNodeId]);
+    }, [nodeId]);
 
     useEffect(() => {
         // Update the canvas when the node changes
@@ -71,23 +89,19 @@ export default function NodeEditorModal() {
     }, [currentNode]);
 
     function removeThisNode() {
-        removeNode(activeFormNodeId);
-        closeForm();
+        removeNode(nodeId);
+        closeTopModal();
     }
 
     function closeEditorForm() {
-        closeForm();
+        closeTopModal();
     }
 
     function applyChanges() {
         if (!currentNode) return;
 
-        modifyNode(activeFormNodeId, currentNode);
-        closeForm();
-    }
-
-    function closeForm() {
-        setActiveFormNodeId(-1);
+        modifyNode(nodeId, currentNode);
+        closeTopModal();
     }
 
     const nodeEffectSelectJSX = () => (
@@ -122,8 +136,6 @@ export default function NodeEditorModal() {
             }))}
         />
     );
-
-    console.log(nodeFirstInLayer);
 
     const contentJSX = () => (
         <div id='node-editor-modal-content-container'>
@@ -161,16 +173,16 @@ export default function NodeEditorModal() {
                 <Button
                     colorScheme='blue'
                     size='md'
-                    isDisabled={!canMoveNode(activeFormNodeId, 'up')}
-                    onClick={() => moveNode(activeFormNodeId, 'up')}
+                    isDisabled={!canMoveNode(nodeId, 'up')}
+                    onClick={() => moveNode(nodeId, 'up')}
                 >
                     <i className='fa-solid fa-arrow-up'></i>
                 </Button>
                 <Button
                     colorScheme='blue'
                     size='md'
-                    isDisabled={!canMoveNode(activeFormNodeId, 'down')}
-                    onClick={() => moveNode(activeFormNodeId, 'down')}
+                    isDisabled={!canMoveNode(nodeId, 'down')}
+                    onClick={() => moveNode(nodeId, 'down')}
                 >
                     <i className='fa-solid fa-arrow-down'></i>
                 </Button>
@@ -194,14 +206,8 @@ export default function NodeEditorModal() {
         </div>
     );
 
-    return (
-        <div
-            id='node-editor-modal-container'
-        >
-            <Modal modalOpen={activeFormNodeId !== -1} setModalOpen={closeForm} contentJSX={contentJSX()} bottomBarJSX={bottomBarJSX()} />
-        </div>
-    );
-}
+    return <></>
+});
 
 function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) {
     const { node, setNode } = props;
@@ -351,3 +357,5 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
         </>
     );
 }
+
+export default NodeEditorModal;

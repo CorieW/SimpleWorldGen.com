@@ -1,38 +1,47 @@
+import { forwardRef, useImperativeHandle } from 'react'
 import './NodesModal.scss'
-import Modal from '../../../../Basic/Modal/Modal'
-import useStore from '../../../editorStore'
+import useAppStore from '../../../../../ts/appStore'
+import useEditorStore from '../../../editorStore'
 import { Button } from '@chakra-ui/react'
 import { INode } from '../../../../../ts/interfaces/generation/INode'
 import Node from './Node/Node'
 import { NodeEffectEnum } from '../../../../../ts/enums/NodeEffectEnum'
 
-type Props = {}
+type Props = {
+    nodeId: number
+}
 
-export default function NodesModal({}: Props) {
+const NodesModal = forwardRef((props: Props, ref) => {
+    const { nodeId } = props
+
+    const { openModal, closeTopModal } = useAppStore()
+
     const {
-        activeFormLayerId,
-        setActiveFormLayerId,
         removeLayer,
         canMoveLayer,
         moveLayer,
         addNode,
         getLayer,
-    } = useStore()
+    } = useEditorStore()
 
-    const layer = getLayer(activeFormLayerId)
-
-    function closeForm() {
-        setActiveFormLayerId(-1)
-    }
+    useImperativeHandle(ref, () => ({
+        openModal(): void {
+            openModal({
+                contentJSX: contentJSX(),
+                bottomBarJSX: bottomBarJSX(),
+            })
+        },
+    }));
 
     function removeThisLayer() {
-        removeLayer(activeFormLayerId)
-        closeForm()
+        removeLayer(nodeId)
+        closeTopModal()
     }
 
     function getNodes(): INode[] {
         const nodes: INode[] = []
 
+        const layer = getLayer(nodeId)
         if (!layer) return nodes
 
         let currentNode: INode | null = layer.beginningNode
@@ -59,7 +68,7 @@ export default function NodesModal({}: Props) {
         }
     }
 
-    function contentJSX() {
+    const contentJSX = (): JSX.Element => {
         return (
             <div className='nodes-container'>
                 {getNodes().map((node, index) => (
@@ -72,14 +81,14 @@ export default function NodesModal({}: Props) {
         )
     }
 
-    function bottomBarJSX() {
+    const bottomBarJSX = (): JSX.Element => {
         return (
             <div id='nodes-modal-bottom-bar'>
                 <div>
                     <Button
                         colorScheme='green'
                         size='md'
-                        onClick={() => addNode(null, activeFormLayerId)}
+                        onClick={() => addNode(null, nodeId)}
                     >
                         <i className='fa-solid fa-plus'></i>
                     </Button>
@@ -93,16 +102,16 @@ export default function NodesModal({}: Props) {
                     <Button
                         colorScheme='blue'
                         size='md'
-                        isDisabled={!canMoveLayer(activeFormLayerId, 'left')}
-                        onClick={() => moveLayer(activeFormLayerId, 'left')}
+                        isDisabled={!canMoveLayer(nodeId, 'left')}
+                        onClick={() => moveLayer(nodeId, 'left')}
                     >
                         <i className='fa-solid fa-arrow-left'></i>
                     </Button>
                     <Button
                         colorScheme='blue'
                         size='md'
-                        isDisabled={!canMoveLayer(activeFormLayerId, 'right')}
-                        onClick={() => moveLayer(activeFormLayerId, 'right')}
+                        isDisabled={!canMoveLayer(nodeId, 'right')}
+                        onClick={() => moveLayer(nodeId, 'right')}
                     >
                         <i className='fa-solid fa-arrow-right'></i>
                     </Button>
@@ -111,7 +120,7 @@ export default function NodesModal({}: Props) {
                     <Button
                         colorScheme='gray'
                         size='md'
-                        onClick={closeForm}
+                        onClick={closeTopModal}
                     >
                         Close
                     </Button>
@@ -120,9 +129,7 @@ export default function NodesModal({}: Props) {
         )
     }
 
-    return (
-        <div id='nodes-modal-container'>
-            <Modal modalOpen={activeFormLayerId !== -1} setModalOpen={closeForm} contentJSX={contentJSX()} bottomBarJSX={bottomBarJSX()} />
-        </div>
-    )
-}
+    return <></>
+})
+
+export default NodesModal;

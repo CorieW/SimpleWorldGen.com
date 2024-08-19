@@ -1,4 +1,3 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.scss';
 import Editor from './components/Editor/Editor';
 import { ReactElement } from 'react';
@@ -7,9 +6,10 @@ import useStore from './ts/appStore';
 import Nav from './components/Nav/Nav';
 import Footer from './components/Footer/Footer';
 import EditorOverlay from './components/Editor/EditorOverlay/EditorOverlay';
+import Modal from './components/Basic/Modal/Modal';
 
 function App(): ReactElement {
-    const { notifications, removeNotification } = useStore();
+    const { openModals, closeTopModal: closeLastModal, notifications, removeNotification } = useStore();
 
     return (
         <div id='app-container'>
@@ -25,6 +25,14 @@ function App(): ReactElement {
                 <EditorOverlay />
             </div>
             <Footer />
+            <Modal
+                modal={openModals.length > 0 ? openModals[openModals.length - 1] : null}
+                open={openModals.length > 0}
+                closeFunc={() => {
+                    console.log('closing modal');
+                    closeLastModal();
+                }}
+            />
         </div>
     );
 }
