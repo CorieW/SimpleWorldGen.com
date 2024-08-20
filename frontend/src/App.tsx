@@ -29,7 +29,6 @@ function App(): ReactElement {
                 modal={openModals.length > 0 ? openModals[openModals.length - 1] : null}
                 open={openModals.length > 0}
                 closeFunc={() => {
-                    console.log('closing modal');
                     closeLastModal();
                 }}
             />

@@ -70,7 +70,7 @@ const NodesModal = forwardRef((props: Props, ref) => {
 
     const contentJSX = (): JSX.Element => {
         return (
-            <div className='nodes-container'>
+            <div id='nodes-modal-content-container'>
                 {getNodes().map((node, index) => (
                     <>
                         {index !== 0 && getEffectSymbol(node.effect)}

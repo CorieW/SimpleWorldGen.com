@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './EditorOverlay.scss';
 import Layers from './components/Layers/Layers';
 import { Button } from '@chakra-ui/react';
 import VisualizationSidebar from './components/VisualizationSidebar/VisualizationSidebar';
 import SettingsSidebar from './components/SettingsSidebar/SettingsSidebar';
 import useEditorStore from '../editorStore';
+import WorldsModal from './components/WorldsModal/WorldsModal';
+import SaveModal from './components/SaveModal/SaveModal';
 
 function EditorOverlay() {
     const [settingsSidebarOpen, setSettingsSidebarOpen] = useState(false);
@@ -12,8 +14,13 @@ function EditorOverlay() {
 
     const { zoomIn, zoomOut, resetView } = useEditorStore();
 
+    const worldsModalRef = useRef<any>(null);
+    const saveModalRef = useRef<any>(null);
+
     return (
         <div id='editor-overlay'>
+            <WorldsModal ref={worldsModalRef} />
+            <SaveModal ref={saveModalRef} />
             <div id='unsupported-resolution-cover'>
                 <span>Unsupported Resolution</span>
             </div>
@@ -21,10 +28,10 @@ function EditorOverlay() {
             <Layers />
             <div id='editor-overlay-btns'>
                 <div className='btn-group'>
-                    <Button>
+                    <Button onClick={() => worldsModalRef.current.openModal()}>
                         <i className="fa-solid fa-cloud"></i>
                     </Button>
-                    <Button onClick={() => {}}>
+                    <Button onClick={() => saveModalRef.current.openModal()}>
                         <i className="fa-solid fa-floppy-disk"></i>
                     </Button>
                 </div>

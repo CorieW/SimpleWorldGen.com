@@ -22,7 +22,7 @@ type Props = {
     pattern?: string
     precision?: number
     onChange?: any
-    options?: { value: string; label: string }[]
+    options?: { value: string; label: string; isDisabled?: boolean }[]
     size?: string
 }
 
@@ -44,7 +44,7 @@ export default function Input(props: Props) {
         size,
     } = props
     const inputSettings = { value, className, placeholder, type, min, max, step, precision, pattern, onChange, size }
-    const inputId = id || (label && `${label?.toLowerCase()}-input`) || ''
+    const inputId = id+"-input" || (label && `${label?.toLowerCase()}-input`) || ''
 
     function handleNumberChange(value: string) {
         let newValue = parseFloat(value)
@@ -75,12 +75,11 @@ export default function Input(props: Props) {
                 className={className}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
+                id={inputId}
+                placeholder={placeholder}
             >
-                <option value='' disabled hidden>
-                    Select an option
-                </option>
                 {options.map((type) => (
-                    <option key={type.value} value={type.value}>
+                    <option key={type.value} value={type.value} disabled={type.isDisabled}>
                         {type.label}
                     </option>
                 ))}
@@ -100,8 +99,8 @@ export default function Input(props: Props) {
     }
 
     return (
-        <div className='input-group'>
-            <label htmlFor={inputId}>{label}</label>
+        <div className='input-group' id={id}>
+            { label != null ? <label htmlFor={inputId}>{label}</label> : null }
             {inputJSX()}
         </div>
     )

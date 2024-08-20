@@ -5,7 +5,7 @@ type Props = {
     children: React.ReactNode;
     className?: string;
     onClick?: () => void;
-    color?: "primary" | "green" | "red" | "default";
+    color?: "primary" | "green" | "red" | "black" | "default";
     size?: "small" | "medium" | "large";
     style?: React.CSSProperties;
     linkButton?: boolean;
@@ -32,6 +32,11 @@ const Button = (props: Props) => {
             case "red":
                 return {
                     backgroundColor: "#dc3545",
+                    color: "white",
+                };
+            case "black":
+                return {
+                    backgroundColor: "black",
                     color: "white",
                 };
             default:

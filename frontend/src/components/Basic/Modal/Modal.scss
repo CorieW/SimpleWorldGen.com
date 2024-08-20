@@ -19,6 +19,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: max-height 1s ease-in-out;
 }
 
 .top-bar,
