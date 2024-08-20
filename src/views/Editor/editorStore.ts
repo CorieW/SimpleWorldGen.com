@@ -59,8 +59,8 @@ const useStore: any = create<EditorStore>((set) => ({
     },
     setWorldSettings: (settings) => set({ worldSettings: settings }),
 
-    layerIdCounter: 2,
-    nodeIdCounter: 3,
+    layerIdCounter: 3,
+    nodeIdCounter: 10,
     getNewLayerId: (): number => {
         // Increment the layerIdCounter and return the new value
         set((state) => ({ layerIdCounter: state.layerIdCounter + 1 }));
