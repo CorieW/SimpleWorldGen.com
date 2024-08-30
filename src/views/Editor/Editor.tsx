@@ -33,6 +33,10 @@ function Editor() {
     const minZoom = 0.01;
 
     useEffect(() => {
+        // Create a node value calculator for each layer here
+        const nodeValueCalculators: NodeValueCalculator[] = layers.map((layer: ILayer) => new NodeValueCalculator(layer.beginningNode));
+
+        // Create the world generator
         const worldDimensions = new WorldDimensions(
             worldWidth,
             worldHeight
@@ -42,7 +46,7 @@ function Editor() {
         worldGenerator.yFadeOffEndRange = fadeOff ? WorldGenMath.lerp(-1, 1, yFadeOffPercentage) : 1;
         worldRef.current = worldGenerator;
 
-        // Attach Paper.js to the canvas and setup
+        // Setup paper.js and set the view
         paper.setup(canvasRef.current!);
         paper.view.viewSize.width = window.innerWidth;
         paper.view.viewSize.height = window.innerHeight;
@@ -59,8 +63,8 @@ function Editor() {
         function generateNoiseValueFunc(globalX: number, globalY: number): IDictionary<number> {
             const values: IDictionary<number> = {};
 
-            layers.forEach((layer: ILayer) => {
-                const calculator = new NodeValueCalculator(layer.beginningNode)
+            layers.forEach((layer: ILayer, index: number) => {
+                const calculator = nodeValueCalculators[index];
                 values[layer.id] = calculator.calculateValue(globalX, globalY);
             });
 

@@ -12,6 +12,11 @@ export default class WorldGenerator {
     private _halfWorldWidth: number;
     private _halfWorldHeight: number;
 
+    /**
+     * The function to be used for generating the noise values for each point in the world.
+     * Each value in the dictionary represents a different noise value, perhaps from a different
+     * layer of noise.
+     */
     private generateValueFunc: (globalX: number, globalY: number) => IDictionary<number>;
     private _gridSystem: GridSystem<ChunkData>;
     private _maxDisplayableTiles: number = 5000;
