@@ -35,17 +35,35 @@ export default function Layer(props: ILayer) {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
+        const width = canvas.width;
+        const height = canvas.height;
+
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const nodeDrawer = new Drawer(canvas, (x, y) => {
-            const layer = getLayerWithNode(id);
-            if (!layer) return 0;
+        const layer = getLayerWithNode(id);
+        if (!layer) return;
 
-            const nodeValueCalculator = new NodeValueCalculator(layer.beginningNode);
-            return nodeValueCalculator.calculateValue(x, y);
+        const nodeValueCalculator = new NodeValueCalculator(layer.beginningNode);
+        nodeValueCalculator.calculateMap(width, height).then((map) => {
+            console.log("Done calculating map");
+            console.log(map);
+
+            let array: number[] = [];
+            map.forEach((row) => {
+                row.forEach((value) => {
+                    array.push(value * 255);
+                    array.push(value * 255);
+                    array.push(value * 255);
+                    array.push(255);
+                });
+            });
+
+            console.log(array);
+
+            const nodeDrawer = new Drawer(canvas, array);
+            nodeDrawer.drawNode();
         });
-        nodeDrawer.drawNode();
     }, [node]);
 
     function removeThisLayer() {

@@ -65,7 +65,8 @@ function Editor() {
 
             layers.forEach((layer: ILayer, index: number) => {
                 const calculator = nodeValueCalculators[index];
-                values[layer.id] = calculator.calculateValue(globalX, globalY);
+                // values[layer.id] = calculator.calculateValue(globalX, globalY);
+                values[layer.id] = 1; // TODO: Fix this
             });
 
             return values;

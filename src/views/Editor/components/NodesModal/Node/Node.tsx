@@ -24,29 +24,47 @@ export default function Node(props: INode) {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
+        const width = canvas.width;
+        const height = canvas.height
+
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const nodeDrawer = new Drawer(canvas, (x, y) => {
-            // Get a copy of the layer of the node
-            const layer = getLayerWithNode(id);
-            if (!layer) return 0;
-            const layerCopy = JSON.parse(JSON.stringify(layer));
+        // Get a copy of the layer of the node
+        const layer = getLayerWithNode(id);
+        if (!layer) return;
+        const layerCopy = JSON.parse(JSON.stringify(layer));
 
-            // Remove the next node from the current node
-            let currentNode = layerCopy.beginningNode;
-            while (currentNode) {
-                if (currentNode.id === id) {
-                    currentNode.nextNode = null;
-                    break;
-                }
-                currentNode = currentNode.nextNode;
+        // Remove the next node from the current node
+        let currentNode = layerCopy.beginningNode;
+        while (currentNode) {
+            if (currentNode.id === id) {
+                currentNode.nextNode = null;
+                break;
             }
+            currentNode = currentNode.nextNode;
+        }
 
-            const nodeValueCalculator = new NodeValueCalculator(layerCopy.beginningNode);
-            return nodeValueCalculator.calculateValue(x, y);
+        const nodeValueCalculator = new NodeValueCalculator(layerCopy.beginningNode);
+        nodeValueCalculator.calculateMap(width, height).then((map) => {
+            console.log("Done calculating map");
+            console.log(map);
+
+            let array: number[] = [];
+            map.forEach((row) => {
+                row.forEach((value) => {
+                    array.push(value * 255);
+                    array.push(value * 255);
+                    array.push(value * 255);
+                    array.push(255);
+                });
+            });
+
+            console.log(array);
+
+            const nodeDrawer = new Drawer(canvas, array);
+            nodeDrawer.drawNode();
         });
-        nodeDrawer.drawNode();
     }, [node]);
 
     return (
