@@ -60,7 +60,7 @@ const useStore: any = create<EditorStore>((set) => ({
     setWorldSettings: (settings) => set({ worldSettings: settings }),
 
     layerIdCounter: 3,
-    nodeIdCounter: 10,
+    nodeIdCounter: 3,
     getNewLayerId: (): number => {
         // Increment the layerIdCounter and return the new value
         set((state) => ({ layerIdCounter: state.layerIdCounter + 1 }));
@@ -119,10 +119,10 @@ const useStore: any = create<EditorStore>((set) => ({
           }
         },
         {
-          "id": 3,
+          "id": 2,
           "name": "Layer 3",
           "beginningNode": {
-            "id": 4,
+            "id": 2,
             "type": NodeTypeEnum.Noise,
             "effect": NodeEffectEnum.Add,
             "nextNode": null,

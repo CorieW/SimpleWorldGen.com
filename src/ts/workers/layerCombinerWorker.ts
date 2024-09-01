@@ -15,44 +15,44 @@ self.onmessage = function(event) {
     const eachNodeNoiseValuesDict: { [key: string]: number[][] } = {};
     const promises: Promise<void>[] = [];
 
-    let currentNode: INode | null = node;
+    let currentNode: INode = node;
     let totalNodes = 0;
     do {
         totalNodes++;
 
         switch (node.type) {
             case NodeTypeEnum.Noise:
-                const noiseNode = node as INoiseNode;
+                const noiseNode = currentNode as INoiseNode;
 
                 switch (noiseNode.noiseType) {
                     case NoiseTypeEnum.Simplex:
                         const simplexNoiseNode = noiseNode as ISimplexNoiseNode;
                         const { seed, octaves, persistence, lacunarity, frequency, offsetX, offsetY } = simplexNoiseNode;
                         const promise = new Noise(seed, octaves, persistence, lacunarity, frequency).generateNoiseMap(width, height, { x: offsetX, y: offsetY }).then(noiseMap => {
-                            eachNodeNoiseValuesDict[node.id] = noiseMap;
+                            eachNodeNoiseValuesDict[currentNode.id] = noiseMap;
                         }).catch(error => {
                             console.error(error);
-                            eachNodeNoiseValuesDict[node.id] = generateEmptyMap(width, height);
+                            eachNodeNoiseValuesDict[currentNode.id] = generateEmptyMap(width, height);
                         });
                         promises.push(promise);
                         break;
                     default:
                         console.error('Invalid noise type');
-                        eachNodeNoiseValuesDict[node.id] = generateEmptyMap(width, height);
+                        eachNodeNoiseValuesDict[currentNode.id] = generateEmptyMap(width, height);
                 }
                 break;
             default:
                 console.error('Invalid node type');
-                eachNodeNoiseValuesDict[node.id] = generateEmptyMap(width, height);
+                eachNodeNoiseValuesDict[currentNode.id] = generateEmptyMap(width, height);
         }
-        currentNode = currentNode!.nextNode;
-    } while (currentNode);
+    } while (currentNode.nextNode && (currentNode = currentNode.nextNode));
 
     // Wait until all noise maps are generated
     Promise.all(promises).then(() => {
         // Calculate the combined noise values
         currentNode = node;
         let effect: NodeEffectEnum | null = null;
+        // console.log("eachNodeNoiseValuesDict", eachNodeNoiseValuesDict, "node", node);
         let noiseVals: number[][] = eachNodeNoiseValuesDict[currentNode!.id];
         while (currentNode!.nextNode) {
             currentNode = currentNode!.nextNode;

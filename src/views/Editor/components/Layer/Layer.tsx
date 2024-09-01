@@ -17,8 +17,7 @@ export default function Layer(props: ILayer) {
         layers,
         modifyLayer,
         removeLayer,
-        getNode,
-        getLayerWithNode,
+        getLayer,
         canMoveLayer,
         moveLayer,
         setActiveFormLayerId,
@@ -26,7 +25,7 @@ export default function Layer(props: ILayer) {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    const node = getNode(beginningNode.id);
+    const node = beginningNode;
 
     useEffect(() => {
         // Update the canvas when the node changes
@@ -41,7 +40,7 @@ export default function Layer(props: ILayer) {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const layer = getLayerWithNode(id);
+        const layer = getLayer(id);
         if (!layer) return;
 
         const nodeValueCalculator = new NodeValueCalculator(layer.beginningNode);
