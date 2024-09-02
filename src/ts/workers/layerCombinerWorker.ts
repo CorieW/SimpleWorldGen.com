@@ -18,32 +18,36 @@ self.onmessage = function(event) {
     let currentNode: INode = node;
     let totalNodes = 0;
     do {
+        // Use iterationNode inside the loop instead of currentNode.
+        // Why? If running an async operation, the currentNode could change before the async operation is complete.
+        // This will remain the same.
+        const iterationNode = currentNode;
         totalNodes++;
 
         switch (node.type) {
             case NodeTypeEnum.Noise:
-                const noiseNode = currentNode as INoiseNode;
+                const noiseNode = iterationNode as INoiseNode;
 
                 switch (noiseNode.noiseType) {
                     case NoiseTypeEnum.Simplex:
                         const simplexNoiseNode = noiseNode as ISimplexNoiseNode;
-                        const { seed, octaves, persistence, lacunarity, frequency, offsetX, offsetY } = simplexNoiseNode;
-                        const promise = new Noise(seed, octaves, persistence, lacunarity, frequency).generateNoiseMap(width, height, { x: offsetX, y: offsetY }).then(noiseMap => {
-                            eachNodeNoiseValuesDict[currentNode.id] = noiseMap;
+                        const { seed, multiplier, octaves, persistence, lacunarity, frequency, offsetX, offsetY } = simplexNoiseNode;
+                        const promise = new Noise(seed, multiplier, octaves, persistence, lacunarity, frequency).generateNoiseMap(width, height, { x: offsetX, y: offsetY }).then(noiseMap => {
+                            eachNodeNoiseValuesDict[simplexNoiseNode.id] = noiseMap;
                         }).catch(error => {
                             console.error(error);
-                            eachNodeNoiseValuesDict[currentNode.id] = generateEmptyMap(width, height);
+                            eachNodeNoiseValuesDict[iterationNode.id] = generateEmptyMap(width, height);
                         });
                         promises.push(promise);
                         break;
                     default:
                         console.error('Invalid noise type');
-                        eachNodeNoiseValuesDict[currentNode.id] = generateEmptyMap(width, height);
+                        eachNodeNoiseValuesDict[iterationNode.id] = generateEmptyMap(width, height);
                 }
                 break;
             default:
                 console.error('Invalid node type');
-                eachNodeNoiseValuesDict[currentNode.id] = generateEmptyMap(width, height);
+                eachNodeNoiseValuesDict[iterationNode.id] = generateEmptyMap(width, height);
         }
     } while (currentNode.nextNode && (currentNode = currentNode.nextNode));
 
@@ -52,7 +56,6 @@ self.onmessage = function(event) {
         // Calculate the combined noise values
         currentNode = node;
         let effect: NodeEffectEnum | null = null;
-        // console.log("eachNodeNoiseValuesDict", eachNodeNoiseValuesDict, "node", node);
         let noiseVals: number[][] = eachNodeNoiseValuesDict[currentNode!.id];
         while (currentNode!.nextNode) {
             currentNode = currentNode!.nextNode;
