@@ -50,9 +50,6 @@ export default function Node(props: INode) {
 
         const nodeValueCalculator = new NodeValueCalculator(layerCopy.beginningNode);
         nodeValueCalculator.calculateMap(width, height).then((map) => {
-            console.log("Done calculating map");
-            console.log(map);
-
             let array: number[] = [];
             map.forEach((row) => {
                 row.forEach((value) => {
@@ -62,8 +59,6 @@ export default function Node(props: INode) {
                     array.push(255);
                 });
             });
-
-            console.log(array);
 
             const nodeDrawer = new Drawer(canvas, array);
             nodeDrawer.drawNode();

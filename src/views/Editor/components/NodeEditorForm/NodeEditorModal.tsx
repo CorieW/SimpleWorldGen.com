@@ -140,8 +140,6 @@ export default function NodeEditorModal() {
         />
     );
 
-    console.log(nodeFirstInLayer);
-
     const contentJSX = () => (
         <div id='node-editor-modal-content-container'>
             <div className='display-container'>
