@@ -32,6 +32,7 @@ export default function NodeEditorModal() {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [currentNode, setCurrentNode] = useState<INode | null>(null);
+    const [loaded, setLoaded] = useState(false);
 
     const nodeFirstInLayer = isNodeFirstInLayer(activeFormNodeId);
 
@@ -65,11 +66,10 @@ export default function NodeEditorModal() {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
+        setLoaded(false);
+
         const nodeValueCalculator = new NodeValueCalculator({ ...currentNode, nextNode: null });
         nodeValueCalculator.calculateMap(width, height).then((map) => {
-            console.log("Done calculating map");
-            console.log(map);
-
             let array: number[] = [];
             map.forEach((row) => {
                 row.forEach((value) => {
@@ -80,10 +80,10 @@ export default function NodeEditorModal() {
                 });
             });
 
-            console.log(array);
-
             const nodeDrawer = new Drawer(canvas, array);
             nodeDrawer.drawNode();
+
+            setLoaded(true);
         });
     }, [currentNode]);
 
@@ -146,6 +146,9 @@ export default function NodeEditorModal() {
         <div id='node-editor-modal-content-container'>
             <div className='display-container'>
                 <div className='inner-container'>
+                    <div className={`loading-container-a ${loaded ? 'hidden' : ''}`}>
+                        <i className="fa-solid fa-spinner fa-spin"></i>
+                    </div>
                     <canvas id='editor-form-canvas' ref={canvasRef}></canvas>
                 </div>
             </div>
