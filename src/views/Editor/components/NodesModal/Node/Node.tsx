@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './Node.scss';
 import { INode } from '../../../../../ts/interfaces/INode';
 import useStore from '../../../editorStore';
@@ -15,6 +15,7 @@ export default function Node(props: INode) {
 
     const node = getNode(id);
 
+    const [loaded, setLoaded] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -34,6 +35,8 @@ export default function Node(props: INode) {
         const layer = getLayerWithNode(id);
         if (!layer) return;
         const layerCopy = JSON.parse(JSON.stringify(layer));
+
+        setLoaded(false);
 
         // Remove the next node from the current node
         let currentNode = layerCopy.beginningNode;
@@ -64,12 +67,17 @@ export default function Node(props: INode) {
 
             const nodeDrawer = new Drawer(canvas, array);
             nodeDrawer.drawNode();
+
+            setLoaded(true);
         });
     }, [node]);
 
     return (
         <div className='node-container'>
             <canvas ref={canvasRef} className='node-canvas'></canvas>
+            <div className={`loading-container-a ${loaded ? 'hidden' : ''}`}>
+                <i className="fa-solid fa-spinner fa-spin"></i>
+            </div>
             <button className='edit-btn' onClick={() => setActiveFormNodeId(id)}></button>
         </div>
     );

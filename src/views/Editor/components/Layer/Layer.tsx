@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './Layer.scss';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
 import editorStore from '../../editorStore';
@@ -23,6 +23,7 @@ export default function Layer(props: ILayer) {
         setActiveFormLayerId,
     } = editorStore();
 
+    const [loaded, setLoaded] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const node = beginningNode;
@@ -43,6 +44,8 @@ export default function Layer(props: ILayer) {
         const layer = getLayer(id);
         if (!layer) return;
 
+        setLoaded(false);
+
         const nodeValueCalculator = new NodeValueCalculator(layer.beginningNode);
         nodeValueCalculator.calculateMap(width, height).then((map) => {
             console.log("Done calculating map");
@@ -62,6 +65,8 @@ export default function Layer(props: ILayer) {
 
             const nodeDrawer = new Drawer(canvas, array);
             nodeDrawer.drawNode();
+
+            setLoaded(true);
         });
     }, [node]);
 
@@ -107,8 +112,10 @@ export default function Layer(props: ILayer) {
                 changeValue={(value: string) => changeLayerName(value)}
             />
             <div className='inner-layer-container'>
-                <canvas width={100} height={100}
-                ref={canvasRef} className='node-canvas'></canvas>
+                <canvas width={100} height={100} ref={canvasRef} className='node-canvas'></canvas>
+                <div className={`loading-container-a ${loaded ? 'hidden' : ''}`}>
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                </div>
                 <button className='edit-btn' onClick={() => setActiveFormLayerId(id)}>
                     <i className='fa-solid fa-pen edit-node-icon'></i>
                 </button>
