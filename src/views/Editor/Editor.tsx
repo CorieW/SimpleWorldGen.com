@@ -1,7 +1,7 @@
-import { useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './Editor.scss';
 import paper from 'paper';
-import WorldGenerator from '../../ts/WorldGenerator';
+import WorldGeneratorFoundation from '../../ts/WorldGeneratorFoundation';
 import WorldDimensions from '../../ts/data/WorldDimensions';
 import MarchingSquares from '../../ts/utils/MarchingSquares';
 import Bounds from '../../ts/data/Bounds';
@@ -13,15 +13,17 @@ import { IVisualizationCondition } from '../../ts/interfaces/visualization/IVisu
 import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
 import IDictionary from '../../ts/utils/IDictionary';
 import WorldGenMath from '../../ts/WorldGenMath';
-import { ILayer } from '../../ts/interfaces/ILayer';
 import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
 import { ScalingTypeEnum } from '../../ts/enums/ScalingTypeEnum';
 import Utils from '../../ts/utils/Utils';
+import WorldGenerator from '../../ts/WorldGenerator';
 
 function Editor() {
     const { worldSettings, visualizationSettings, layers } = useStore();
 
     const { worldWidth, worldHeight, fadeOff, xFadeOffPercentage, yFadeOffPercentage } = worldSettings;
+
+    const [loaded, setLoaded] = useState<boolean>(false);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const positionRef = useRef<paper.Point>(new paper.Point(worldWidth / 2, worldHeight / 2));
@@ -33,15 +35,13 @@ function Editor() {
     const minZoom = 0.01;
 
     useEffect(() => {
-        // Create a node value calculator for each layer here
-        const nodeValueCalculators: NodeValueCalculator[] = layers.map((layer: ILayer) => new NodeValueCalculator(layer.beginningNode));
-
+        console.log("Recalling")
         // Create the world generator
         const worldDimensions = new WorldDimensions(
             worldWidth,
             worldHeight
         );
-        const worldGenerator = new WorldGenerator(worldDimensions, generateNoiseValueFunc);
+        const worldGenerator = new WorldGenerator(worldDimensions, layers);
         worldGenerator.xFadeOffEndRange = fadeOff ? WorldGenMath.lerp(-1, 1, xFadeOffPercentage) : 1;
         worldGenerator.yFadeOffEndRange = fadeOff ? WorldGenMath.lerp(-1, 1, yFadeOffPercentage) : 1;
         worldRef.current = worldGenerator;
@@ -57,21 +57,14 @@ function Editor() {
         canvasRef.current!.style.backgroundColor = worldSettings.backgroundColor;
 
         dragStartRef.current = null;
+        console.log("recalled")
 
+        // TODO: Need to set loaded when tiles have fully loaded in
+        setLoaded(true);
         updateWorld();
 
-        function generateNoiseValueFunc(globalX: number, globalY: number): IDictionary<number> {
-            const values: IDictionary<number> = {};
-
-            layers.forEach((layer: ILayer, index: number) => {
-                const calculator = nodeValueCalculators[index];
-                // values[layer.id] = calculator.calculateValue(globalX, globalY);
-                values[layer.id] = 1; // TODO: Fix this
-            });
-
-            return values;
-        }
-    }, [worldSettings, layers.map((layer: ILayer) => layer.beginningNode)]);
+        // TODO: Might need to adjust the below
+    }, [worldSettings, layers]);
 
     useEffect(() => {
         function onResize() {
@@ -174,6 +167,7 @@ function Editor() {
     }
 
     function draw(chunkData: ChunkData) {
+        console.log("Drawing chunk data");
         const tileSize = (chunkData.getSize()) / (chunkData.getData().length - 1);
 
         visualizationSettings.forEach((setting: IVisualizationSetting) => {
@@ -182,13 +176,13 @@ function Editor() {
                     drawPolygons(setting);
                     break;
                 case VisualizationTypeEnum.Square:
-                    drawSquares(setting, 'Square', setting.scalingType);
+                    drawShapes(setting, 'Square', setting.scalingType);
                     break;
                 case VisualizationTypeEnum.Circle:
-                    drawSquares(setting, 'Circle', setting.scalingType);
+                    drawShapes(setting, 'Circle', setting.scalingType);
                     break;
                 case VisualizationTypeEnum.Triangle:
-                    drawSquares(setting, 'Triangle', setting.scalingType);
+                    drawShapes(setting, 'Triangle', setting.scalingType);
                     break;
             }
         });
@@ -202,7 +196,7 @@ function Editor() {
 
             const shapes = new MarchingSquares(chunkData.getData().length, chunkData.getData().length,
                 (x, y) => {
-                    const values = chunkData.getData()[x][y];
+                    const values = chunkData.getData()[y][x];
                     return evaluationFunction(setting, values);
                 },
                 (x, y) => {
@@ -211,7 +205,7 @@ function Editor() {
                     setting.conditions.forEach((condition: IVisualizationCondition) => {
                         let center = (condition.min + condition.max) / 2;
                         let border = Math.abs(condition.max - condition.min) / 2;
-                        let value = chunkData.getData()[x][y][condition.layerId];
+                        let value = chunkData.getData()[y][x][condition.layerId];
 
                         let dist = Math.abs(center - value) / border;
                         let distRev = dist - 1;
@@ -246,7 +240,7 @@ function Editor() {
             });
         }
 
-        function drawSquares(setting: IVisualizationSetting, shape: 'Square' | 'Circle' | 'Triangle' = 'Square', scalingType: ScalingTypeEnum = ScalingTypeEnum.NONE) {
+        function drawShapes(setting: IVisualizationSetting, shape: 'Square' | 'Circle' | 'Triangle' = 'Square', scalingType: ScalingTypeEnum = ScalingTypeEnum.NONE) {
             let avgMin = 0;
             let avgMax = 0;
             setting.conditions.forEach((condition: IVisualizationCondition) => {
@@ -256,9 +250,9 @@ function Editor() {
             avgMin /= setting.conditions.length;
             avgMax /= setting.conditions.length;
 
-            for (let x = 0; x < chunkData.getData().length; x++) {
-                for (let y = 0; y < chunkData.getData().length; y++) {
-                    const values = chunkData.getData()[x][y];
+            for (let y = 0; y < chunkData.getData().length; y++) {
+                for (let x = 0; x < chunkData.getData().length; x++) {
+                    const values = chunkData.getData()[y][x];
                     if (evaluationFunction(setting, values)) {
                         const point = new paper.Point(
                             chunkData.getX() + x * tileSize,
@@ -347,6 +341,9 @@ function Editor() {
     return (
         <div id='editor'>
             <canvas id='worldCanvas' ref={canvasRef} />
+            <div className={`loading-container-a ${loaded ? 'hidden' : ''}`}>
+                <i className="fa-solid fa-spinner fa-spin"></i>
+            </div>
             <EditorOverlay zoomIn={zoomIn} zoomOut={zoomOut} resetView={resetView} />
         </div>
     );

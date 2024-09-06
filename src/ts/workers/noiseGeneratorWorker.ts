@@ -3,10 +3,20 @@ import { makeNoise2D } from 'open-simplex-noise';
 
 self.onmessage = function(event) {
     const data = event.data;
-    const { width, height, seed, multiplier, octaves, persistence, lacunarity, frequency, offset } = data;
+    const {
+        width,
+        height,
+        seed,
+        multiplier,
+        octaves,
+        persistence,
+        lacunarity,
+        frequency,
+        spread,
+        offset
+    } = data;
 
     const noise = makeNoise2D(seed);
-
     const noiseData: number[][] = [];
     for (let y = 0; y < height; y++) {
         noiseData[y] = [];
@@ -27,13 +37,11 @@ self.onmessage = function(event) {
 
         for (let i = 0; i < octaves; i++) {
             const currentFrequency = frequency * Math.pow(lacunarity, i);
-            const offsetX = offset.x * currentFrequency;
-            const offsetY = offset.y * currentFrequency;
 
             noiseValue +=
                 noise(
-                    (x + offsetX) * currentFrequency,
-                    (y + offsetY) * currentFrequency
+                    (offset.x + x * spread) * currentFrequency,
+                    (offset.y + y * spread) * currentFrequency
                 ) * amplitude;
 
             totalAmplitude += amplitude;

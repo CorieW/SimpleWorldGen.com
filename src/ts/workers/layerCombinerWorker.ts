@@ -6,9 +6,11 @@ import { INoiseNode } from "../interfaces/INoiseNode";
 import { ISimplexNoiseNode } from "../interfaces/ISimplexNoiseNode";
 import Noise from "../utils/Noise";
 
+// Used to generate layer values and also combine multiple layers into a 2D map
+// of objects where each property is a layer value.
 self.onmessage = function(event) {
     const data = event.data;
-    const { node, width, height } = data;
+    const { node, width, height, x, y, spread } = data;
 
     if (!node) self.postMessage([]);
 
@@ -32,7 +34,7 @@ self.onmessage = function(event) {
                     case NoiseTypeEnum.Simplex:
                         const simplexNoiseNode = noiseNode as ISimplexNoiseNode;
                         const { seed, multiplier, octaves, persistence, lacunarity, frequency, offsetX, offsetY } = simplexNoiseNode;
-                        const promise = new Noise(seed, multiplier, octaves, persistence, lacunarity, frequency).generateNoiseMap(width, height, { x: offsetX, y: offsetY }).then(noiseMap => {
+                        const promise = new Noise(seed, multiplier, octaves, persistence, lacunarity, frequency, spread).generateNoiseMap(width, height, { x: new Number(offsetX) + x, y: new Number(offsetY) + y }).then(noiseMap => {
                             eachNodeNoiseValuesDict[simplexNoiseNode.id] = noiseMap;
                         }).catch(error => {
                             console.error(error);

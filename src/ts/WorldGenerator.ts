@@ -1,29 +1,13 @@
-import WorldDimensions from './data/WorldDimensions';
-import Vector2 from './utils/Vector2';
-import Bounds from './data/Bounds';
-import GridSystem from './data/GridSystem';
-import ChunkData from './data/ChunkData';
-import QuadTreeNode from './data/QuadTreeNode';
-import WorldGenMath from './WorldGenMath';
+import WorldGenMath from "./WorldGenMath";
+import WorldGeneratorFoundation from "./WorldGeneratorFoundation";
+import WorldDimensions from "./data/WorldDimensions";
+import { ILayer } from "./interfaces/ILayer";
 import IDictionary from './utils/IDictionary';
+import { NodeValueCalculator } from "./utils/LayerValueCalculator";
 
-export default class WorldGenerator {
-    private _worldDimensions: WorldDimensions;
-    private _halfWorldWidth: number;
-    private _halfWorldHeight: number;
-
-    /**
-     * The function to be used for generating the noise values for each point in the world.
-     * Each value in the dictionary represents a different noise value, perhaps from a different
-     * layer of noise.
-     */
-    private generateValueFunc: (globalX: number, globalY: number) => IDictionary<number>;
-    private _gridSystem: GridSystem<ChunkData>;
-    private _maxDisplayableTiles: number = 5000;
-    private _sizeSignificance: number = 2;
-
-    // State for determining if the world should be updated
-    private _previousDistributedShares: number[] = [];
+export default class WorldGenerator extends WorldGeneratorFoundation {
+    private _layers: ILayer[];
+    private _prevNodeValueCalculators: NodeValueCalculator[] = [];
 
     /**
      * The range of the fade off effect. The fade off effect is a gradient that
@@ -35,116 +19,75 @@ export default class WorldGenerator {
     public xFadeOffEndRange: number = 0.5;
     public yFadeOffEndRange: number = 0.5;
 
-    constructor(worldDimensions: WorldDimensions, generateNoiseValueFunc: (globalX: number, globalY: number) => IDictionary<number>) {
-        this._worldDimensions = worldDimensions;
-        this._halfWorldWidth = worldDimensions.xKM / 2;
-        this._halfWorldHeight = worldDimensions.yKM / 2;
-
-        this.generateValueFunc = generateNoiseValueFunc;
-
-        let largestDimension = Math.max(worldDimensions.xKM, worldDimensions.yKM);
-        this._gridSystem = new GridSystem(largestDimension);
+    constructor(worldDimensions: WorldDimensions, ILayers: ILayer[]) {
+        super(worldDimensions);
+        this._layers = ILayers;
     }
 
-    shouldUpdate(bounds: Bounds): boolean {
-        let leafs: QuadTreeNode<ChunkData>[] = [];
-        let shares: number[] = [];
+    override generateValuesMap(globalX: number, globalY: number, width: number, height: number, spread: number): Promise<IDictionary<number>[][]> {
+        // Terminate previous workers
+        // this._prevNodeValueCalculators.forEach((calculator) => {
+        //     calculator.terminateWorker();
+        // });
 
-        this._gridSystem.update(bounds, (quadNode) => {
-            leafs.push(quadNode);
-            shares.push(quadNode.getSize() ^ this._sizeSignificance);
-        });
+        // * What exactly does this do?
+        // For each layer, a map of values are calculated based on the layer properties.
+        // calculateMap calculates the map of values on a separate thread, promising that
+        // the values will be resolved.
+        // Once the values for each layer are resolved, the values are stored in a dictionary
+        // with the layer id as the key.
+        return new Promise((resolve, reject) => {
+            const indexToLayerId: IDictionary<number> = {};
+            const promises: Promise<number[][]>[] = this._layers.map((layer: ILayer, index: number) => {
+                indexToLayerId[index] = layer.id;
+                const calculator = new NodeValueCalculator(layer.beginningNode);
+                this._prevNodeValueCalculators.push(calculator);
+                return calculator.calculateMap(width, height, globalX, globalY, spread);
+            });
 
-        let distributedShares: number[] = this.distributeInverseShares(shares, this._maxDisplayableTiles);
+            const values: IDictionary<number>[][] = [];
 
-        return this._previousDistributedShares.length !== distributedShares.length || !distributedShares.every((share, index) => share === this._previousDistributedShares[index]);
-    }
+            // Wait for the values of each layer to be resolved
+            Promise.all(promises).then((layerValuesArr) => {
+                layerValuesArr.forEach((layerValues, index) => {
+                    for (let y = 0; y < layerValues.length; y++) {
+                        // Initialize the values array for the x index if it doesn't exist
+                        if (!values[y]) {
+                            values[y] = [];
+                        }
 
-    update(bounds: Bounds, drawChunkData: (chunkData: ChunkData) => void) {
-        let leafs: QuadTreeNode<ChunkData>[] = [];
-        let shares: number[] = [];
+                        for (let x = 0; x < layerValues[y].length; x++) {
+                            // Initialize an object for the values at the x, y index if it doesn't exist
+                            if (!values[y][x]) {
+                                values[y][x] = {};
+                            }
 
-        this._gridSystem.update(bounds, (quadNode) => {
-            leafs.push(quadNode);
-            shares.push(quadNode.getSize() ^ this._sizeSignificance);
-        });
+                            // Apply falloff
+                            const scaledXDistFromCenter = Math.abs(globalX + (x * spread)) / this._halfWorldWidth;
+                            let xFadeOffMultiplier = WorldGenMath.invLerp(1, this.xFadeOffEndRange, scaledXDistFromCenter);
+                            if (this.xFadeOffEndRange == 1) {
+                                xFadeOffMultiplier = 1;
+                            }
 
-        let distributedShares: number[] = this.distributeInverseShares(shares, this._maxDisplayableTiles);
-        distributedShares.forEach((share, index) => {
-            let bounds = leafs[index].getBounds();
-            let newChunkData = new ChunkData(bounds.x, bounds.y, bounds.width);
-            newChunkData.addData(this.generateChunkData(bounds, share));
-            drawChunkData(newChunkData);
-        });
+                            const scaledYDistFromCenter = Math.abs(globalY + (y * spread)) / this._halfWorldHeight;
+                            let yFadeOffMultiplier = WorldGenMath.invLerp(1, this.yFadeOffEndRange, scaledYDistFromCenter);
+                            if (this.yFadeOffEndRange == 1) {
+                                yFadeOffMultiplier = 1;
+                            }
 
-        this._previousDistributedShares = distributedShares;
-    }
+                            const combinedFadeOffMultiplier = Math.sqrt(xFadeOffMultiplier * yFadeOffMultiplier);
 
-    generateChunkData(bounds: Bounds, detail: number): IDictionary<number>[][] {
-        detail = Math.round(Math.sqrt(detail));
-        let halfWorldWidth = this._worldDimensions.xKM / 2;
-        let halfWorldHeight = this._worldDimensions.yKM / 2;
-        let sizePerTile = bounds.width / detail;
+                            let value = layerValues[y][x] * combinedFadeOffMultiplier;
+                            value = Math.min(1, Math.max(0, value));
+                            values[y][x][indexToLayerId[index]] = value;
+                        }
+                    }
+                });
 
-        let points: IDictionary<number>[][] = [];
-        for (let x = 0; x <= detail; x++) {
-            let totalX = (bounds.x + (x * sizePerTile)) - halfWorldWidth;
-            points.push([]);
-
-            for (let y = 0; y <= detail; y++) {
-                let totalY = (bounds.y + (y * sizePerTile)) - halfWorldHeight;
-                let worldPos = new Vector2(totalX, totalY);
-
-                let noiseVals = this.generateValues(worldPos.x, worldPos.y);
-                points[x].push(noiseVals);
-            }
-        }
-
-        return points;
-    }
-
-    generateValues(globalX: number, globalY: number): IDictionary<number> {
-        let vals = this.generateValueFunc(globalX, globalY);
-
-        let scaledXDistFromCenter = Math.abs(globalX) / this._halfWorldWidth;
-        let xFadeOffMultiplier = WorldGenMath.invLerp(1, this.xFadeOffEndRange, scaledXDistFromCenter);
-        if (this.xFadeOffEndRange == 1) {
-            xFadeOffMultiplier = 1;
-        }
-
-        let scaledYDistFromCenter = Math.abs(globalY) / this._halfWorldHeight;
-        let yFadeOffMultiplier = WorldGenMath.invLerp(1, this.yFadeOffEndRange, scaledYDistFromCenter);
-        if (this.yFadeOffEndRange == 1) {
-            yFadeOffMultiplier = 1;
-        }
-
-        let combinedFadeOffMultiplier = Math.sqrt(xFadeOffMultiplier * yFadeOffMultiplier);
-
-        const fadedValsDict: IDictionary<number> = {};
-        for (let key in vals) {
-            const val = vals[key];
-
-            let valWithFade = val * combinedFadeOffMultiplier;
-            fadedValsDict[key] = Math.min(1, Math.max(0, valWithFade));
-        }
-
-        return fadedValsDict;
-    }
-
-    private distributeInverseShares(shares: number[], totalValue: number): number[] {
-        const totalShares = shares.reduce((acc, share) => acc + share, 0);
-        let remainingValue = totalValue;
-        const inverseShares = shares.map(share => totalShares - share); // Calculate inverse shares
-        const totalInverseShares = inverseShares.reduce((acc, share) => acc + share, 0);
-
-        return shares.map((share, index) => {
-            if (index === shares.length - 1) {
-                return remainingValue; // Assign remaining value to the last item
-            } else {
-                const value = Math.round((totalShares - share) / totalInverseShares * totalValue * 100) / 100;
-                remainingValue -= value;
-                return value;
-            }
+                resolve(values);
+            }).catch((error) => {
+                reject(error);
+            })
         });
     }
 }

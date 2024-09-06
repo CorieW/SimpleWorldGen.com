@@ -10,7 +10,7 @@ export default class ChunkData {
         this._x = x;
         this._y = y;
         this._size = size;
-        this._data = [];
+        this._data = []
     }
 
     addData(data: IDictionary<number>[][]) {

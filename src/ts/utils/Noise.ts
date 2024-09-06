@@ -5,14 +5,16 @@ export default class Noise {
     private _persistence: number;
     private _lacunarity: number;
     private _frequency: number;
+    private _spread: number;
 
-    constructor(seed: number, multiplier: number = 1, octaves: number = 1, persistence: number = 0.5, lacunarity: number = 2, frequency: number = 1) {
+    constructor(seed: number, multiplier: number = 1, octaves: number = 1, persistence: number = 0.5, lacunarity: number = 2, frequency: number = 1, spread: number = 1) {
         this._seed = seed;
         this._multiplier = multiplier;
         this._octaves = octaves;
         this._persistence = persistence;
         this._lacunarity = lacunarity;
-        this._frequency = frequency
+        this._frequency = frequency;
+        this._spread = spread;
     }
 
     /**
@@ -44,6 +46,7 @@ export default class Noise {
             persistence: this._persistence,
             lacunarity: this._lacunarity,
             frequency: this._frequency,
+            spread: this._spread,
             offset
         });
 
