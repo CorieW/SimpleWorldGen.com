@@ -6,6 +6,7 @@ import { Button } from '@chakra-ui/react';
 import VisualizationSidebar from '../VisualizationSidebar/VisualizationSidebar';
 import SettingsSidebar from '../SettingsSidebar/SettingsSidebar';
 import NodesModal from '../NodesModal/NodesModal';
+import SaveModal from '../SaveModal/SaveModal';
 
 type Props = {
     zoomIn: () => void;
@@ -14,6 +15,7 @@ type Props = {
 }
 
 function EditorOverlay(props: Props) {
+    const [saveModalOpen, setSaveModalOpen] = useState(false);
     const [settingsSidebarOpen, setSettingsSidebarOpen] = useState(false);
     const [visualizationSidebarOpen, setVisualizationSidebarOpen] =
         useState(false);
@@ -29,6 +31,12 @@ function EditorOverlay(props: Props) {
             <NodeEditorModal />
             <div id='editor-overlay-btns'>
                 <div className='btn-group menu-btns'>
+                    <Button
+                        id='save-btn'
+                        onClick={() => setSaveModalOpen(true)}
+                    >
+                        <i className='fa-solid fa-save'></i>
+                    </Button>
                     <Button
                         id='settings-btn'
                         onClick={() =>
@@ -59,25 +67,20 @@ function EditorOverlay(props: Props) {
                         <i className="fa-solid fa-arrows-to-dot"></i>
                     </Button>
                 </div>
-                {/* <div> // TODO: Implement save functionality
-                    <Button id='save-btn'>
-                        <i className='fa-solid fa-save'></i>
-                    </Button>
-                </div> */}
             </div>
 
-            {
-                <SettingsSidebar
-                    sidebarOpen={settingsSidebarOpen}
-                    setSidebarOpen={setSettingsSidebarOpen}
-                />
-            }
-            {
-                <VisualizationSidebar
-                    sidebarOpen={visualizationSidebarOpen}
-                    setSidebarOpen={setVisualizationSidebarOpen}
-                />
-            }
+            <SaveModal
+                modalOpen={saveModalOpen}
+                setModalOpen={setSaveModalOpen}
+            />
+            <SettingsSidebar
+                sidebarOpen={settingsSidebarOpen}
+                setSidebarOpen={setSettingsSidebarOpen}
+            />
+            <VisualizationSidebar
+                sidebarOpen={visualizationSidebarOpen}
+                setSidebarOpen={setVisualizationSidebarOpen}
+            />
         </div>
     );
 }
