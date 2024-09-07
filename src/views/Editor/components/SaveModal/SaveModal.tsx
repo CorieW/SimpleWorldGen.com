@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Modal from '../../../../components/Modal/Modal'
 import { Button } from '@chakra-ui/react'
 import useStore from '../../editorStore'
+import Dropzone from '../../../../components/Dropzone/Dropzone'
 // import {
 //     FileUploadDropzone,
 //     FileUploadList,
@@ -27,6 +28,8 @@ export default function SaveModal(props: Props) {
         setVisualizationSettings,
     } = useStore()
 
+    const [file, setFile] = useState<any>(null)
+
     useEffect(() => {
         // On CTRL + S, save to device
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -42,6 +45,14 @@ export default function SaveModal(props: Props) {
         }
     }, [worldSettings, layers, visualizationSettings])
 
+    /**
+     * Close the modal and reset the file state
+     */
+    function closeModal() {
+        setModalOpen(false)
+        setFile(null)
+    }
+
     function convertToJSONString(worldSettings: any, layers: any, visualizationSettings: any) {
         const json = {
             worldSettings,
@@ -51,6 +62,10 @@ export default function SaveModal(props: Props) {
         return JSON.stringify(json)
     }
 
+    /**
+     * Save the world settings, layers, and visualization settings to the device
+     * as a JSON file
+     */
     function saveToDevice() {
         // Save to device
         const jsonStr = convertToJSONString(worldSettings, layers, visualizationSettings)
@@ -61,52 +76,72 @@ export default function SaveModal(props: Props) {
         a.download = SAVE_NAME
         a.click()
         URL.revokeObjectURL(url)
-        setModalOpen(false)
+        closeModal()
     }
 
-    function loadFromDevice(e: any) {
-        const file = e.target.files?.[0]
+    /**
+     * Load the file from the device
+     * Update the world settings, layers, and visualization settings
+     * @param file The file to load
+     */
+    function loadFromDevice(file: any) {
         if (file) {
             const reader = new FileReader()
+
+            reader.onabort = () => {
+                console.error('file reading was aborted')
+            }
+            reader.onerror = (e) => {
+                console.error(e)
+            }
             reader.onload = (e) => {
                 const jsonStr = e.target?.result as string
                 const json = JSON.parse(jsonStr)
                 setWorldSettings(json.worldSettings)
                 setLayers(json.layers)
                 setVisualizationSettings(json.visualizationSettings)
-                setModalOpen(false)
+                closeModal()
             }
             reader.readAsText(file)
         }
     }
 
     const contentJSX = (
-        <div className='w-full'>
+        <div className='flex flex-col w-full h-full gap-3'>
             <h1 className='text-2xl font-bold text-center'>Save / Load</h1>
-            {/* <FileUploadRoot maxW="xl" alignItems="stretch" maxFiles={10}>
-                <FileUploadDropzone />
-                <FileUploadList />
-            </FileUploadRoot> */}
-            <input
-                type='file'
-                accept='.json'
-                onChange={ (e) => {
-                    loadFromDevice(e)
-                } }
+            <Dropzone
+                acceptedFileTypes={{
+                    'application/json': ['.json']
+                }}
+                maxFiles={1}
+                onDrop={(files) => {
+                    setFile(files[0])
+                }}
             />
+            <Button
+                className='modal-btn'
+                onClick={ () => {
+                    // Load uploaded
+                    loadFromDevice(file)
+                } }
+                colorScheme='gray'
+                isDisabled={file === null}
+            >
+                Load {file ? file.name : 'unavailable'}
+            </Button>
         </div>
     )
 
     const bottomBarJSX = (
         <div className='flex justify-between w-full'>
-            <div>
+            <div className='flex gap-1'>
                 <Button
                     className='modal-btn'
                     onClick={ () => {
                         // Save to device
                         saveToDevice()
                     } }
-                    colorScheme='green'
+                    colorScheme='gray'
                 >
                     Save to Device
                 </Button>
@@ -115,7 +150,7 @@ export default function SaveModal(props: Props) {
                 <Button
                     colorScheme='gray'
                     size='md'
-                    onClick={() => setModalOpen(false)}
+                    onClick={() => closeModal()}
                 >
                     Close
                 </Button>
@@ -127,7 +162,12 @@ export default function SaveModal(props: Props) {
         <div>
             <Modal
                 modalOpen={modalOpen}
-                setModalOpen={setModalOpen}
+                setModalOpen={(modalOpen: boolean) => {
+                    setModalOpen(modalOpen)
+                    if (!modalOpen) {
+                        setFile(null)
+                    }
+                }}
                 contentJSX={contentJSX}
                 bottomBarJSX={bottomBarJSX}
             />
