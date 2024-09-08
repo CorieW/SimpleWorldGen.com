@@ -134,6 +134,11 @@ export default function SaveModal(props: Props) {
                     return
                 }
 
+                addNotification({
+                    type: 'success',
+                    text: 'File loaded successfully'
+                })
+
                 setWorldSaveFile({ name: file.name, ...json })
             }
             reader.readAsText(file)
@@ -162,6 +167,12 @@ export default function SaveModal(props: Props) {
                     setWorldSettings(worldSaveFile?.worldSettings)
                     setLayers(worldSaveFile?.layers)
                     setVisualizationSettings(worldSaveFile?.visualizationSettings)
+
+                    addNotification({
+                        type: 'success',
+                        text: 'Applied loaded file'
+                    })
+
                     closeModal()
                 } }
                 colorScheme='gray'
