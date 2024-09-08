@@ -3,9 +3,6 @@ Available at: https://simpleworldgen.com
 
 Tasks: https://www.notion.so/Projects-Tasks-95b90fccf4e24bd3968e3350049f3b42?pvs=4
 
-# Hard Limitations
-- [Impractical for extremely large maps. This is because as zoom increases, precision decreases in the drawing of the map. Meaning, it's better suited for maps small to large, as a lower zoom level is necessary to view close-up details.](https://gyazo.com/69aa0be214b873100d41c36e17d735fb)
-
 # Version history
 [v0.4.0: Added saving and loading](https://gyazo.com/af2092afaf6c2b01e81148fdf5f07a33)
 
