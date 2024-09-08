@@ -1,8 +1,10 @@
 .node-container {
+    --node-size: 100px;
+
     position: relative;
     display: flex;
     flex-direction: row;
-    width: var(--node-size);
+    width: 100%;
     height: var(--node-size);
     min-height: var(--node-size);
     border-radius: 15px;

@@ -1,12 +1,12 @@
 .layer-container {
-    --node-size: 150px;
+    --layer-size: 150px;
 
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;
     border-radius: 15px;
     pointer-events: all;
-    width: var(--node-size);
+    width: var(--layer-size);
     user-select: none;
 
     .inner-layer-container {
@@ -14,9 +14,9 @@
         position: relative;
         display: flex;
         flex-direction: row;
-        width: var(--node-size);
-        height: var(--node-size);
-        min-height: var(--node-size);
+        width: var(--layer-size);
+        height: var(--layer-size);
+        min-height: var(--layer-size);
         border-radius: 15px;
         overflow: hidden;
         border: 3px solid white;
