@@ -43,7 +43,7 @@ function EditorOverlay(props: Props) {
                             setSettingsSidebarOpen(!settingsSidebarOpen)
                         }
                     >
-                        <i className='fa-solid fa-cog'></i>
+                        <i className="fa-solid fa-earth-oceania"></i>
                     </Button>
                     <Button
                         id='toggle-visualization-menu-btn'

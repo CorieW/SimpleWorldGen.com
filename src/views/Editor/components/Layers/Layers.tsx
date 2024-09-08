@@ -10,7 +10,7 @@ import ScrollContainer from '../../../../components/ScrollContainer/ScrollContai
 export default function Layers({}: any) {
     const { layers, getNewLayerId, getNewNodeId, addLayer } = useStore();
 
-    const [expanded, setExpanded] = useState<boolean>(true);
+    const [expanded, setExpanded] = useState<boolean>(false);
 
     function addNewLayer() {
         // Todo: Simplify this function
@@ -53,9 +53,10 @@ export default function Layers({}: any) {
                     size='sm'
                     onClick={() => setExpanded(!expanded)}
                 >
-                    <i
-                        className={`fa-solid fa-arrow-${expanded ? 'down' : 'up'}`}
-                    ></i>
+                    <i className={`fa-solid fa-arrow-${expanded ? 'down' : 'up'}`} />
+                    <span>
+                        {expanded ? 'Collapse Layers' : 'Expand Layers'}
+                    </span>
                 </Button>
                 {expanded && listJSX}
             </div>
