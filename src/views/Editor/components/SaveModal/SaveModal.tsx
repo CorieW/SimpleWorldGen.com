@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import Modal from '../../../../components/Modal/Modal'
 import { Button } from '@chakra-ui/react'
-import useStore from '../../editorStore'
+import useStore from '../../../../appStore'
+import useEditorStore from '../../editorStore'
 import Dropzone from '../../../../components/Dropzone/Dropzone'
+import { IWorldSettings } from '../../../../ts/interfaces/IWorldSettings'
+import { ILayer } from '../../../../ts/interfaces/ILayer'
+import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting'
 // import {
 //     FileUploadDropzone,
 //     FileUploadList,
@@ -14,10 +18,21 @@ type Props = {
     setModalOpen: (modalOpen: boolean) => void
 }
 
+interface WorldSaveFile {
+    name: string
+    worldSettings: IWorldSettings
+    layers: ILayer[]
+    visualizationSettings: IVisualizationSetting[]
+}
+
 export default function SaveModal(props: Props) {
     const SAVE_NAME = 'world.json'
 
     const { modalOpen, setModalOpen } = props
+
+    const {
+        addNotification
+    } = useStore()
 
     const {
         worldSettings,
@@ -26,9 +41,9 @@ export default function SaveModal(props: Props) {
         setLayers,
         visualizationSettings,
         setVisualizationSettings,
-    } = useStore()
+    } = useEditorStore()
 
-    const [file, setFile] = useState<any>(null)
+    const [worldSaveFile, setWorldSaveFile] = useState<WorldSaveFile | null>(null)
 
     useEffect(() => {
         // On CTRL + S, save to device
@@ -50,7 +65,7 @@ export default function SaveModal(props: Props) {
      */
     function closeModal() {
         setModalOpen(false)
-        setFile(null)
+        setWorldSaveFile(null)
     }
 
     function convertToJSONString(worldSettings: any, layers: any, visualizationSettings: any) {
@@ -60,6 +75,19 @@ export default function SaveModal(props: Props) {
             visualizationSettings
         }
         return JSON.stringify(json)
+    }
+
+    function validateJSON(json: any) {
+        if (!json.hasOwnProperty('worldSettings')) {
+            return false
+        }
+        if (!json.hasOwnProperty('layers')) {
+            return false
+        }
+        if (!json.hasOwnProperty('visualizationSettings')) {
+            return false
+        }
+        return true
     }
 
     /**
@@ -97,10 +125,16 @@ export default function SaveModal(props: Props) {
             reader.onload = (e) => {
                 const jsonStr = e.target?.result as string
                 const json = JSON.parse(jsonStr)
-                setWorldSettings(json.worldSettings)
-                setLayers(json.layers)
-                setVisualizationSettings(json.visualizationSettings)
-                closeModal()
+
+                if (!validateJSON(json)) {
+                    addNotification({
+                        type: 'error',
+                        text: 'Invalid JSON file'
+                    })
+                    return
+                }
+
+                setWorldSaveFile({ name: file.name, ...json })
             }
             reader.readAsText(file)
         }
@@ -115,19 +149,25 @@ export default function SaveModal(props: Props) {
                 }}
                 maxFiles={1}
                 onDrop={(files) => {
-                    setFile(files[0])
+                    if (files.length === 1) {
+                        // Load the file
+                        loadFromDevice(files[0])
+                    }
                 }}
             />
             <Button
                 className='modal-btn'
                 onClick={ () => {
-                    // Load uploaded
-                    loadFromDevice(file)
+                    // Apply the world settings, layers, and visualization settings
+                    setWorldSettings(worldSaveFile?.worldSettings)
+                    setLayers(worldSaveFile?.layers)
+                    setVisualizationSettings(worldSaveFile?.visualizationSettings)
+                    closeModal()
                 } }
                 colorScheme='gray'
-                isDisabled={file === null}
+                isDisabled={worldSaveFile === null}
             >
-                Load {file ? file.name : 'unavailable'}
+                Load {worldSaveFile ? worldSaveFile.name : 'unavailable'}
             </Button>
         </div>
     )
@@ -165,7 +205,7 @@ export default function SaveModal(props: Props) {
                 setModalOpen={(modalOpen: boolean) => {
                     setModalOpen(modalOpen)
                     if (!modalOpen) {
-                        setFile(null)
+                        setWorldSaveFile(null)
                     }
                 }}
                 contentJSX={contentJSX}

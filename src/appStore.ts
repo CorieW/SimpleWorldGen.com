@@ -3,7 +3,7 @@ import { INotification } from './components/NotificationBar/Notification/INotifi
 
 type AppStore = {
     notifications: INotification[];
-    addNotification: (notification: { text: string; type: string }) => void;
+    addNotification: (notification: { type: string; text: string; }) => void;
     removeNotification: (notification: INotification) => void;
     clearNotifications: () => void;
 };
