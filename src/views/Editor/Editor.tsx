@@ -100,11 +100,11 @@ function Editor() {
             const view = paper.view;
 
             const oldZoom = zoomRef.current;
-            let newZoom = oldZoom * (1 + event.deltaY * -0.001);
-            // Limit zoom to reasonable values
-            newZoom = Math.max(minZoom, Math.min(newZoom, maxZoom));
+            const newZoom = oldZoom * (1 + event.deltaY * -0.001);
+            setZoom(newZoom);
+            const zoom = zoomRef.current;
 
-            const beta = oldZoom / newZoom;
+            const beta = oldZoom / zoom;
 
             const mousePosition = new paper.Point(event.offsetX, event.offsetY);
             const viewPosition = view.viewToProject(mousePosition);
@@ -112,7 +112,6 @@ function Editor() {
             move = move.multiply(1 - beta);
             const newCenter = positionRef.current.add(move);
 
-            setZoom(newZoom);
             setPosition(newCenter);
         }
 
@@ -148,6 +147,8 @@ function Editor() {
     }
 
     function setZoom(zoom: number) {
+        console.log(zoom);
+        zoom = Math.max(minZoom, Math.min(zoom, maxZoom));
         zoomRef.current = zoom;
         paper.view.zoom = zoom;
         updateWorld();
