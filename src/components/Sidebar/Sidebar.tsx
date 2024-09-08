@@ -29,7 +29,7 @@ export default function Sidebar(props: Props) {
             }`}
         >
             <div className='top-bar-container'>
-                <Button
+                {/* <Button // ! Temporarily removed expand button
                     className='expand-btn'
                     onClick={() => setExpanded(!expanded)}
                 >
@@ -38,7 +38,8 @@ export default function Sidebar(props: Props) {
                             expanded ? 'compress' : 'expand'
                         }`}
                     ></i>
-                </Button>
+                </Button> */}
+                <div></div>
                 <Button className='close-btn' onClick={() => closeSidebar()}>
                     <i className='fa-solid fa-times'></i>
                 </Button>
