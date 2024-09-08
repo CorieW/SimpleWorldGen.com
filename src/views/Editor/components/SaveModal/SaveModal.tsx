@@ -129,14 +129,14 @@ export default function SaveModal(props: Props) {
                 if (!validateJSON(json)) {
                     addNotification({
                         type: 'error',
-                        text: 'Invalid JSON file'
+                        text: `File <b>${file.name}</b> is not a valid world save file`
                     })
                     return
                 }
 
                 addNotification({
                     type: 'success',
-                    text: 'File loaded successfully'
+                    text: `Loaded <b>${file.name}</b> successfully`
                 })
 
                 setWorldSaveFile({ name: file.name, ...json })
@@ -170,7 +170,7 @@ export default function SaveModal(props: Props) {
 
                     addNotification({
                         type: 'success',
-                        text: 'Applied loaded file'
+                        text: `Applied <b>${worldSaveFile?.name}</b> successfully`
                     })
 
                     closeModal()
