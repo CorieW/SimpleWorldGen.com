@@ -1,0 +1,64 @@
+#app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+
+    #content {
+        flex: 1;
+    }
+
+    #notification-bar {
+        z-index: 1000;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        height: fit-content;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .move-btn:hover,
+    .move-btn:active {
+        &:not(:disabled) {
+            color: gold;
+        }
+
+        &:disabled {
+            cursor: default;
+        }
+    }
+
+    .delete-btn:hover,
+    .delete-btn:active {
+        color: red;
+    }
+
+    .add-btn:hover,
+    .add-btn:active {
+        color: limegreen;
+    }
+
+    a {
+        color: var(--primary-color);
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+#worldCanvas {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    background-color: #000;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    cursor: pointer;
+}

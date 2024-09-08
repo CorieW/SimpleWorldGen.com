@@ -1,0 +1,9 @@
+#apply-visualization-btn {
+    background-color: gold;
+
+    &:hover,
+    &:active {
+        background-color: black;
+        color: white;
+    }
+}
