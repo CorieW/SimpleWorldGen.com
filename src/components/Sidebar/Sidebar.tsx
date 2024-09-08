@@ -15,7 +15,7 @@ export default function Sidebar(props: Props) {
     const { open, setOpen, onClose, title, contentJSX, bottomBarContentJSX } =
         props;
 
-    const [expanded, setExpanded] = useState<boolean>(false);
+    const [expanded] = useState<boolean>(false);
 
     function closeSidebar() {
         setOpen(false);
