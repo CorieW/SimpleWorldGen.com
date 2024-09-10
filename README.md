@@ -1,7 +1,7 @@
 # Information
 Available at: https://simpleworldgen.com
 
-Tasks: https://www.notion.so/Projects-Tasks-95b90fccf4e24bd3968e3350049f3b42?pvs=4
+Tasks: https://soapy-cerise-09a.notion.site/Projects-Tasks-95b90fccf4e24bd3968e3350049f3b42
 
 # Version history
 [v0.4.0: Added saving and loading](https://gyazo.com/af2092afaf6c2b01e81148fdf5f07a33)
