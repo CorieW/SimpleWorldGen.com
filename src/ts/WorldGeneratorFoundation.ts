@@ -17,51 +17,85 @@ export default abstract class WorldGeneratorFoundation {
     private _gridSystem: GridSystem<ChunkData>;
     private _maxDisplayableTiles: number = 5000;
     private _sizeSignificance: number = 2;
+    private _maxConcurrentChunks: number;
 
     // State for determining if the world should be updated
-    private _previousDistributedShares: number[] = [];
+    private _previousGenerationSignature: string = '';
 
-    constructor(worldDimensions: WorldDimensions) {
+    constructor(worldDimensions: WorldDimensions, maxConcurrentChunks: number = 4) {
         this._halfWorldWidth = worldDimensions.xKM / 2;
         this._halfWorldHeight = worldDimensions.yKM / 2;
+        this._maxConcurrentChunks = Math.max(1, Math.floor(maxConcurrentChunks));
 
         const largestDimension = Math.max(worldDimensions.xKM, worldDimensions.yKM);
         this._gridSystem = new GridSystem(largestDimension);
     }
 
     shouldUpdate(bounds: Bounds): boolean {
-        const leafs: QuadTreeNode<ChunkData>[] = [];
-        const shares: number[] = [];
-
-        this._gridSystem.update(bounds, (quadNode) => {
-            leafs.push(quadNode);
-            shares.push(quadNode.getSize() ^ this._sizeSignificance);
-        });
-
-        const distributedShares: number[] = Utils.distributeInverseShares(shares, this._maxDisplayableTiles);
-
-        return this._previousDistributedShares.length !== distributedShares.length || !distributedShares.every((share, index) => share === this._previousDistributedShares[index]);
+        const { signature } = this.createGenerationPlan(bounds);
+        return signature !== this._previousGenerationSignature;
     }
 
-    update(bounds: Bounds, onGenerated: (chunkData: ChunkData) => void) {
+    async update(
+        bounds: Bounds,
+        onChunkGenerated: (chunkData: ChunkData, index: number, total: number) => void
+    ): Promise<void> {
+        const { chunks, signature } = this.createGenerationPlan(bounds);
+        this._previousGenerationSignature = signature;
+
+        try {
+            let nextChunkIndex = 0;
+            const generateChunks = async () => {
+                while (nextChunkIndex < chunks.length) {
+                    const index = nextChunkIndex++;
+                    const { bounds: chunkBounds, detail } = chunks[index];
+                    const chunkData = await this.generateChunkData(chunkBounds, detail);
+                    onChunkGenerated(chunkData, index, chunks.length);
+                }
+            };
+
+            await Promise.all(
+                Array.from(
+                    { length: Math.min(this._maxConcurrentChunks, chunks.length) },
+                    () => generateChunks()
+                )
+            );
+        } catch (error) {
+            if (this._previousGenerationSignature === signature) {
+                this._previousGenerationSignature = '';
+            }
+            throw error;
+        }
+    }
+
+    private createGenerationPlan(bounds: Bounds): {
+        chunks: { bounds: Bounds; detail: number }[];
+        signature: string;
+    } {
         const leafs: QuadTreeNode<ChunkData>[] = [];
         const shares: number[] = [];
 
         this._gridSystem.update(bounds, (quadNode) => {
             leafs.push(quadNode);
-            shares.push(quadNode.getSize() ^ this._sizeSignificance);
+            shares.push(quadNode.getSize() ** this._sizeSignificance);
         });
 
         const distributedShares: number[] = Utils.distributeInverseShares(shares, this._maxDisplayableTiles);
-        distributedShares.forEach((share, index) => {
-            const bounds = leafs[index].getBounds();
-            const detail = Math.round(Math.sqrt(share));
-            this.generateChunkData(bounds, detail).then((data) => {
-                onGenerated(data);
-            })
+        const chunks = distributedShares.map((share, index) => {
+            const chunkBounds = leafs[index].getBounds();
+            return {
+                bounds: chunkBounds,
+                detail: Math.max(1, Math.round(Math.sqrt(share))),
+            };
         });
 
-        this._previousDistributedShares = distributedShares;
+        const signature = chunks
+            .map(({ bounds: chunkBounds, detail }) =>
+                `${chunkBounds.x},${chunkBounds.y},${chunkBounds.width},${chunkBounds.height},${detail}`
+            )
+            .join('|');
+
+        return { chunks, signature };
     }
 
     async generateChunkData(bounds: Bounds, detail: number): Promise<ChunkData> {
@@ -69,7 +103,8 @@ export default abstract class WorldGeneratorFoundation {
         const pos = new Vector2(bounds.x - this._halfWorldWidth, bounds.y - this._halfWorldHeight);
 
         const newChunkData = new ChunkData(bounds.x, bounds.y, bounds.width);
-        const values = await this.generateValuesMap(pos.x, pos.y, detail, detail, sizePerTile);
+        const pointsPerAxis = detail + 1;
+        const values = await this.generateValuesMap(pos.x, pos.y, pointsPerAxis, pointsPerAxis, sizePerTile);
         newChunkData.addData(values);
 
         return newChunkData;
