@@ -102,11 +102,11 @@ function Editor() {
             const view = paper.view;
 
             const oldZoom = zoomRef.current;
-            let newZoom = oldZoom * (1 + event.deltaY * -0.001);
-            // Limit zoom to reasonable values
-            newZoom = Math.max(minZoom, Math.min(newZoom, maxZoom));
+            const newZoom = oldZoom * (1 + event.deltaY * -0.001);
+            setZoom(newZoom);
+            const zoom = zoomRef.current;
 
-            const beta = oldZoom / newZoom;
+            const beta = oldZoom / zoom;
 
             const mousePosition = new paper.Point(event.offsetX, event.offsetY);
             const viewPosition = view.viewToProject(mousePosition);
@@ -114,7 +114,6 @@ function Editor() {
             move = move.multiply(1 - beta);
             const newCenter = positionRef.current.add(move);
 
-            setZoom(newZoom);
             setPosition(newCenter);
         }
 
@@ -134,8 +133,8 @@ function Editor() {
     });
 
     function updateWorld() {
-        let bounds = paper.view.bounds;
-        let boundsData = new Bounds(bounds.x, bounds.y, bounds.width, bounds.height);
+        const bounds = paper.view.bounds;
+        const boundsData = new Bounds(bounds.x, bounds.y, bounds.width, bounds.height);
 
         if (!worldRef.current!.shouldUpdate(boundsData)) return;
 
@@ -150,6 +149,8 @@ function Editor() {
     }
 
     function setZoom(zoom: number) {
+        console.log(zoom);
+        zoom = Math.max(minZoom, Math.min(zoom, maxZoom));
         zoomRef.current = zoom;
         paper.view.zoom = zoom;
         updateWorld();
@@ -210,12 +211,12 @@ function Editor() {
                     let closestValue = Number.MAX_VALUE;
                     let outputValue = 0;
                     setting.conditions.forEach((condition: IVisualizationCondition) => {
-                        let center = (condition.min + condition.max) / 2;
-                        let border = Math.abs(condition.max - condition.min) / 2;
-                        let value = chunkData.getData()[x][y][condition.layerId];
+                        const center = (condition.min + condition.max) / 2;
+                        const border = Math.abs(condition.max - condition.min) / 2;
+                        const value = chunkData.getData()[x][y][condition.layerId];
 
-                        let dist = Math.abs(center - value) / border;
-                        let distRev = dist - 1;
+                        const dist = Math.abs(center - value) / border;
+                        const distRev = dist - 1;
 
                         if (dist < closestValue) {
                             closestValue = dist;
@@ -293,8 +294,8 @@ function Editor() {
 
                         if (rect === null) return;
 
-                        let maxScale = setting.maxScale || 1;
-                        let minScale = setting.minScale || 0;
+                        const maxScale = setting.maxScale || 1;
+                        const minScale = setting.minScale || 0;
                         let valueScale = 1;
                         if (scalingType === ScalingTypeEnum.VALUE || scalingType === ScalingTypeEnum.BOTH) {
                             let avg = 0;
@@ -309,7 +310,7 @@ function Editor() {
                         if (scalingType === ScalingTypeEnum.ZOOM || scalingType === ScalingTypeEnum.BOTH) {
                             zoomScale = WorldGenMath.invLerp(minZoom, maxZoom, zoomRef.current);
                         }
-                        let scale = Math.max(valueScale, zoomScale);
+                        const scale = Math.max(valueScale, zoomScale);
 
                         rect.strokeWidth = 0;
                         rect.fillColor = new paper.Color(setting.color);

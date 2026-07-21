@@ -28,13 +28,13 @@ export default class QuadTreeNode<T> {
             throw new Error('Cannot split a node that already has children.');
 
         this._splits = splits;
-        let childSize = this._size / splits;
+        const childSize = this._size / splits;
 
         for (let x = 0; x < splits; x++) {
             this._children.push([]);
 
             for (let y = 0; y < splits; y++) {
-                let child = new QuadTreeNode<T>(
+                const child = new QuadTreeNode<T>(
                     this._x + x * childSize,
                     this._y + y * childSize,
                     childSize
@@ -81,7 +81,7 @@ export default class QuadTreeNode<T> {
     }
 
     getChildrenFlat(): QuadTreeNode<T>[] {
-        let children: QuadTreeNode<T>[] = [];
+        const children: QuadTreeNode<T>[] = [];
 
         for (let x = 0; x < this.getSplits(); x++) {
             for (let y = 0; y < this.getSplits(); y++) {
@@ -108,10 +108,10 @@ export default class QuadTreeNode<T> {
         if (this.hasChildren()) {
             for (let x = 0; x < this.getSplits(); x++) {
                 for (let y = 0; y < this.getSplits(); y++) {
-                    let child = this.getNodeAt(x, y);
+                    const child = this.getNodeAt(x, y);
 
                     if (child.hasChildren()) {
-                        let childDescendants =
+                        const childDescendants =
                             child.getLeafNodes();
                         descendants = descendants.concat(childDescendants);
                     } else {

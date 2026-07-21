@@ -1,8 +1,9 @@
 import './Modal.scss'
+import type { ReactNode } from 'react'
 
 export interface IModal {
-    contentJSX: JSX.Element
-    bottomBarJSX?: JSX.Element
+    contentJSX: ReactNode
+    bottomBarJSX?: ReactNode
     width?: 'sm' | 'md' | 'lg' | 'xl'
     height?: 'sm' | 'md' | 'lg' | 'xl'
     useExactHeight?: boolean

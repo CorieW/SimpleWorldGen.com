@@ -37,11 +37,11 @@ export default class GridSystem<T> {
         quadNode: QuadTreeNode<T>,
         bounds: Bounds
     ): boolean {
-        let x = quadNode.getX();
-        let y = quadNode.getY();
-        let size = quadNode.getSize();
+        const x = quadNode.getX();
+        const y = quadNode.getY();
+        const size = quadNode.getSize();
 
-        let isOverlappingBounds = bounds.intersects(
+        const isOverlappingBounds = bounds.intersects(
             new Bounds(x, y, size, size)
         );
 

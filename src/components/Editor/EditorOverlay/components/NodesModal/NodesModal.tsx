@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react'
+import { Fragment, forwardRef, useImperativeHandle, type ReactNode } from 'react'
 import './NodesModal.scss'
 import useAppStore from '../../../../../ts/appStore'
 import useEditorStore from '../../../editorStore'
@@ -53,7 +53,7 @@ const NodesModal = forwardRef((props: Props, ref) => {
         return nodes
     }
 
-    function getEffectSymbol(effect: NodeEffectEnum | null): JSX.Element | string {
+    function getEffectSymbol(effect: NodeEffectEnum | null): ReactNode {
         switch (effect) {
             case NodeEffectEnum.Add:
                 return <i className="fa-solid fa-plus"></i>
@@ -71,10 +71,10 @@ const NodesModal = forwardRef((props: Props, ref) => {
     const contentJSX = (
         <div id='nodes-modal-content-container'>
             {getNodes().map((node, index) => (
-                <>
+                <Fragment key={node.id}>
                     {index !== 0 && getEffectSymbol(node.effect)}
-                    <Node key={index} {...node} />
-                </>
+                    <Node {...node} />
+                </Fragment>
             ))}
         </div>
     )
@@ -83,31 +83,31 @@ const NodesModal = forwardRef((props: Props, ref) => {
         <div id='nodes-modal-bottom-bar'>
             <div>
                 <Button
-                    colorScheme='green'
+                    colorPalette='green'
                     size='md'
                     onClick={() => addNode(null, nodeId)}
                 >
                     <i className='fa-solid fa-plus'></i>
                 </Button>
                 <Button
-                    colorScheme='red'
+                    colorPalette='red'
                     size='md'
                     onClick={removeThisLayer}
                 >
                     <i className='fa-solid fa-trash'></i>
                 </Button>
                 <Button
-                    colorScheme='blue'
+                    colorPalette='blue'
                     size='md'
-                    isDisabled={!canMoveLayer(nodeId, 'left')}
+                    disabled={!canMoveLayer(nodeId, 'left')}
                     onClick={() => moveLayer(nodeId, 'left')}
                 >
                     <i className='fa-solid fa-arrow-left'></i>
                 </Button>
                 <Button
-                    colorScheme='blue'
+                    colorPalette='blue'
                     size='md'
-                    isDisabled={!canMoveLayer(nodeId, 'right')}
+                    disabled={!canMoveLayer(nodeId, 'right')}
                     onClick={() => moveLayer(nodeId, 'right')}
                 >
                     <i className='fa-solid fa-arrow-right'></i>
@@ -115,7 +115,7 @@ const NodesModal = forwardRef((props: Props, ref) => {
             </div>
             <div>
                 <Button
-                    colorScheme='gray'
+                    colorPalette='gray'
                     size='md'
                     onClick={closeTopModal}
                 >

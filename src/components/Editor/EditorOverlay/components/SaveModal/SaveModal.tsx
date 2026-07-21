@@ -7,8 +7,6 @@ import { IWorldSettings } from '../../../../../ts/interfaces/generation/IWorldSe
 import { ILayer } from '../../../../../ts/interfaces/generation/ILayer'
 import { IVisualizationSetting } from '../../../../../ts/interfaces/visualization/IVisualizationSetting'
 
-type Props = {}
-
 interface WorldSaveFile {
     name: string
     worldSettings: IWorldSettings
@@ -16,7 +14,7 @@ interface WorldSaveFile {
     visualizationSettings: IVisualizationSetting[]
 }
 
-const SaveModal = forwardRef((_: Props, ref) => {
+const SaveModal = forwardRef((_, ref) => {
     const SAVE_NAME = 'world.json'
 
     const {
@@ -80,13 +78,13 @@ const SaveModal = forwardRef((_: Props, ref) => {
     }
 
     function validateJSON(json: any) {
-        if (!json.hasOwnProperty('worldSettings')) {
+        if (!Object.prototype.hasOwnProperty.call(json, 'worldSettings')) {
             return false
         }
-        if (!json.hasOwnProperty('layers')) {
+        if (!Object.prototype.hasOwnProperty.call(json, 'layers')) {
             return false
         }
-        if (!json.hasOwnProperty('visualizationSettings')) {
+        if (!Object.prototype.hasOwnProperty.call(json, 'visualizationSettings')) {
             return false
         }
         return true
@@ -138,7 +136,7 @@ const SaveModal = forwardRef((_: Props, ref) => {
 
                 addNotification({
                     type: 'success',
-                    text: `File <b>${file.name}</b> loaded successfully`
+                    text: `Loaded <b>${file.name}</b> successfully`
                 })
 
                 setWorldSaveFile({ name: file.name, ...json })
@@ -172,13 +170,13 @@ const SaveModal = forwardRef((_: Props, ref) => {
 
                     addNotification({
                         type: 'success',
-                        text: 'Applied loaded file'
+                        text: `Applied <b>${worldSaveFile?.name}</b> successfully`
                     })
 
                     closeModal()
                 } }
-                colorScheme='gray'
-                isDisabled={worldSaveFile === null}
+                colorPalette='gray'
+                disabled={worldSaveFile === null}
             >
                 Load {worldSaveFile ? worldSaveFile.name : 'unavailable'}
             </Button>
@@ -194,14 +192,14 @@ const SaveModal = forwardRef((_: Props, ref) => {
                         // Save to device
                         saveToDevice()
                     } }
-                    colorScheme='gray'
+                    colorPalette='gray'
                 >
                     Save to Device
                 </Button>
             </div>
             <div>
                 <Button
-                    colorScheme='gray'
+                    colorPalette='gray'
                     size='md'
                     onClick={() => closeModal()}
                 >
