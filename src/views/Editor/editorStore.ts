@@ -59,8 +59,8 @@ const useStore: any = create<EditorStore>((set) => ({
     },
     setWorldSettings: (settings) => set({ worldSettings: settings }),
 
-    layerIdCounter: 3,
-    nodeIdCounter: 3,
+    layerIdCounter: 1,
+    nodeIdCounter: 1,
     getNewLayerId: (): number => {
         // Increment the layerIdCounter and return the new value
         set((state) => ({ layerIdCounter: state.layerIdCounter + 1 }));
@@ -116,25 +116,6 @@ const useStore: any = create<EditorStore>((set) => ({
             "offsetY": 0,
             "effect": NodeEffectEnum.Add,
             "nextNode": null
-          }
-        },
-        {
-          "id": 2,
-          "name": "Layer 3",
-          "beginningNode": {
-            "id": 2,
-            "type": NodeTypeEnum.Noise,
-            "effect": NodeEffectEnum.Add,
-            "nextNode": null,
-            "noiseType": NoiseTypeEnum.Simplex,
-            "octaves": "1",
-            "seed": "1",
-            "multiplier": "1.0",
-            "persistence": "0.5",
-            "lacunarity": "2.0",
-            "frequency": "0.02",
-            "offsetX": "0",
-            "offsetY": "0"
           }
         }
     ],
@@ -489,52 +470,6 @@ const useStore: any = create<EditorStore>((set) => ({
                     "layerId": 1,
                     "min": 0.5,
                     "max": 1,
-                    "minInclusive": true,
-                    "maxInclusive": false
-                }
-            ]
-        },
-        {
-            "type": VisualizationTypeEnum.Square,
-            "colorType": VisualizationColorTypeEnum.Color,
-            "color": "#fff694",
-            "conditions": [
-                {
-                    "layerId": 3,
-                    "condOperator": null,
-                    "min": 0.6,
-                    "max": 1,
-                    "minInclusive": true,
-                    "maxInclusive": false
-                },
-                {
-                    "layerId": 0,
-                    "condOperator": null,
-                    "min": 0,
-                    "max": 0.2,
-                    "minInclusive": true,
-                    "maxInclusive": false
-                }
-            ]
-        },
-        {
-            "type": VisualizationTypeEnum.Square,
-            "colorType": VisualizationColorTypeEnum.Color,
-            "color": "#7ed321",
-            "conditions": [
-                {
-                    "layerId": 3,
-                    "condOperator": null,
-                    "min": 0.61,
-                    "max": 1,
-                    "minInclusive": true,
-                    "maxInclusive": false
-                },
-                {
-                    "layerId": 0,
-                    "condOperator": null,
-                    "min": 0,
-                    "max": 0.2,
                     "minInclusive": true,
                     "maxInclusive": false
                 }
