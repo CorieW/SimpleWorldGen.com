@@ -9,13 +9,13 @@
     "build": "tsc --noEmit && tsc -p tsconfig.node.json --noEmit && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check": "npm run lint && npm run build && npm --prefix firebase/functions run check"
+    "check": "pnpm run lint && pnpm run build && pnpm --dir firebase/functions run check"
   },
   "engines": {
     "node": ">=22.13.0",
-    "npm": ">=10.0.0"
+    "pnpm": ">=11.13.0"
   },
-  "packageManager": "npm@11.14.1",
+  "packageManager": "pnpm@11.13.0",
   "dependencies": {
     "@chakra-ui/react": "^3.36.0",
     "@emotion/react": "^11.14.0",
