@@ -4,17 +4,17 @@
     flex-direction: column;
     gap: 16px;
     padding: 18px;
-    border: 1px solid var(--ui-border);
+    border: 2px solid var(--ui-border-strong);
     border-radius: var(--ui-radius-md);
-    background: rgba(255, 255, 255, 0.025);
+    background: var(--ui-panel-raised);
 
     .setting-label {
         width: fit-content;
         padding: 4px 8px;
-        border: 1px solid rgba(243, 200, 91, 0.32);
-        border-radius: 99px;
-        background: var(--ui-accent-soft);
-        color: var(--ui-accent);
+        border: 2px solid var(--ui-accent);
+        border-radius: 0;
+        background: var(--ui-accent);
+        color: var(--ui-accent-ink);
         font-size: 0.62rem;
         font-weight: 850;
         letter-spacing: 0.1em;
@@ -54,7 +54,7 @@
                     height: 20px;
                     padding: 0 5px;
                     place-items: center;
-                    border-radius: 99px;
+                    border-radius: 0;
                     background: var(--ui-field-raised);
                     color: var(--ui-muted);
                     font-size: 0.65rem;

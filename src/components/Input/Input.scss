@@ -20,15 +20,15 @@
         min-width: 0;
         height: 42px;
         box-sizing: border-box;
-        border: 1px solid var(--ui-border);
+        border: 2px solid var(--ui-border);
         border-radius: var(--ui-radius-sm);
         outline: none;
         background: var(--ui-field);
         color: var(--ui-text);
         font: inherit;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+        font-size: 0.86rem;
+        font-weight: 800;
+        transition: border-color 80ms ease, box-shadow 80ms ease, background 80ms ease;
 
         &::placeholder {
             color: var(--ui-muted);
@@ -41,7 +41,7 @@
 
         &:focus {
             border-color: var(--ui-accent);
-            box-shadow: 0 0 0 3px var(--ui-accent-soft);
+            box-shadow: 3px 3px 0 var(--ui-accent-soft);
         }
     }
 
@@ -72,14 +72,14 @@
 
     .number-input-controls {
         position: absolute;
-        top: 1px;
-        right: 1px;
-        bottom: 1px;
+        top: 2px;
+        right: 2px;
+        bottom: 2px;
         display: grid;
         width: 34px;
         grid-template-rows: 1fr 1fr;
         overflow: hidden;
-        border-left: 1px solid var(--ui-border);
+        border-left: 2px solid var(--ui-border);
         border-radius: 0 calc(var(--ui-radius-sm) - 1px) calc(var(--ui-radius-sm) - 1px) 0;
 
         button {
@@ -94,7 +94,7 @@
             cursor: pointer;
 
             &:first-child {
-                border-bottom: 1px solid var(--ui-border);
+                border-bottom: 2px solid var(--ui-border);
             }
 
             &:hover,

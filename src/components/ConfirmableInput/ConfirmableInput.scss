@@ -28,7 +28,7 @@
             padding-right: 34px;
             border-color: var(--ui-accent);
             background: var(--ui-field);
-            box-shadow: 0 0 0 3px var(--ui-accent-soft);
+            box-shadow: 3px 3px 0 var(--ui-accent-soft);
             text-align: left;
 
             + .confirmable-input-change-btn {
@@ -50,6 +50,7 @@
         border: 0 !important;
         background: var(--ui-accent) !important;
         color: var(--ui-accent-ink) !important;
+        box-shadow: none;
         font-size: 0.7rem;
     }
 }

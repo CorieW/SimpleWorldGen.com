@@ -19,11 +19,11 @@
         height: var(--node-size);
         min-height: var(--node-size);
         overflow: hidden;
-        border: 2px solid rgba(255, 255, 255, 0.72);
+        border: 3px solid var(--ui-border-strong);
         border-radius: var(--ui-radius-md);
         background: #7f8b98;
-        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
-        transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+        box-shadow: 4px 4px 0 rgba(3, 8, 15, 0.78);
+        transition: border-color 80ms ease, transform 80ms ease, box-shadow 80ms ease;
 
         canvas {
             width: 100%;
@@ -56,8 +56,8 @@
         &:hover,
         &:focus-within {
             border-color: var(--ui-accent);
-            box-shadow: 0 0 0 3px var(--ui-accent-soft), 0 10px 26px rgba(0, 0, 0, 0.28);
-            transform: translateY(-2px);
+            box-shadow: 5px 5px 0 #8f6c19;
+            transform: translate(-1px, -1px);
 
             .edit-btn {
                 background: rgba(8, 17, 29, 0.76);
@@ -78,7 +78,7 @@
         opacity: 0;
         pointer-events: none;
         transform: translateY(5px);
-        transition: opacity 140ms ease, transform 140ms ease;
+            transition: opacity 80ms ease, transform 80ms ease;
 
         .chakra-button {
             width: 34px;

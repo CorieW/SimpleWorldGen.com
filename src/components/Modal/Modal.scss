@@ -6,9 +6,8 @@
     padding: 24px;
     justify-content: center;
     align-items: center;
-    background: rgba(3, 9, 17, 0.68);
+    background: rgba(3, 9, 17, 0.82);
     pointer-events: all;
-    backdrop-filter: blur(7px);
 }
 
 .inner-modal-container {
@@ -17,10 +16,10 @@
     max-height: min(780px, 100%);
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 3px solid var(--ui-border-strong);
     border-radius: var(--ui-radius-lg);
     background: var(--ui-panel-solid);
-    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
+    box-shadow: 8px 8px 0 rgba(3, 8, 15, 0.82);
     color: var(--ui-text);
 
     .top-bar {
@@ -29,13 +28,13 @@
         align-items: center;
         justify-content: space-between;
         padding: 7px 8px 7px 18px;
-        border-bottom: 1px solid var(--ui-border);
-        background: rgba(255, 255, 255, 0.025);
+        border-bottom: 3px solid var(--ui-border);
+        background: var(--ui-panel-raised);
 
         .modal-grip {
             width: 32px;
             height: 4px;
-            border-radius: 99px;
+            border-radius: 0;
             background: var(--ui-border-strong);
         }
     }
@@ -56,8 +55,8 @@
         gap: 8px;
         justify-content: space-between;
         padding: 13px 14px;
-        border-top: 1px solid var(--ui-border);
-        background: rgba(5, 12, 21, 0.42);
+        border-top: 3px solid var(--ui-border);
+        background: var(--ui-ink);
     }
 }
 

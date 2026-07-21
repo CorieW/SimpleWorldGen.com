@@ -44,7 +44,7 @@ select:focus-visible {
 
 *::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
-  border-radius: 99px;
+  border-radius: 0;
   background: var(--ui-field-raised);
   background-clip: padding-box;
 }

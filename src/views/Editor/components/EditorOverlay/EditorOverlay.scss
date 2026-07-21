@@ -13,12 +13,11 @@
         flex-direction: column;
         gap: 7px;
         padding: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 3px solid var(--ui-border-strong);
         border-radius: var(--ui-radius-md);
         background: var(--ui-panel);
         box-shadow: var(--ui-shadow);
         pointer-events: all;
-        backdrop-filter: blur(12px);
 
         &.menu-btns {
             position: absolute;
@@ -38,7 +37,7 @@
             height: 46px;
             min-height: 46px;
             padding: 0;
-            border-color: rgba(255, 255, 255, 0.42) !important;
+            border-color: var(--ui-border-strong) !important;
             border-radius: var(--ui-radius-sm) !important;
             background: #09111e !important;
             color: white !important;
@@ -50,7 +49,7 @@
                 border-color: var(--ui-accent) !important;
                 background: var(--ui-accent) !important;
                 color: var(--ui-accent-ink) !important;
-                box-shadow: 0 0 0 2px var(--ui-accent-soft);
+                box-shadow: 3px 3px 0 #8f6c19;
             }
         }
     }

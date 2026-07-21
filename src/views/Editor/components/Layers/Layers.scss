@@ -21,12 +21,11 @@
             min-width: 0;
             margin-bottom: 9px;
             padding: 12px 12px 9px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid var(--ui-border-strong);
             border-radius: var(--ui-radius-lg);
-            background: linear-gradient(180deg, rgba(17, 31, 50, 0.95), rgba(8, 17, 29, 0.96));
+            background: var(--ui-panel);
             box-shadow: var(--ui-shadow);
             pointer-events: all;
-            backdrop-filter: blur(14px);
 
             .layer-list {
                 display: flex;
@@ -52,8 +51,8 @@
                         flex-direction: column;
                         gap: 9px;
                         justify-content: center;
-                        border: 1px dashed rgba(243, 200, 91, 0.72) !important;
-                        background: rgba(243, 200, 91, 0.07) !important;
+                        border: 3px dashed var(--ui-accent) !important;
+                        background: var(--ui-field) !important;
                         color: var(--ui-accent) !important;
 
                         i {
@@ -90,7 +89,8 @@
     min-height: 34px;
     gap: 9px;
     justify-content: center;
-    border-color: rgba(255, 255, 255, 0.35) !important;
+    border-width: 3px 3px 0 !important;
+    border-color: var(--ui-border-strong) !important;
     border-bottom: 0 !important;
     border-radius: var(--ui-radius-sm) var(--ui-radius-sm) 0 0 !important;
     background: var(--ui-panel) !important;
@@ -98,7 +98,8 @@
     pointer-events: all;
 
     span {
-        font-size: 0.72rem;
+        font-size: 0.68rem;
+        font-weight: 900;
         letter-spacing: 0.08em;
         text-transform: uppercase;
     }

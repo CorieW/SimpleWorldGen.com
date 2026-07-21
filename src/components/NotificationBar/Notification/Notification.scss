@@ -5,7 +5,7 @@
     min-height: 48px;
     gap: 10px;
     overflow: hidden;
-    border: 1px solid var(--ui-border-strong);
+    border: 3px solid var(--ui-border-strong);
     border-left: 4px solid var(--notice-color, var(--ui-focus));
     border-radius: var(--ui-radius-sm);
     background: var(--ui-panel);
@@ -13,7 +13,6 @@
     color: var(--ui-text);
     opacity: 1;
     transition: opacity 0.5s, transform 0.5s;
-    backdrop-filter: blur(12px);
 
     &.fading {
         opacity: 0;
@@ -53,7 +52,7 @@
             padding: 0;
             place-items: center;
             border: 0;
-            border-radius: 6px;
+            border-radius: 0;
             background: transparent;
             color: var(--ui-muted);
             cursor: pointer;

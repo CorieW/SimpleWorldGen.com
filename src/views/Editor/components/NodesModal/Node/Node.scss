@@ -3,10 +3,11 @@
     display: flex;
     min-height: 100px;
     overflow: hidden;
-    border: 2px solid var(--ui-border-strong);
+    border: 3px solid var(--ui-border-strong);
     border-radius: var(--ui-radius-md);
     background: #7f8b98;
-    transition: border-color 140ms ease, box-shadow 140ms ease;
+    box-shadow: 4px 4px 0 rgba(3, 8, 15, 0.78);
+    transition: border-color 80ms ease, box-shadow 80ms ease;
 
     canvas {
         width: 100%;
@@ -39,7 +40,7 @@
     &:hover,
     &:focus-within {
         border-color: var(--ui-accent);
-        box-shadow: 0 0 0 3px var(--ui-accent-soft);
+        box-shadow: 5px 5px 0 #8f6c19;
 
         .edit-btn {
             background: rgba(8, 17, 29, 0.75);

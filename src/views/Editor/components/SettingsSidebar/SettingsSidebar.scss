@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 12px;
     padding-bottom: 22px;
-    border-bottom: 1px solid var(--ui-border);
+    border-bottom: 2px solid var(--ui-border);
 
     &:last-child {
         padding-bottom: 0;
@@ -16,9 +16,10 @@
         align-items: center;
         margin: 0;
         color: var(--ui-text);
-        font-size: 0.92rem;
-        font-weight: 780;
-        letter-spacing: 0.015em;
+        font-size: 0.82rem;
+        font-weight: 900;
+        letter-spacing: 0.055em;
+        text-transform: uppercase;
 
         i {
             width: 17px;
@@ -83,8 +84,8 @@
         width: 46px;
         min-width: 46px;
         height: 26px;
-        border: 1px solid var(--ui-border-strong);
-        border-radius: 99px;
+        border: 2px solid var(--ui-border-strong);
+        border-radius: 1px;
         background: var(--ui-field);
         transition: border-color 140ms ease, background 140ms ease;
 
@@ -94,9 +95,9 @@
             left: 3px;
             width: 18px;
             height: 18px;
-            border-radius: 50%;
+            border-radius: 0;
             background: var(--ui-muted);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+            box-shadow: none;
             transition: transform 140ms ease, background 140ms ease;
         }
     }

@@ -3,10 +3,10 @@
     flex-direction: column;
     gap: 11px;
     padding: 14px;
-    border: 1px solid var(--ui-border);
+    border: 2px solid var(--ui-border);
     border-left: 3px solid var(--ui-accent);
     border-radius: var(--ui-radius-sm);
-    background: rgba(4, 11, 20, 0.26);
+    background: var(--ui-field);
 
     .condition-range {
         display: grid;
@@ -62,8 +62,8 @@
         width: 19px;
         height: 19px;
         place-items: center;
-        border: 1px solid var(--ui-border-strong);
-        border-radius: 5px;
+        border: 2px solid var(--ui-border-strong);
+        border-radius: 0;
         background: var(--ui-field);
         color: transparent;
         font-size: 0.56rem;
