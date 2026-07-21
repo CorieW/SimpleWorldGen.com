@@ -1,5 +1,3 @@
-import { render } from "react-dom"
-
 describe('Sidebar component', () => {
     test('should render the sidebar when it is open', () => {
         // TODO

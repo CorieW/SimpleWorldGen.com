@@ -3,7 +3,7 @@ import './NodeEditorModal.scss';
 import useStore from '../../editorStore';
 import {
     Button,
-    Divider,
+    Separator,
     Stack,
     HStack
 } from '@chakra-ui/react';
@@ -134,10 +134,10 @@ export default function NodeEditorModal() {
             </div>
             <div className='form-container'>
                 <h2 className='title'>Edit Node</h2>
-                <Stack spacing={3}>
+                <Stack gap={3}>
                     {!nodeFirstInLayer && nodeEffectSelectJSX()}
                     {nodeTypeSelectJSX()}
-                    <Divider />
+                    <Separator />
                     {currentNode && currentNode.type === NodeTypeEnum.Noise &&
                         NoiseNodeEditorSection(
                             { node: currentNode as INoiseNode, setNode: setCurrentNode }
@@ -152,24 +152,24 @@ export default function NodeEditorModal() {
         <div id='node-editor-modal-bottom-bar'>
             <div>
                 <Button
-                    colorScheme='red'
+                    colorPalette='red'
                     size='md'
                     onClick={removeThisNode}
                 >
                     <i className='fa-solid fa-trash'></i>
                 </Button>
                 <Button
-                    colorScheme='blue'
+                    colorPalette='blue'
                     size='md'
-                    isDisabled={!canMoveNode(activeFormNodeId, 'up')}
+                    disabled={!canMoveNode(activeFormNodeId, 'up')}
                     onClick={() => moveNode(activeFormNodeId, 'up')}
                 >
                     <i className='fa-solid fa-arrow-up'></i>
                 </Button>
                 <Button
-                    colorScheme='blue'
+                    colorPalette='blue'
                     size='md'
-                    isDisabled={!canMoveNode(activeFormNodeId, 'down')}
+                    disabled={!canMoveNode(activeFormNodeId, 'down')}
                     onClick={() => moveNode(activeFormNodeId, 'down')}
                 >
                     <i className='fa-solid fa-arrow-down'></i>
@@ -177,14 +177,14 @@ export default function NodeEditorModal() {
             </div>
             <div>
                 <Button
-                    colorScheme='gray'
+                    colorPalette='gray'
                     size='md'
                     onClick={closeEditorForm}
                 >
                     Cancel
                 </Button>
                 <Button
-                    colorScheme='green'
+                    colorPalette='green'
                     size='md'
                     onClick={applyChanges}
                 >
@@ -203,12 +203,15 @@ export default function NodeEditorModal() {
     );
 }
 
-function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) {
+function NoiseNodeEditorSection(props: {
+    node: INoiseNode;
+    setNode: (node: INoiseNode | ISimplexNoiseNode) => void;
+}) {
     const { node, setNode } = props;
     const { noiseType } = node as INoiseNode;
 
     const simplexNoiseJSX = () => {
-        let simplexNoiseNode = node as ISimplexNoiseNode;
+        const simplexNoiseNode = node as ISimplexNoiseNode;
         const {
             octaves,
             persistence,
@@ -220,7 +223,7 @@ function NoiseNodeEditorSection(props: { node: INoiseNode; setNode: Function }) 
 
         return (
             <>
-                <Stack spacing={3}>
+                <Stack gap={3}>
                     <Input
                         type='number'
                         label='Octaves'

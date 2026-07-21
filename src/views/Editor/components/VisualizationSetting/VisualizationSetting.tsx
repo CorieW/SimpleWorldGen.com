@@ -145,30 +145,38 @@ export default function VisualizationSetting(props: Props) {
                         }
                     />
                 </div>
-                <Checkbox
+                <Checkbox.Root
                     className='condition-min-inclusive'
-                    defaultChecked={condition.minInclusive}
-                    onChange={(e: any) =>
+                    checked={condition.minInclusive}
+                    onCheckedChange={({ checked }) =>
                         setCondition(index, {
                             ...condition,
-                            minInclusive: e.target.checked,
+                            minInclusive: checked === true,
                         })
                     }
                 >
-                    Min Inclusive
-                </Checkbox>
-                <Checkbox
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control>
+                        <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Label>Min Inclusive</Checkbox.Label>
+                </Checkbox.Root>
+                <Checkbox.Root
                     className='condition-max-inclusive'
-                    defaultChecked={condition.maxInclusive}
-                    onChange={(e: any) =>
+                    checked={condition.maxInclusive}
+                    onCheckedChange={({ checked }) =>
                         setCondition(index, {
                             ...condition,
-                            maxInclusive: e.target.checked,
+                            maxInclusive: checked === true,
                         })
                     }
                 >
-                    Max Inclusive
-                </Checkbox>
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control>
+                        <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Label>Max Inclusive</Checkbox.Label>
+                </Checkbox.Root>
             </>
         );
     };
@@ -222,7 +230,7 @@ export default function VisualizationSetting(props: Props) {
                     />
                 </HStack>
                 <div className='conditions'>
-                    <Text size='sm' fontWeight={600}>
+                    <Text fontSize='sm' fontWeight={600}>
                         Conditions
                     </Text>
                     {setting.conditions.map((condition, index) => {
@@ -273,14 +281,14 @@ export default function VisualizationSetting(props: Props) {
                     <Button
                         id='up-setting-btn'
                         onClick={() => moveVisualizationSetting(index, 'up')}
-                        isDisabled={!canMoveVisualizationSetting(index, 'up')}
+                        disabled={!canMoveVisualizationSetting(index, 'up')}
                     >
                         <i className='fa-solid fa-arrow-up'></i>
                     </Button>
                     <Button
                         id='down-setting-btn'
                         onClick={() => moveVisualizationSetting(index, 'down')}
-                        isDisabled={!canMoveVisualizationSetting(index, 'down')}
+                        disabled={!canMoveVisualizationSetting(index, 'down')}
                     >
                         <i className='fa-solid fa-arrow-down'></i>
                     </Button>

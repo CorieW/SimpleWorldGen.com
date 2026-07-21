@@ -1,5 +1,3 @@
-import { render } from "react-dom"
-
 describe('Dropzone component', () => {
     test('should render the dropzone', () => {
         // TODO

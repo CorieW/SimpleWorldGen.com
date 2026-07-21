@@ -1,5 +1,3 @@
-import { render } from "react-dom"
-
 describe('ScrollContainer component', () => {
     test('should render the scroll container', () => {
         // TODO

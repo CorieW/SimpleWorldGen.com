@@ -1,5 +1,3 @@
-import { render } from "react-dom"
-
 describe('Modal component', () => {
     test('should render the modal when it is open', () => {
         // TODO

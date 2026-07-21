@@ -4,6 +4,7 @@ import Editor from './views/Editor/Editor';
 import { ReactElement } from 'react';
 import NotificationBar from './components/NotificationBar/NotificationBar';
 import useStore from './appStore';
+import FirebaseTest from './views/FirebaseTest/FirebaseTest';
 
 function App(): ReactElement {
     const { notifications, removeNotification } = useStore();
@@ -19,6 +20,7 @@ function App(): ReactElement {
             <Router>
                 <Routes>
                     <Route path='*' element={<Editor />} />
+                    <Route path='/firebase' element={<FirebaseTest />} />
                 </Routes>
             </Router>
         </div>

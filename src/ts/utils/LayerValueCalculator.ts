@@ -22,7 +22,7 @@ export class NodeValueCalculator {
         let effect: NodeEffectEnum | null = null;
 
         do {
-            let currentNoiseVal = this.calculateNodeValue(currentNode, x, y);
+            const currentNoiseVal = this.calculateNodeValue(currentNode, x, y);
 
             switch (effect) {
                 case NodeEffectEnum.Add:
@@ -51,17 +51,19 @@ export class NodeValueCalculator {
 
     private calculateNodeValue(node: INode, x: number, y: number): number {
         switch (node.type) {
-            case NodeTypeEnum.Noise:
+            case NodeTypeEnum.Noise: {
                 const noiseNode = node as INoiseNode;
 
                 switch (noiseNode.noiseType) {
-                    case NoiseTypeEnum.Simplex:
+                    case NoiseTypeEnum.Simplex: {
                         const simplexNoiseNode = noiseNode as ISimplexNoiseNode;
                         const { octaves, persistence, lacunarity, frequency, offsetX, offsetY } = simplexNoiseNode;
                         return new Noise(noiseNode.seed).generateOctaveNoise(x, y, octaves, persistence, lacunarity, frequency, { x: offsetX, y: offsetY }) * noiseNode.multiplier;
+                    }
                     default:
                         return 0;
                 }
+            }
             default:
                 return 0;
         }

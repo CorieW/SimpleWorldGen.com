@@ -1,5 +1,3 @@
-import { render } from "react-dom"
-
 describe('NotificationBar component', () => {
     test('should render the notification bar', () => {
         // TODO

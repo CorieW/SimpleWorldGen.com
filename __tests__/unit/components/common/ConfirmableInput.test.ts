@@ -1,5 +1,3 @@
-import { render } from "react-dom"
-
 describe('ConfirmableInput component', () => {
     test('should render the input field', () => {
         // TODO

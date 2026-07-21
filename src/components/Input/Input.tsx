@@ -1,13 +1,11 @@
 import './Input.scss'
 import {
-    Select,
+    NativeSelect,
     NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    NumberIncrementStepper,
-    NumberDecrementStepper,
     Input as NormalInput,
 } from '@chakra-ui/react';
+
+type InputSize = 'xs' | 'sm' | 'md' | 'lg'
 
 type Props = {
     type?: string
@@ -23,7 +21,7 @@ type Props = {
     precision?: number
     onChange?: any
     options?: { value: string; label: string }[]
-    size?: string
+    size?: InputSize
 }
 
 export default function Input(props: Props) {
@@ -43,7 +41,6 @@ export default function Input(props: Props) {
         options = [],
         size,
     } = props
-    const inputSettings = { value, className, placeholder, type, min, max, step, precision, pattern, onChange, size }
     const inputId = id || (label && `${label?.toLowerCase()}-input`) || ''
 
     function handleNumberChange(value: string) {
@@ -54,37 +51,50 @@ export default function Input(props: Props) {
         if (value[value.length - 1] === '.') {
             newValue += step || 0
         }
-        onChange(newValue)
+        onChange?.(newValue)
     }
 
     const numberInputJSX = () => {
         return (
-            <NumberInput id={inputId} {...inputSettings} onChange={(valueString) => handleNumberChange(valueString)}>
-                <NumberInputField />
-                <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                </NumberInputStepper>
-            </NumberInput>
+            <NumberInput.Root
+                className={className}
+                value={String(value ?? '')}
+                min={min}
+                max={max}
+                step={step}
+                size={size}
+                formatOptions={precision === undefined ? undefined : { maximumFractionDigits: precision }}
+                onValueChange={({ value: valueString }) => handleNumberChange(valueString)}
+            >
+                <NumberInput.Input id={inputId} placeholder={placeholder} pattern={pattern} />
+                <NumberInput.Control>
+                    <NumberInput.IncrementTrigger />
+                    <NumberInput.DecrementTrigger />
+                </NumberInput.Control>
+            </NumberInput.Root>
         )
     }
 
     const selectJSX = () => {
         return (
-            <Select
-                className={className}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-            >
-                <option value='' disabled hidden>
-                    Select an option
-                </option>
-                {options.map((type) => (
-                    <option key={type.value} value={type.value}>
-                        {type.label}
+            <NativeSelect.Root size={size}>
+                <NativeSelect.Field
+                    id={inputId}
+                    className={className}
+                    value={value}
+                    onChange={(event) => onChange?.(event.target.value)}
+                >
+                    <option value='' disabled hidden>
+                        Select an option
                     </option>
-                ))}
-            </Select>
+                    {options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </NativeSelect.Field>
+                <NativeSelect.Indicator />
+            </NativeSelect.Root>
         )
     }
 
@@ -95,7 +105,17 @@ export default function Input(props: Props) {
             case 'select':
                 return selectJSX()
             default:
-                return <NormalInput id={inputId} {...inputSettings} />
+                return (
+                    <NormalInput
+                        id={inputId}
+                        className={className}
+                        placeholder={placeholder}
+                        value={value}
+                        pattern={pattern}
+                        size={size}
+                        onChange={onChange}
+                    />
+                )
         }
     }
 
