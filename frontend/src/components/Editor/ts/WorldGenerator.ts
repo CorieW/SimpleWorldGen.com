@@ -12,6 +12,11 @@ export default class WorldGenerator {
     private _halfWorldWidth: number;
     private _halfWorldHeight: number;
 
+    /**
+     * The function to be used for generating the noise values for each point in the world.
+     * Each value in the dictionary represents a different noise value, perhaps from a different
+     * layer of noise.
+     */
     private generateValueFunc: (globalX: number, globalY: number) => IDictionary<number>;
     private _gridSystem: GridSystem<ChunkData>;
     private _maxDisplayableTiles: number = 5000;
@@ -37,37 +42,37 @@ export default class WorldGenerator {
 
         this.generateValueFunc = generateNoiseValueFunc;
 
-        let largestDimension = Math.max(worldDimensions.xKM, worldDimensions.yKM);
+        const largestDimension = Math.max(worldDimensions.xKM, worldDimensions.yKM);
         this._gridSystem = new GridSystem(largestDimension);
     }
 
     shouldUpdate(bounds: Bounds): boolean {
-        let leafs: QuadTreeNode<ChunkData>[] = [];
-        let shares: number[] = [];
+        const leafs: QuadTreeNode<ChunkData>[] = [];
+        const shares: number[] = [];
 
         this._gridSystem.update(bounds, (quadNode) => {
             leafs.push(quadNode);
             shares.push(quadNode.getSize() ^ this._sizeSignificance);
         });
 
-        let distributedShares: number[] = this.distributeInverseShares(shares, this._maxDisplayableTiles);
+        const distributedShares: number[] = this.distributeInverseShares(shares, this._maxDisplayableTiles);
 
         return this._previousDistributedShares.length !== distributedShares.length || !distributedShares.every((share, index) => share === this._previousDistributedShares[index]);
     }
 
     update(bounds: Bounds, drawChunkData: (chunkData: ChunkData) => void) {
-        let leafs: QuadTreeNode<ChunkData>[] = [];
-        let shares: number[] = [];
+        const leafs: QuadTreeNode<ChunkData>[] = [];
+        const shares: number[] = [];
 
         this._gridSystem.update(bounds, (quadNode) => {
             leafs.push(quadNode);
             shares.push(quadNode.getSize() ^ this._sizeSignificance);
         });
 
-        let distributedShares: number[] = this.distributeInverseShares(shares, this._maxDisplayableTiles);
+        const distributedShares: number[] = this.distributeInverseShares(shares, this._maxDisplayableTiles);
         distributedShares.forEach((share, index) => {
-            let bounds = leafs[index].getBounds();
-            let newChunkData = new ChunkData(bounds.x, bounds.y, bounds.width);
+            const bounds = leafs[index].getBounds();
+            const newChunkData = new ChunkData(bounds.x, bounds.y, bounds.width);
             newChunkData.addData(this.generateChunkData(bounds, share));
             drawChunkData(newChunkData);
         });
@@ -77,20 +82,20 @@ export default class WorldGenerator {
 
     generateChunkData(bounds: Bounds, detail: number): IDictionary<number>[][] {
         detail = Math.round(Math.sqrt(detail));
-        let halfWorldWidth = this._worldDimensions.xKM / 2;
-        let halfWorldHeight = this._worldDimensions.yKM / 2;
-        let sizePerTile = bounds.width / detail;
+        const halfWorldWidth = this._worldDimensions.xKM / 2;
+        const halfWorldHeight = this._worldDimensions.yKM / 2;
+        const sizePerTile = bounds.width / detail;
 
-        let points: IDictionary<number>[][] = [];
+        const points: IDictionary<number>[][] = [];
         for (let x = 0; x <= detail; x++) {
-            let totalX = (bounds.x + (x * sizePerTile)) - halfWorldWidth;
+            const totalX = (bounds.x + (x * sizePerTile)) - halfWorldWidth;
             points.push([]);
 
             for (let y = 0; y <= detail; y++) {
-                let totalY = (bounds.y + (y * sizePerTile)) - halfWorldHeight;
-                let worldPos = new Vector2(totalX, totalY);
+                const totalY = (bounds.y + (y * sizePerTile)) - halfWorldHeight;
+                const worldPos = new Vector2(totalX, totalY);
 
-                let noiseVals = this.generateValues(worldPos.x, worldPos.y);
+                const noiseVals = this.generateValues(worldPos.x, worldPos.y);
                 points[x].push(noiseVals);
             }
         }
@@ -99,27 +104,27 @@ export default class WorldGenerator {
     }
 
     generateValues(globalX: number, globalY: number): IDictionary<number> {
-        let vals = this.generateValueFunc(globalX, globalY);
+        const vals = this.generateValueFunc(globalX, globalY);
 
-        let scaledXDistFromCenter = Math.abs(globalX) / this._halfWorldWidth;
+        const scaledXDistFromCenter = Math.abs(globalX) / this._halfWorldWidth;
         let xFadeOffMultiplier = WorldGenMath.invLerp(1, this.xFadeOffEndRange, scaledXDistFromCenter);
         if (this.xFadeOffEndRange == 1) {
             xFadeOffMultiplier = 1;
         }
 
-        let scaledYDistFromCenter = Math.abs(globalY) / this._halfWorldHeight;
+        const scaledYDistFromCenter = Math.abs(globalY) / this._halfWorldHeight;
         let yFadeOffMultiplier = WorldGenMath.invLerp(1, this.yFadeOffEndRange, scaledYDistFromCenter);
         if (this.yFadeOffEndRange == 1) {
             yFadeOffMultiplier = 1;
         }
 
-        let combinedFadeOffMultiplier = Math.sqrt(xFadeOffMultiplier * yFadeOffMultiplier);
+        const combinedFadeOffMultiplier = Math.sqrt(xFadeOffMultiplier * yFadeOffMultiplier);
 
         const fadedValsDict: IDictionary<number> = {};
-        for (let key in vals) {
+        for (const key in vals) {
             const val = vals[key];
 
-            let valWithFade = val * combinedFadeOffMultiplier;
+            const valWithFade = val * combinedFadeOffMultiplier;
             fadedValsDict[key] = Math.min(1, Math.max(0, valWithFade));
         }
 

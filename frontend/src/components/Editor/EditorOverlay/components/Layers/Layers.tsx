@@ -7,7 +7,7 @@ import { Button } from '@chakra-ui/react';
 import { NodeTypeEnum } from '../../../../../ts/enums/NodeTypeEnum';
 import ScrollContainer from '../../../../Basic/ScrollContainer/ScrollContainer';
 
-export default function Layers({}: any) {
+export default function Layers() {
     const { layers, getNewLayerId, getNewNodeId, addLayer } = useStore();
 
     const [expanded, setExpanded] = useState<boolean>(true);

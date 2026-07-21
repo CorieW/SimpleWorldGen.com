@@ -7,7 +7,7 @@ import Input from '../../../../Basic/Input/Input'
 const WorldsModal = forwardRef((_, ref) => {
   const { openModal } = useStore()
 
-  const [worlds, setWorlds] = useState<any[]>([
+  const [worlds] = useState<any[]>([
     {
       id: 1,
       title: 'World 1',

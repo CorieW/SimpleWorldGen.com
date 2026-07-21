@@ -23,9 +23,9 @@ type AppStore = {
     setWhatIsThis: (whatIsThis: string | null) => void;
 };
 
-const useStore = create<AppStore>((set, get) => ({
+const useStore = create<AppStore>((set) => ({
     openModals: [],
-    openModal: (modal) => set((state) => ({ openModals: [modal] })),
+    openModal: (modal) => set({ openModals: [modal] }),
     openModalOnTop: (modal) => set((state) => ({ openModals: [...state.openModals, modal] })),
     closeModal: (modal) => set((state) => ({ openModals: state.openModals.filter((m) => m !== modal) })),
     closeTopModal: () => set((state) => ({ openModals: state.openModals.slice(0, -1) })),

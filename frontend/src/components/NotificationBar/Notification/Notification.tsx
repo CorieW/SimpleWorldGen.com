@@ -53,7 +53,7 @@ export default function Notification({ notification, closeNotification }: Props)
         <div className={`notification-container ${type} ${isFading ? 'fading' : ''}`}>
             <div className='content-container'>
                 <i className={getTypeIcon()}></i>
-                <p>{text}</p>
+                <p dangerouslySetInnerHTML={{ __html: text }}></p>
             </div>
             <div className='close-container'>
                 <button className='close-btn' onClick={() => closeNotification()}>

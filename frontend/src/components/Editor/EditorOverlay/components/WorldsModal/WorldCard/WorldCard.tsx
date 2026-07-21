@@ -13,7 +13,7 @@ type Props = {
 }
 
 export default function WorldCard(props: Props) {
-    const { id, title, img, posterDisplayName, posterUsername, posterProfileImg, bookmarked } = props
+    const { title, img, posterDisplayName, posterProfileImg, bookmarked } = props
     const [isBookmarked, setIsBookmarked] = useState<boolean>(bookmarked)
 
     useEffect(() => {

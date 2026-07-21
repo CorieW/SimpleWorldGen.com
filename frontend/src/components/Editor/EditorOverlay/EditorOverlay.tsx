@@ -37,6 +37,7 @@ function EditorOverlay() {
                 </div>
                 <div className='btn-group'>
                     <Button
+                        id='settings-btn'
                         onClick={() =>
                             setSettingsSidebarOpen(!settingsSidebarOpen)
                         }
@@ -66,18 +67,14 @@ function EditorOverlay() {
                 </div>
             </div>
 
-            {
-                <SettingsSidebar
-                    sidebarOpen={settingsSidebarOpen}
-                    setSidebarOpen={setSettingsSidebarOpen}
-                />
-            }
-            {
-                <VisualizationSidebar
-                    sidebarOpen={visualizationSidebarOpen}
-                    setSidebarOpen={setVisualizationSidebarOpen}
-                />
-            }
+            <SettingsSidebar
+                sidebarOpen={settingsSidebarOpen}
+                setSidebarOpen={setSettingsSidebarOpen}
+            />
+            <VisualizationSidebar
+                sidebarOpen={visualizationSidebarOpen}
+                setSidebarOpen={setVisualizationSidebarOpen}
+            />
         </div>
     );
 }

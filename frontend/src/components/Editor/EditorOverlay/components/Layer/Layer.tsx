@@ -101,16 +101,16 @@ export default function Layer(props: ILayer) {
             <div className='btns-container'>
                 <Button
                     className='move-btn'
-                    colorScheme='transparent'
+                    colorPalette='transparent'
                     size='sm'
-                    isDisabled={!canMoveLayer(id, 'left')}
+                    disabled={!canMoveLayer(id, 'left')}
                     onClick={() => moveLayer(id, 'left')}
                 >
                     <i className='fa-solid fa-arrow-left'></i>
                 </Button>
                 <Button
                     className='delete-btn'
-                    colorScheme='transparent'
+                    colorPalette='transparent'
                     size='sm'
                     onClick={removeThisLayer}
                 >
@@ -118,9 +118,9 @@ export default function Layer(props: ILayer) {
                 </Button>
                 <Button
                     className='move-btn'
-                    colorScheme='transparent'
+                    colorPalette='transparent'
                     size='sm'
-                    isDisabled={!canMoveLayer(id, 'right')}
+                    disabled={!canMoveLayer(id, 'right')}
                     onClick={() => moveLayer(id, 'right')}
                 >
                     <i className='fa-solid fa-arrow-right'></i>

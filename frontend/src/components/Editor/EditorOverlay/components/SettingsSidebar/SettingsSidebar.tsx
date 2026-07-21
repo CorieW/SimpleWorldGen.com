@@ -4,8 +4,7 @@ import {
     Text,
     Button,
     Stack,
-    FormControl,
-    FormLabel,
+    Field,
     Switch,
     HStack,
 } from '@chakra-ui/react';
@@ -78,7 +77,7 @@ export default function SettingsSidebar(props: Props) {
 
     const contentJSX = (
         <>
-            <Stack spacing={1}>
+            <Stack gap={1}>
                 <Text fontSize={'lg'} fontWeight={600}>
                     World Dimensions
                 </Text>
@@ -109,7 +108,7 @@ export default function SettingsSidebar(props: Props) {
                     }
                 />
             </Stack>
-            <Stack spacing={1}>
+            <Stack gap={1}>
                 <Text fontSize={'lg'} fontWeight={600}>
                     General
                 </Text>
@@ -128,13 +127,13 @@ export default function SettingsSidebar(props: Props) {
                     />
                 </HStack>
             </Stack>
-            <Stack spacing={1}>
-                <FormControl
+            <Stack gap={1}>
+                <Field.Root
                     display='flex'
                     alignItems='center'
                     justifyContent={'space-between'}
                 >
-                    <FormLabel
+                    <Field.Label
                         htmlFor='fade-off-toggle'
                         fontSize={'lg'}
                         fontWeight={600}
@@ -142,19 +141,24 @@ export default function SettingsSidebar(props: Props) {
                         flex={1}
                     >
                         Fade Off
-                    </FormLabel>
-                    <Switch
+                    </Field.Label>
+                    <Switch.Root
                         id='fade-off-toggle'
                         size='md'
-                        isChecked={fadeOff}
-                        onChange={(e) =>
+                        checked={fadeOff}
+                        onCheckedChange={({ checked }) =>
                             setCurrentSettings({
                                 ...currentSettings,
-                                fadeOff: e.target.checked,
+                                fadeOff: checked,
                             })
                         }
-                    />
-                </FormControl>
+                    >
+                        <Switch.HiddenInput />
+                        <Switch.Control>
+                            <Switch.Thumb />
+                        </Switch.Control>
+                    </Switch.Root>
+                </Field.Root>
                 {fadeOff && fadeOffOptionsJSX}
             </Stack>
             {

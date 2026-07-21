@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import './Sidebar.scss';
 import { Button, Text } from '@chakra-ui/react';
 
@@ -7,15 +8,15 @@ type Props = {
     setOpen: (menuOpen: boolean) => void;
     onClose: () => void;
     title: string;
-    contentJSX: JSX.Element;
-    bottomBarContentJSX: JSX.Element | null;
+    contentJSX: ReactNode;
+    bottomBarContentJSX: ReactNode;
 };
 
 export default function Sidebar(props: Props) {
     const { open, setOpen, onClose, title, contentJSX, bottomBarContentJSX } =
         props;
 
-    const [expanded, setExpanded] = useState<boolean>(false);
+    const [expanded] = useState<boolean>(false);
 
     function closeSidebar() {
         setOpen(false);
@@ -29,7 +30,7 @@ export default function Sidebar(props: Props) {
             }`}
         >
             <div className='top-bar-container'>
-                <Button
+                {/* <Button // ! Temporarily removed expand button
                     className='expand-btn'
                     onClick={() => setExpanded(!expanded)}
                 >
@@ -38,7 +39,8 @@ export default function Sidebar(props: Props) {
                             expanded ? 'compress' : 'expand'
                         }`}
                     ></i>
-                </Button>
+                </Button> */}
+                <div></div>
                 <Button className='close-btn' onClick={() => closeSidebar()}>
                     <i className='fa-solid fa-times'></i>
                 </Button>

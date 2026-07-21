@@ -68,7 +68,7 @@ const useStore: any = create<EditorStore>((set) => ({
     },
     setWorldSettings: (settings) => set({ worldSettings: settings }),
 
-    layerIdCounter: 2,
+    layerIdCounter: 3,
     nodeIdCounter: 3,
     getNewLayerId: (): number => {
         // Increment the layerIdCounter and return the new value
@@ -123,10 +123,10 @@ const useStore: any = create<EditorStore>((set) => ({
           }
         },
         {
-          "id": 3,
+          "id": 2,
           "name": "Layer 3",
           "beginningNode": {
-            "id": 4,
+            "id": 2,
             "type": NodeTypeEnum.Noise,
             "effect": NodeEffectEnum.Add,
             "nextNode": null,
@@ -224,7 +224,7 @@ const useStore: any = create<EditorStore>((set) => ({
 
             while (currentNode) {
                 if (currentNode.type === NodeTypeEnum.Noise) {
-                    let noiseNode = currentNode as INoiseNode;
+                    const noiseNode = currentNode as INoiseNode;
                     noiseNode.seed = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
                 }
 
