@@ -33,64 +33,66 @@ export default class WorldGenMath {
         offset?: { x: number; y: number };
         normalizeMode: string;
     }): number[][] {
-        let {
+        const {
             seed,
             width,
             height,
-            scale,
+            scale: configuredScale,
             octaves,
             multiplier,
             persistence,
             lacunarity,
             offset = { x: 0, y: 0 },
-            normalizeMode,
+            normalizeMode: configuredNormalizeMode,
         } = settings;
+
+        let scale = configuredScale;
+        let normalizeMode = configuredNormalizeMode;
 
         if (scale <= 0) scale = 0.0001;
 
         if (normalizeMode !== 'global' && normalizeMode !== 'local')
             normalizeMode = 'local';
 
-        let octaveOffsets = new Array(octaves);
+        const octaveOffsets = new Array(octaves);
 
         let maxVal = 0;
-        let frequency = 1;
         let amplitude = 1;
 
         for (let i = 0; i < octaves; i++) {
-            let offsetX = seed + offset.x;
-            let offsetY = seed + offset.y;
+            const offsetX = seed + offset.x;
+            const offsetY = seed + offset.y;
             octaveOffsets[i] = { x: offsetX, y: offsetY };
 
             maxVal += amplitude;
             amplitude *= persistence;
         }
 
-        let noiseMap: number[][] = new Array(width);
+        const noiseMap: number[][] = new Array(width);
 
         let minLocalVal = 9999999;
         let maxLocalVal = -9999999;
 
-        let halfWidth = width / 2;
-        let halfHeight = height / 2;
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
 
         for (let x = 0; x < width; x++) {
             noiseMap[x] = new Array(height);
 
             for (let y = 0; y < height; y++) {
                 let noiseHeight = 0;
-                frequency = 1;
+                let frequency = 1;
                 amplitude = 1;
 
                 for (let i = 0; i < octaves; i++) {
-                    let sampleX =
+                    const sampleX =
                         ((x - halfWidth + octaveOffsets[i].x) / scale) *
                         frequency;
-                    let sampleY =
+                    const sampleY =
                         ((y - halfHeight + octaveOffsets[i].y) / scale) *
                         frequency;
 
-                    let pNoise = noise.simplex2(sampleX, sampleY) * 2 - 1;
+                    const pNoise = noise.simplex2(sampleX, sampleY) * 2 - 1;
                     noiseHeight += pNoise * amplitude;
 
                     amplitude *= persistence;
@@ -114,7 +116,7 @@ export default class WorldGenMath {
                     );
                 else
                     noiseMap[x][y] =
-                        (noiseMap[x][y] + 1) / ((2 * maxLocalVal) / 2);
+                        (noiseMap[x][y] + maxVal) / (2 * maxVal);
 
                 noiseMap[x][y] = this.clamp01(noiseMap[x][y] * multiplier);
             }

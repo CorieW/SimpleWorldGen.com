@@ -1,10 +1,11 @@
 import './Modal.scss'
+import type { ReactNode } from 'react'
 
 type Props = {
     modalOpen: boolean
     setModalOpen: (modalOpen: boolean) => void
-    contentJSX: JSX.Element
-    bottomBarJSX: JSX.Element
+    contentJSX: ReactNode
+    bottomBarJSX: ReactNode
 }
 
 export default function Modal(props: Props) {

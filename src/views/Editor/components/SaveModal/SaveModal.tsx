@@ -78,13 +78,13 @@ export default function SaveModal(props: Props) {
     }
 
     function validateJSON(json: any) {
-        if (!json.hasOwnProperty('worldSettings')) {
+        if (!Object.prototype.hasOwnProperty.call(json, 'worldSettings')) {
             return false
         }
-        if (!json.hasOwnProperty('layers')) {
+        if (!Object.prototype.hasOwnProperty.call(json, 'layers')) {
             return false
         }
-        if (!json.hasOwnProperty('visualizationSettings')) {
+        if (!Object.prototype.hasOwnProperty.call(json, 'visualizationSettings')) {
             return false
         }
         return true
@@ -175,8 +175,8 @@ export default function SaveModal(props: Props) {
 
                     closeModal()
                 } }
-                colorScheme='gray'
-                isDisabled={worldSaveFile === null}
+                colorPalette='gray'
+                disabled={worldSaveFile === null}
             >
                 Load {worldSaveFile ? worldSaveFile.name : 'unavailable'}
             </Button>
@@ -192,14 +192,14 @@ export default function SaveModal(props: Props) {
                         // Save to device
                         saveToDevice()
                     } }
-                    colorScheme='gray'
+                    colorPalette='gray'
                 >
                     Save to Device
                 </Button>
             </div>
             <div>
                 <Button
-                    colorScheme='gray'
+                    colorPalette='gray'
                     size='md'
                     onClick={() => closeModal()}
                 >

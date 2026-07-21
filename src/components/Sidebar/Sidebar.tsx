@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import './Sidebar.scss';
 import { Button, Text } from '@chakra-ui/react';
 
@@ -7,8 +8,8 @@ type Props = {
     setOpen: (menuOpen: boolean) => void;
     onClose: () => void;
     title: string;
-    contentJSX: JSX.Element;
-    bottomBarContentJSX: JSX.Element | null;
+    contentJSX: ReactNode;
+    bottomBarContentJSX: ReactNode;
 };
 
 export default function Sidebar(props: Props) {

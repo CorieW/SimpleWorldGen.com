@@ -1,19 +1,10 @@
-import React from 'react'
-import { IWorldSettings } from '../../ts/interfaces/IWorldSettings'
-import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    validatePassword,
-    signInWithPopup,
-    GoogleAuthProvider,
-    FacebookAuthProvider,
-    signOut
-} from "firebase/auth";
+type WorldSummary = {
+    id: string
+    name: string
+    description: string
+}
 
-type Props = {}
-
-export default function FirebaseTest({}: Props) {
+export default function FirebaseTest() {
     function registerWithEmail() {
         // Validate
 
@@ -49,7 +40,7 @@ export default function FirebaseTest({}: Props) {
         
     }
 
-    function getWorlds(): any[] {
+    function getWorlds(): WorldSummary[] {
         return [];
     }
 

@@ -3,6 +3,26 @@ Available at: https://simpleworldgen.com
 
 Tasks: https://www.notion.so/Projects-Tasks-95b90fccf4e24bd3968e3350049f3b42?pvs=4
 
+# Development
+
+The project uses Node.js 22 and npm. With a Node version manager, run `nvm use`
+from the repository root before installing dependencies.
+
+```sh
+npm install
+npm --prefix firebase/functions install
+npm run dev
+```
+
+Run all frontend and Firebase Functions validation with:
+
+```sh
+npm run check
+```
+
+The Firebase Functions runtime is explicitly set to Node.js 22 in both
+`firebase/firebase.json` and `firebase/functions/package.json`.
+
 # Recent changes
 - Improved notifications for loading
 - Fixed issue with btn zooming not clamping to min/max zoom
