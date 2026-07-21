@@ -25,16 +25,18 @@ export default class Noise {
      * @param onGenerated callback function when the noise map is generated
      */
     generateNoiseMap(width: number, height: number, offset: { x: number; y: number } = { x: 0, y: 0 }): Promise<number[][]> {
-        const worker = new Worker('/src/ts/workers/noiseGeneratorWorker.ts', { type: 'module' });
+        const worker = new Worker(new URL('../workers/noiseGeneratorWorker.ts', import.meta.url), { type: 'module' });
 
         const promise = new Promise<number[][]>((resolve, reject) => {
             worker.onmessage = (event) => {
+                worker.terminate();
                 resolve(event.data);
             };
 
             worker.onerror = (error) => {
+                worker.terminate();
                 reject(error);
-            }
+            };
         });
 
         worker.postMessage({

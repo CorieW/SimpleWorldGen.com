@@ -3,10 +3,12 @@ import { INode } from "../interfaces/INode"
 export class NodeValueCalculator {
     private node: INode;
     private worker: Worker | null;
+    private rejectPending: ((reason?: unknown) => void) | null;
 
     constructor(node: INode) {
         this.node = node;
         this.worker = null;
+        this.rejectPending = null;
     }
 
     /**
@@ -21,24 +23,44 @@ export class NodeValueCalculator {
             this.terminateWorker();
         }
 
-        this.worker = new Worker('/src/ts/workers/layerCombinerWorker.ts', { type: 'module' });
+        const worker = new Worker(new URL('../workers/layerCombinerWorker.ts', import.meta.url), { type: 'module' });
+        this.worker = worker;
 
         const promise = new Promise<number[][]>((resolve, reject) => {
-            this.worker!.onmessage = (event) => {
+            this.rejectPending = reject;
+
+            worker.onmessage = (event) => {
+                this.finishWorker(worker);
                 resolve(event.data);
             };
 
-            this.worker!.onerror = (error) => {
+            worker.onerror = (error) => {
+                this.finishWorker(worker);
                 reject(error);
-            }
+            };
         });
 
-        this.worker.postMessage({ node: this.node, width, height, x, y, spread });
+        worker.postMessage({ node: this.node, width, height, x, y, spread });
 
         return promise;
     }
 
     terminateWorker() {
-        this.worker?.terminate();
+        if (!this.worker) return;
+
+        const reject = this.rejectPending;
+        this.finishWorker(this.worker);
+        reject?.(new DOMException('World generation was cancelled.', 'AbortError'));
+    }
+
+    private finishWorker(worker: Worker) {
+        worker.onmessage = null;
+        worker.onerror = null;
+        worker.terminate();
+
+        if (this.worker === worker) {
+            this.worker = null;
+            this.rejectPending = null;
+        }
     }
 }
