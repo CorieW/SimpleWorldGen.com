@@ -1,39 +1,33 @@
-import { useEffect, useState } from 'react'
-import Modal from '../../../../components/Modal/Modal'
-import { Button } from '@chakra-ui/react'
-import useStore from '../../../../appStore'
-import useEditorStore from '../../editorStore'
-import Dropzone from '../../../../components/Dropzone/Dropzone'
-import { IWorldSettings } from '../../../../ts/interfaces/IWorldSettings'
-import { ILayer } from '../../../../ts/interfaces/ILayer'
-import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting'
-// import {
-//     FileUploadDropzone,
-//     FileUploadList,
-//     FileUploadRoot,
-//   } from "@/components/ui/file-button"
+import { useCallback, useEffect, useState } from 'react';
+import { Button } from '@chakra-ui/react';
+import Modal from '../../../../components/Modal/Modal';
+import Dropzone from '../../../../components/Dropzone/Dropzone';
+import useStore from '../../../../appStore';
+import { ILayer } from '../../../../ts/interfaces/ILayer';
+import { IWorldSettings } from '../../../../ts/interfaces/IWorldSettings';
+import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
+import useEditorStore from '../../editorStore';
+import './SaveModal.scss';
+
+const SAVE_NAME = 'world.json';
 
 type Props = {
-    modalOpen: boolean
-    setModalOpen: (modalOpen: boolean) => void
-}
+    modalOpen: boolean;
+    setModalOpen: (modalOpen: boolean) => void;
+};
 
-interface WorldSaveFile {
-    name: string
-    worldSettings: IWorldSettings
-    layers: ILayer[]
-    visualizationSettings: IVisualizationSetting[]
-}
+type WorldSaveData = {
+    worldSettings: IWorldSettings;
+    layers: ILayer[];
+    visualizationSettings: IVisualizationSetting[];
+};
 
-export default function SaveModal(props: Props) {
-    const SAVE_NAME = 'world.json'
+type WorldSaveFile = WorldSaveData & {
+    name: string;
+};
 
-    const { modalOpen, setModalOpen } = props
-
-    const {
-        addNotification
-    } = useStore()
-
+export default function SaveModal({ modalOpen, setModalOpen }: Props) {
+    const { addNotification } = useStore();
     const {
         worldSettings,
         setWorldSettings,
@@ -41,187 +35,153 @@ export default function SaveModal(props: Props) {
         setLayers,
         visualizationSettings,
         setVisualizationSettings,
-    } = useEditorStore()
+    } = useEditorStore();
+    const [worldSaveFile, setWorldSaveFile] = useState<WorldSaveFile | null>(null);
 
-    const [worldSaveFile, setWorldSaveFile] = useState<WorldSaveFile | null>(null)
+    const closeModal = useCallback(() => {
+        setModalOpen(false);
+        setWorldSaveFile(null);
+    }, [setModalOpen]);
+
+    const saveToDevice = useCallback(() => {
+        const saveData: WorldSaveData = { worldSettings, layers, visualizationSettings };
+        const blob = new Blob([JSON.stringify(saveData)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+
+        downloadLink.href = url;
+        downloadLink.download = SAVE_NAME;
+        downloadLink.click();
+        URL.revokeObjectURL(url);
+        closeModal();
+    }, [closeModal, layers, visualizationSettings, worldSettings]);
 
     useEffect(() => {
-        // On CTRL + S, save to device
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault()
-                saveToDevice()
+        function handleKeyDown(event: KeyboardEvent) {
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                saveToDevice();
             }
         }
 
-        document.addEventListener('keydown', handleKeyDown)
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    }, [worldSettings, layers, visualizationSettings])
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [saveToDevice]);
 
-    /**
-     * Close the modal and reset the file state
-     */
-    function closeModal() {
-        setModalOpen(false)
-        setWorldSaveFile(null)
-    }
+    function loadFromDevice(file: File) {
+        const reader = new FileReader();
 
-    function convertToJSONString(worldSettings: any, layers: any, visualizationSettings: any) {
-        const json = {
-            worldSettings,
-            layers,
-            visualizationSettings
-        }
-        return JSON.stringify(json)
-    }
+        reader.onerror = (event) => console.error(event);
+        reader.onload = (event) => {
+            const fileContents = event.target?.result;
+            if (typeof fileContents !== 'string') return;
 
-    function validateJSON(json: any) {
-        if (!Object.prototype.hasOwnProperty.call(json, 'worldSettings')) {
-            return false
-        }
-        if (!Object.prototype.hasOwnProperty.call(json, 'layers')) {
-            return false
-        }
-        if (!Object.prototype.hasOwnProperty.call(json, 'visualizationSettings')) {
-            return false
-        }
-        return true
-    }
-
-    /**
-     * Save the world settings, layers, and visualization settings to the device
-     * as a JSON file
-     */
-    function saveToDevice() {
-        // Save to device
-        const jsonStr = convertToJSONString(worldSettings, layers, visualizationSettings)
-        const blob = new Blob([jsonStr], { type: 'application/json' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = SAVE_NAME
-        a.click()
-        URL.revokeObjectURL(url)
-        closeModal()
-    }
-
-    /**
-     * Load the file from the device
-     * Update the world settings, layers, and visualization settings
-     * @param file The file to load
-     */
-    function loadFromDevice(file: any) {
-        if (file) {
-            const reader = new FileReader()
-
-            reader.onabort = () => {
-                console.error('file reading was aborted')
+            let parsedData: unknown;
+            try {
+                parsedData = JSON.parse(fileContents);
+            } catch {
+                notifyInvalidFile(file.name);
+                return;
             }
-            reader.onerror = (e) => {
-                console.error(e)
+
+            if (!isWorldSaveData(parsedData)) {
+                notifyInvalidFile(file.name);
+                return;
             }
-            reader.onload = (e) => {
-                const jsonStr = e.target?.result as string
-                const json = JSON.parse(jsonStr)
 
-                if (!validateJSON(json)) {
-                    addNotification({
-                        type: 'error',
-                        text: `File <b>${file.name}</b> is not a valid world save file`
-                    })
-                    return
-                }
-
-                addNotification({
-                    type: 'success',
-                    text: `Loaded <b>${file.name}</b> successfully`
-                })
-
-                setWorldSaveFile({ name: file.name, ...json })
-            }
-            reader.readAsText(file)
-        }
+            addNotification({
+                type: 'success',
+                text: `Loaded <b>${file.name}</b> successfully`,
+            });
+            setWorldSaveFile({ name: file.name, ...parsedData });
+        };
+        reader.readAsText(file);
     }
 
-    const contentJSX = (
-        <div className='flex flex-col w-full h-full gap-3'>
-            <h1 className='text-2xl font-bold text-center'>Save / Load</h1>
+    function notifyInvalidFile(fileName: string) {
+        addNotification({
+            type: 'error',
+            text: `File <b>${fileName}</b> is not a valid world save file`,
+        });
+    }
+
+    function applyLoadedWorld() {
+        if (!worldSaveFile) return;
+
+        setWorldSettings(worldSaveFile.worldSettings);
+        setLayers(worldSaveFile.layers);
+        setVisualizationSettings(worldSaveFile.visualizationSettings);
+        addNotification({
+            type: 'success',
+            text: `Applied <b>${worldSaveFile.name}</b> successfully`,
+        });
+        closeModal();
+    }
+
+    const content = (
+        <div className='save-modal-content'>
+            <div className='modal-heading'>
+                <span className='modal-heading-icon'>
+                    <i className='fa-solid fa-floppy-disk' aria-hidden='true'></i>
+                </span>
+                <div>
+                    <h1>Save / Load</h1>
+                    <p>Keep a local copy of your world configuration.</p>
+                </div>
+            </div>
             <Dropzone
-                acceptedFileTypes={{
-                    'application/json': ['.json']
-                }}
+                acceptedFileTypes={{ 'application/json': ['.json'] }}
                 maxFiles={1}
                 onDrop={(files) => {
-                    if (files.length === 1) {
-                        // Load the file
-                        loadFromDevice(files[0])
-                    }
+                    if (files.length === 1) loadFromDevice(files[0]);
                 }}
             />
             <Button
-                className='modal-btn'
-                onClick={ () => {
-                    // Apply the world settings, layers, and visualization settings
-                    setWorldSettings(worldSaveFile?.worldSettings)
-                    setLayers(worldSaveFile?.layers)
-                    setVisualizationSettings(worldSaveFile?.visualizationSettings)
-
-                    addNotification({
-                        type: 'success',
-                        text: `Applied <b>${worldSaveFile?.name}</b> successfully`
-                    })
-
-                    closeModal()
-                } }
+                className='modal-btn primary-btn'
                 colorPalette='gray'
-                disabled={worldSaveFile === null}
+                disabled={!worldSaveFile}
+                onClick={applyLoadedWorld}
             >
-                Load {worldSaveFile ? worldSaveFile.name : 'unavailable'}
+                Load {worldSaveFile?.name || 'unavailable'}
             </Button>
         </div>
-    )
+    );
 
-    const bottomBarJSX = (
-        <div className='flex justify-between w-full'>
-            <div className='flex gap-1'>
-                <Button
-                    className='modal-btn'
-                    onClick={ () => {
-                        // Save to device
-                        saveToDevice()
-                    } }
-                    colorPalette='gray'
-                >
-                    Save to Device
+    const actions = (
+        <div className='modal-actions'>
+            <div>
+                <Button className='modal-btn' colorPalette='gray' onClick={saveToDevice}>
+                    <i className='fa-solid fa-download' aria-hidden='true'></i>
+                    Save to device
                 </Button>
             </div>
             <div>
-                <Button
-                    colorPalette='gray'
-                    size='md'
-                    onClick={() => closeModal()}
-                >
+                <Button className='modal-btn' colorPalette='gray' size='md' onClick={closeModal}>
                     Close
                 </Button>
             </div>
         </div>
-    )
+    );
 
     return (
-        <div>
-            <Modal
-                modalOpen={modalOpen}
-                setModalOpen={(modalOpen: boolean) => {
-                    setModalOpen(modalOpen)
-                    if (!modalOpen) {
-                        setWorldSaveFile(null)
-                    }
-                }}
-                contentJSX={contentJSX}
-                bottomBarJSX={bottomBarJSX}
-            />
-        </div>
-  )
+        <Modal
+            open={modalOpen}
+            onClose={closeModal}
+            footer={actions}
+        >
+            {content}
+        </Modal>
+    );
+}
+
+function isWorldSaveData(value: unknown): value is WorldSaveData {
+    if (typeof value !== 'object' || value === null) return false;
+
+    const candidate = value as Partial<WorldSaveData>;
+    return (
+        typeof candidate.worldSettings === 'object' &&
+        candidate.worldSettings !== null &&
+        Array.isArray(candidate.layers) &&
+        Array.isArray(candidate.visualizationSettings)
+    );
 }

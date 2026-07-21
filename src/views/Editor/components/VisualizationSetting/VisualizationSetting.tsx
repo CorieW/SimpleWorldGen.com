@@ -1,299 +1,171 @@
-import './VisualizationSetting.scss';
-import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
-import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
-import { Checkbox, Button, Text, HStack } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import Input from '../../../../components/Input/Input';
-import useStore from '../../editorStore';
-import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
-import { ILayer } from '../../../../ts/interfaces/ILayer';
-import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
-import Shapes from '../../../../ts/utils/Shapes';
 import { ScalingTypeEnum } from '../../../../ts/enums/ScalingTypeEnum';
+import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
+import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
+import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
+import Shapes from '../../../../ts/utils/Shapes';
+import useStore from '../../editorStore';
+import VisualizationCondition from './VisualizationCondition';
+import './VisualizationSetting.scss';
 
 type Props = {
     index: number;
     settings: IVisualizationSetting[];
-    setSettings: (setting: IVisualizationSetting[]) => void;
+    setSettings: (settings: IVisualizationSetting[]) => void;
 };
 
-export default function VisualizationSetting(props: Props) {
-    const { index, settings, setSettings } = props;
-
+export default function VisualizationSetting({ index, settings, setSettings }: Props) {
+    const { layers } = useStore();
     const setting = settings[index];
 
-    const {
-        layers,
-    } = useStore();
-
-    function setSetting(newSetting: IVisualizationSetting) {
-        const newSettings = [...settings];
-        newSettings[index] = newSetting;
-        setSettings(newSettings);
+    function replaceSetting(nextSetting: IVisualizationSetting) {
+        setSettings(settings.map((current, currentIndex) => (
+            currentIndex === index ? nextSetting : current
+        )));
     }
 
-    function moveVisualizationSetting(index: number, direction: 'up' | 'down') {
-        const newSettings = [...settings];
-        const temp = newSettings[index];
-        newSettings[index] = newSettings[index + (direction === 'up' ? -1 : 1)];
-        newSettings[index + (direction === 'up' ? -1 : 1)] = temp;
-        setSettings(newSettings);
+    function updateSetting(changes: Partial<IVisualizationSetting>) {
+        replaceSetting({ ...setting, ...changes });
     }
 
-    function canMoveVisualizationSetting(index: number, direction: 'up' | 'down') {
-        return direction === 'up' ? index !== 0 : index !== settings.length - 1;
+    function moveSetting(direction: 'up' | 'down') {
+        const targetIndex = index + (direction === 'up' ? -1 : 1);
+        if (targetIndex < 0 || targetIndex >= settings.length) return;
+
+        const reorderedSettings = [...settings];
+        [reorderedSettings[index], reorderedSettings[targetIndex]] = [
+            reorderedSettings[targetIndex],
+            reorderedSettings[index],
+        ];
+        setSettings(reorderedSettings);
     }
 
     function addCondition() {
-        const newSetting = { ...setting };
-        newSetting.conditions.push({
-            layerId: -1,
+        const condition: IVisualizationCondition = {
+            layerId: layers[0]?.id ?? -1,
             condOperator: null,
             min: 0,
-            max: 0,
+            max: 1,
             minInclusive: false,
             maxInclusive: false,
-        });
-        setSetting(newSetting);
+        };
+        updateSetting({ conditions: [...setting.conditions, condition] });
     }
 
-    function deleteCondition(index: number) {
-        const newSetting = { ...setting };
-        newSetting.conditions.splice(index, 1);
-        setSetting(newSetting);
+    function replaceCondition(conditionIndex: number, condition: IVisualizationCondition) {
+        updateSetting({
+            conditions: setting.conditions.map((current, currentIndex) => (
+                currentIndex === conditionIndex ? condition : current
+            )),
+        });
+    }
+
+    function deleteCondition(conditionIndex: number) {
+        updateSetting({
+            conditions: setting.conditions.filter((_, currentIndex) => currentIndex !== conditionIndex),
+        });
     }
 
     function deleteSetting() {
-        const newSettings = [...settings];
-        newSettings.splice(index, 1);
-        setSettings(newSettings);
+        setSettings(settings.filter((_, currentIndex) => currentIndex !== index));
     }
 
-    function setCondition(index: number, condition: IVisualizationCondition) {
-        const newSetting = { ...setting };
-        newSetting.conditions[index] = condition;
-        setSetting(newSetting);
-    }
-
-    function adjustConditionRangeInput(value: number): number {
-        return value < 0 ? 0 : value > 1 ? 1 : value;
-    }
-
-    const conditionalOperatorSelectJSX = function (
-        condition: IVisualizationCondition
-    ) {
-        return (
-            <Input
-                label='Operator'
-                className='condition-operator'
-                type='select'
-                value={condition.condOperator?.toString()}
-                onChange={(valueString: any) =>
-                    setCondition(index, {
-                        ...condition,
-                        condOperator: valueString as VisualizationConditionalOperatorEnum,
-                    })
-                }
-                options={Object.values(VisualizationConditionalOperatorEnum).map((operator) => ({
-                    label: operator,
-                    value: operator,
-                }))}
-            />
-        );
-    };
-
-    const rangeJSX = function (
-        condition: IVisualizationCondition,
-        index: number
-    ) {
-        return (
-            <>
-                <div className='condition-range'>
-                    <Input
-                        label='Min Value'
-                        className='min-input'
-                        type='number'
-                        value={condition.min.toString()}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        onChange={(valueString: any) =>
-                            setCondition(index, {
-                                ...condition,
-                                min: adjustConditionRangeInput(
-                                    parseFloat(valueString)
-                                ),
-                            })
-                        }
-                    />
-                    <span className='condition-separator'>-</span>
-                    <Input
-                        label='Max Value'
-                        className='max-input'
-                        type='number'
-                        value={condition.max.toString()}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        onChange={(valueString: any) =>
-                            setCondition(index, {
-                                ...condition,
-                                max: adjustConditionRangeInput(
-                                    parseFloat(valueString)
-                                ),
-                            })
-                        }
-                    />
-                </div>
-                <Checkbox.Root
-                    className='condition-min-inclusive'
-                    checked={condition.minInclusive}
-                    onCheckedChange={({ checked }) =>
-                        setCondition(index, {
-                            ...condition,
-                            minInclusive: checked === true,
-                        })
-                    }
-                >
-                    <Checkbox.HiddenInput />
-                    <Checkbox.Control>
-                        <Checkbox.Indicator />
-                    </Checkbox.Control>
-                    <Checkbox.Label>Min Inclusive</Checkbox.Label>
-                </Checkbox.Root>
-                <Checkbox.Root
-                    className='condition-max-inclusive'
-                    checked={condition.maxInclusive}
-                    onCheckedChange={({ checked }) =>
-                        setCondition(index, {
-                            ...condition,
-                            maxInclusive: checked === true,
-                        })
-                    }
-                >
-                    <Checkbox.HiddenInput />
-                    <Checkbox.Control>
-                        <Checkbox.Indicator />
-                    </Checkbox.Control>
-                    <Checkbox.Label>Max Inclusive</Checkbox.Label>
-                </Checkbox.Root>
-            </>
-        );
-    };
+    const canMoveUp = index > 0;
+    const canMoveDown = index < settings.length - 1;
 
     return (
         <div className='visualization-setting'>
+            <div className='setting-label'>Visualization {index + 1}</div>
+
             <div className='setting-content'>
-                <div className='visualization-type'>
+                <Input
+                    label='Visualization Type'
+                    type='select'
+                    className='visualization-type-input'
+                    value={setting.type}
+                    onChange={(value) => updateSetting({ type: value as VisualizationTypeEnum })}
+                    options={Object.values(VisualizationTypeEnum).map((type) => ({
+                        label: type,
+                        value: type,
+                    }))}
+                />
+
+                {Shapes.getShape(setting.type).canScale && (
                     <Input
-                        label='Visualization Type'
+                        label='Scaling Type'
+                        className='scaling-type-input'
                         type='select'
-                        className='visualization-type-input'
-                        value={setting.type}
-                        onChange={(valueString: any) =>
-                            setSetting({ ...setting, type: valueString as VisualizationTypeEnum })
-                        }
-                        options={Object.values(VisualizationTypeEnum).map((type) => ({
+                        value={setting.scalingType}
+                        onChange={(value) => updateSetting({ scalingType: value as ScalingTypeEnum })}
+                        options={Object.values(ScalingTypeEnum).map((type) => ({
                             label: type,
                             value: type,
                         }))}
                     />
-                </div>
-                {
-                    Shapes.getShape(setting.type).canScale && (
-                        <div className='scaling-type'>
-                            <Input
-                                label='Scaling Type'
-                                className='scaling-type-input'
-                                type='select'
-                                value={setting.scalingType}
-                                onChange={(valueString: any) =>
-                                    setSetting({ ...setting, scalingType: valueString as ScalingTypeEnum })
-                                }
-                                options={Object.values(ScalingTypeEnum).map((type) => ({
-                                    label: type,
-                                    value: type,
-                                }))}
-                            />
-                        </div>
-                    )
-                }
-                <HStack>
-                    <ColorPicker color={setting.color} setColor={(color) => setSetting({ ...setting, color })} />
+                )}
+
+                <div className='color-setting-row'>
+                    <ColorPicker
+                        color={setting.color}
+                        setColor={(color) => updateSetting({ color })}
+                    />
                     <Input
                         className='color-input'
                         value={setting.color}
                         placeholder='Hex Color'
-                        onChange={(valueString: any) =>
-                            setSetting({ ...setting, color: valueString })
-                        }
+                        onChange={(color) => updateSetting({ color })}
                     />
-                </HStack>
+                </div>
+
                 <div className='conditions'>
-                    <Text fontSize='sm' fontWeight={600}>
-                        Conditions
-                    </Text>
-                    {setting.conditions.map((condition, index) => {
-                        return (
-                            <div key={index} className='condition'>
-                                {index != 0 &&
-                                    conditionalOperatorSelectJSX(condition)}
-                                <Input
-                                    label='Select Layer'
-                                    className='condition-field'
-                                    type='select'
-                                    value={condition.layerId}
-                                    onChange={(valueString: any) =>
-                                        setCondition(index, {
-                                            ...condition,
-                                            layerId: parseInt(valueString),
-                                        })
-                                    }
-                                    options={layers.map((layer: ILayer) => ({
-                                        label: layer.name,
-                                        value: layer.id,
-                                    }))}
-                                />
-                                {rangeJSX(condition, index)}
-                                <div className='condition-actions'>
-                                    <Button
-                                        className='delete-condition-btn'
-                                        onClick={() => deleteCondition(index)}
-                                    >
-                                        <i className='fa-solid fa-trash'></i>
-                                    </Button>
-                                </div>
-                            </div>
-                        );
-                    })}
+                    <h4>Conditions <span>{setting.conditions.length}</span></h4>
+                    {setting.conditions.map((condition, conditionIndex) => (
+                        <VisualizationCondition
+                            key={conditionIndex}
+                            condition={condition}
+                            conditionIndex={conditionIndex}
+                            layers={layers}
+                            onChange={(nextCondition) => replaceCondition(conditionIndex, nextCondition)}
+                            onDelete={() => deleteCondition(conditionIndex)}
+                        />
+                    ))}
                 </div>
             </div>
+
             <div className='setting-actions'>
                 <div>
-                    <Button id='add-condition-btn' onClick={addCondition}>
-                        <i className='fa-solid fa-plus'></i>
+                    <Button className='add-condition-btn' onClick={addCondition}>
+                        <i className='fa-solid fa-plus' aria-hidden='true'></i>
+                        Add condition
                     </Button>
                     <Button
-                        id='delete-setting-btn'
-                        onClick={deleteSetting}>
-                        <i className='fa-solid fa-trash'></i>
-                    </Button>
-                    <Button
-                        id='up-setting-btn'
-                        onClick={() => moveVisualizationSetting(index, 'up')}
-                        disabled={!canMoveVisualizationSetting(index, 'up')}
+                        className='delete-setting-btn danger-btn icon-btn'
+                        aria-label='Delete visualization'
+                        title='Delete visualization'
+                        onClick={deleteSetting}
                     >
-                        <i className='fa-solid fa-arrow-up'></i>
+                        <i className='fa-solid fa-trash' aria-hidden='true'></i>
                     </Button>
                     <Button
-                        id='down-setting-btn'
-                        onClick={() => moveVisualizationSetting(index, 'down')}
-                        disabled={!canMoveVisualizationSetting(index, 'down')}
+                        className='up-setting-btn icon-btn'
+                        aria-label='Move visualization up'
+                        title='Move up'
+                        onClick={() => moveSetting('up')}
+                        disabled={!canMoveUp}
                     >
-                        <i className='fa-solid fa-arrow-down'></i>
+                        <i className='fa-solid fa-arrow-up' aria-hidden='true'></i>
                     </Button>
-                </div>
-                <div>
+                    <Button
+                        className='down-setting-btn icon-btn'
+                        aria-label='Move visualization down'
+                        title='Move down'
+                        onClick={() => moveSetting('down')}
+                        disabled={!canMoveDown}
+                    >
+                        <i className='fa-solid fa-arrow-down' aria-hidden='true'></i>
+                    </Button>
                 </div>
             </div>
         </div>

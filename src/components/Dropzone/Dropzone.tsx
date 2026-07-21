@@ -1,12 +1,12 @@
 import './Dropzone.scss';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, type Accept } from 'react-dropzone';
 
 type Props = {
-    acceptedFileTypes?: any,
-    maxFiles?: number,
-    showUploads?: boolean,
-    onDrop?: (files: any) => void
-}
+    acceptedFileTypes?: Accept;
+    maxFiles?: number;
+    showUploads?: boolean;
+    onDrop?: (files: File[]) => void;
+};
 
 export default function Dropzone(props: Props) {
     const {
@@ -22,10 +22,8 @@ export default function Dropzone(props: Props) {
         onDropAccepted: onDrop,
     });
 
-    function getAcceptedFilesTypesString() {
-        return Object.keys(acceptedFileTypes).map((key) => {
-            return acceptedFileTypes[key]
-        }).join(', ');
+    function getAcceptedFilesTypesString(acceptedTypes: Accept) {
+        return Object.values(acceptedTypes).flat().join(', ');
     }
 
     const multipleFilesJSX = () => (
@@ -57,8 +55,10 @@ export default function Dropzone(props: Props) {
         <div {...getRootProps({className: 'dropzone-container dropzone'})}>
             <div className="header">
                 <input {...getInputProps()} />
-                <p>Drag and drop { maxFiles > 1 ? "some files" : "a file" } here, or click to select files</p>
-                { acceptedFileTypes && <p className='acceptable-types-text'>Acceptable file types: {getAcceptedFilesTypesString()}</p> }
+                <span className='dropzone-icon'><i className='fa-solid fa-file-arrow-up' aria-hidden='true'></i></span>
+                <p><strong>Drop { maxFiles > 1 ? "files" : "a world file" } here</strong></p>
+                <p className='dropzone-hint'>or click to browse your device</p>
+                { acceptedFileTypes && <p className='acceptable-types-text'>{getAcceptedFilesTypesString(acceptedFileTypes)}</p> }
             </div>
             {showUploads && acceptedFiles.length > 0 && filesJSX()}
         </div>

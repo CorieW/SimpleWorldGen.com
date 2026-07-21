@@ -1,198 +1,145 @@
 import { useEffect, useState } from 'react';
+import { Button } from '@chakra-ui/react';
 import Sidebar from '../../../../components/Sidebar/Sidebar';
-import {
-    Text,
-    Button,
-    Stack,
-    Field,
-    Switch,
-    HStack,
-} from '@chakra-ui/react';
 import Input from '../../../../components/Input/Input';
-import useStore from '../../editorStore';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
+import { IWorldSettings } from '../../../../ts/interfaces/IWorldSettings';
+import useStore from '../../editorStore';
+import './SettingsSidebar.scss';
 
 type Props = {
     sidebarOpen: boolean;
     setSidebarOpen: (sidebarOpen: boolean) => void;
 };
 
-export default function SettingsSidebar(props: Props) {
-    const { sidebarOpen, setSidebarOpen } = props;
-
+export default function SettingsSidebar({ sidebarOpen, setSidebarOpen }: Props) {
     const { worldSettings, setWorldSettings, randomizeSeeds } = useStore();
+    const [currentSettings, setCurrentSettings] = useState<IWorldSettings>({ ...worldSettings });
 
-    const [currentSettings, setCurrentSettings] =
-        useState<any>(worldSettings);
-
-    const { worldWidth, worldHeight, fadeOff, xFadeOffPercentage, yFadeOffPercentage } =
-        currentSettings;
+    const {
+        worldWidth,
+        worldHeight,
+        fadeOff,
+        xFadeOffPercentage,
+        yFadeOffPercentage,
+        backgroundColor,
+    } = currentSettings;
 
     useEffect(() => {
-        // Clone the world settings
-        setCurrentSettings(JSON.parse(JSON.stringify(worldSettings)));
+        setCurrentSettings({ ...worldSettings });
     }, [worldSettings]);
 
-    function apply() {
-        setWorldSettings(currentSettings);
+    function updateCurrentSettings(settings: Partial<IWorldSettings>) {
+        setCurrentSettings((current) => ({ ...current, ...settings }));
+    }
+
+    function updateWorldSize(size: number) {
+        // World generation currently requires equal dimensions.
+        updateCurrentSettings({ worldWidth: size, worldHeight: size });
     }
 
     function closeMenu() {
-        setCurrentSettings(worldSettings);
+        setCurrentSettings({ ...worldSettings });
         setSidebarOpen(false);
     }
 
-    const fadeOffOptionsJSX = (
-        <HStack>
-            <Input
-                label='X'
-                type='number'
-                value={xFadeOffPercentage}
-                step={0.05}
-                min={0}
-                max={1}
-                onChange={(valueString: any) =>
-                    setCurrentSettings({
-                        ...currentSettings,
-                        xFadeOffPercentage: parseFloat(valueString),
-                    })
-                }
-            />
-            <Input
-                label='Y'
-                type='number'
-                value={yFadeOffPercentage}
-                step={0.05}
-                min={0}
-                max={1}
-                onChange={(valueString: any) =>
-                    setCurrentSettings({
-                        ...currentSettings,
-                        yFadeOffPercentage: parseFloat(valueString),
-                    })
-                }
-            />
-        </HStack>
-    );
-
-    const contentJSX = (
+    const content = (
         <>
-            <Stack gap={1}>
-                <Text fontSize={'lg'} fontWeight={600}>
-                    World Dimensions
-                </Text>
-                <Input
-                    label='Width'
-                    type='number'
-                    value={worldWidth}
-                    step={100}
-                    onChange={(valueString: any) =>
-                        setCurrentSettings({
-                            ...currentSettings,
-                            worldWidth: parseFloat(valueString),
-                            worldHeight: parseFloat(valueString) // TODO: Remove this line when world supports different width and height
-                        })
-                    }
-                />
-                <Input
-                    label='Height'
-                    type='number'
-                    value={worldHeight}
-                    step={100}
-                    onChange={(valueString: any) =>
-                        setCurrentSettings({
-                            ...currentSettings,
-                            worldHeight: parseFloat(valueString),
-                            worldWidth: parseFloat(valueString) // TODO: Remove this line when world supports different width and height
-                        })
-                    }
-                />
-            </Stack>
-            <Stack gap={1}>
-                <Text fontSize={'lg'} fontWeight={600}>
-                    General
-                </Text>
-                <HStack>
-                <ColorPicker color={currentSettings.backgroundColor} setColor={(color) => setCurrentSettings({...currentSettings, backgroundColor: color})} />
+            <section className='settings-section'>
+                <h3>
+                    <i className='fa-solid fa-expand' aria-hidden='true'></i>
+                    World dimensions
+                </h3>
+                <Input label='Width' type='number' value={worldWidth} step={100} onChange={updateWorldSize} />
+                <Input label='Height' type='number' value={worldHeight} step={100} onChange={updateWorldSize} />
+            </section>
+
+            <section className='settings-section'>
+                <h3>
+                    <i className='fa-solid fa-fill-drip' aria-hidden='true'></i>
+                    World appearance
+                </h3>
+                <div className='form-row color-field-row'>
+                    <ColorPicker
+                        color={backgroundColor}
+                        setColor={(color) => updateCurrentSettings({ backgroundColor: color })}
+                    />
                     <Input
                         className='color-input'
-                        value={currentSettings.backgroundColor}
+                        value={backgroundColor}
                         placeholder='Hex Color'
-                        onChange={(e: any) =>
-                            setCurrentSettings({
-                                ...currentSettings,
-                                backgroundColor: e.target.value,
-                            })
-                        }
+                        onChange={(value) => updateCurrentSettings({ backgroundColor: value })}
                     />
-                </HStack>
-            </Stack>
-            <Stack gap={1}>
-                <Field.Root
-                    display='flex'
-                    alignItems='center'
-                    justifyContent={'space-between'}
-                >
-                    <Field.Label
-                        htmlFor='fade-off-toggle'
-                        fontSize={'lg'}
-                        fontWeight={600}
-                        m={0}
-                        flex={1}
-                    >
-                        Fade Off
-                    </Field.Label>
-                    <Switch.Root
+                </div>
+            </section>
+
+            <section className='settings-section'>
+                <label className='toggle-field' htmlFor='fade-off-toggle'>
+                    <span>
+                        <strong>Fade off</strong>
+                        <small>Blend the world edges into the background</small>
+                    </span>
+                    <input
                         id='fade-off-toggle'
-                        size='md'
+                        type='checkbox'
                         checked={fadeOff}
-                        onCheckedChange={({ checked }) =>
-                            setCurrentSettings({
-                                ...currentSettings,
-                                fadeOff: checked,
-                            })
-                        }
-                    >
-                        <Switch.HiddenInput />
-                        <Switch.Control>
-                            <Switch.Thumb />
-                        </Switch.Control>
-                    </Switch.Root>
-                </Field.Root>
-                {fadeOff && fadeOffOptionsJSX}
-            </Stack>
-            {
-                // TODO: Add fade off option
-            }
-            <Stack>
-                <Text fontSize={'lg'} fontWeight={600}>
-                    Actions
-                </Text>
-                <Button onClick={randomizeSeeds}>
-                    Randomize Seeds
+                        onChange={(event) => updateCurrentSettings({ fadeOff: event.target.checked })}
+                    />
+                    <span className='toggle-track' aria-hidden='true'><span></span></span>
+                </label>
+                {fadeOff && (
+                    <div className='form-row'>
+                        <Input
+                            label='X'
+                            type='number'
+                            value={xFadeOffPercentage}
+                            step={0.05}
+                            min={0}
+                            max={1}
+                            onChange={(value) => updateCurrentSettings({ xFadeOffPercentage: value })}
+                        />
+                        <Input
+                            label='Y'
+                            type='number'
+                            value={yFadeOffPercentage}
+                            step={0.05}
+                            min={0}
+                            max={1}
+                            onChange={(value) => updateCurrentSettings({ yFadeOffPercentage: value })}
+                        />
+                    </div>
+                )}
+            </section>
+
+            <section className='settings-section'>
+                <h3>
+                    <i className='fa-solid fa-wand-magic-sparkles' aria-hidden='true'></i>
+                    Generation
+                </h3>
+                <Button className='wide-btn' onClick={randomizeSeeds}>
+                    <i className='fa-solid fa-dice' aria-hidden='true'></i>
+                    Randomize seeds
                 </Button>
-            </Stack>
+            </section>
         </>
     );
 
-    const bottomBarContentJSX = (
-        <>
-            <div>
-                <Button id='apply-visualization-btn' onClick={apply}>
-                    Apply
-                </Button>
-            </div>
-        </>
+    const actions = (
+        <div>
+            <Button className='apply-settings-btn primary-btn' onClick={() => setWorldSettings(currentSettings)}>
+                Apply
+            </Button>
+        </div>
     );
 
     return (
         <Sidebar
             open={sidebarOpen}
-            setOpen={setSidebarOpen}
             onClose={closeMenu}
             title='Settings'
-            contentJSX={contentJSX}
-            bottomBarContentJSX={bottomBarContentJSX}
-        />
+            footer={actions}
+        >
+            {content}
+        </Sidebar>
     );
 }

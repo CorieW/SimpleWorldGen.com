@@ -35,9 +35,10 @@ export default function Layers() {
                     {layers.map((layer: ILayer) => (
                         <Layer key={layer.id} {...layer} />
                     ))}
-                    <li id='add-layer-listing'>
-                        <Button size='sm' onClick={addNewLayer}>
-                            <i className='fa-solid fa-plus'></i>
+                    <li className='add-layer-listing'>
+                        <Button className='add-layer-btn' onClick={addNewLayer} aria-label='Add a new layer'>
+                            <i className='fa-solid fa-plus' aria-hidden='true'></i>
+                            <span>New layer</span>
                         </Button>
                     </li>
                 </ul>
@@ -49,12 +50,16 @@ export default function Layers() {
         <div id='layers-container'>
             <div className='inner-container'>
                 <Button
-                    id='toggle-layers-btn'
+                    className='toggle-layers-btn'
                     size='sm'
+                    aria-expanded={expanded}
+                    aria-label={expanded ? 'Collapse layers' : 'Expand layers'}
                     onClick={() => setExpanded(!expanded)}
                 >
+                    <span>Layers</span>
                     <i
-                        className={`fa-solid fa-arrow-${expanded ? 'down' : 'up'}`}
+                        className={`fa-solid fa-chevron-${expanded ? 'down' : 'up'}`}
+                        aria-hidden='true'
                     ></i>
                 </Button>
                 {expanded && listJSX}

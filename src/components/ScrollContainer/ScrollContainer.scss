@@ -1,6 +1,6 @@
 .horizontal-scroll-container, .vertical-scroll-container {
-    --scroll-bar-height: 10px;
-    --scroll-bar-width: 10px;
+    --scroll-bar-height: 7px;
+    --scroll-bar-width: 7px;
 
     display: flex;
     gap: 10px;
@@ -14,14 +14,21 @@
 
     &>.horizontal-scroll, &>.vertical-scroll {
         position: relative;
-        background-color: white;
-        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.08);
+        border-radius: 99px;
 
         &>.scroll-bar {
             position: absolute;
-            background-color: gray;
-            border-radius: 5px;
+            border: 0;
+            background-color: var(--ui-muted);
+            border-radius: 99px;
             pointer-events: all;
+            cursor: grab;
+            touch-action: none;
+
+            &:hover {
+                background-color: var(--ui-accent);
+            }
         }
     }
 }

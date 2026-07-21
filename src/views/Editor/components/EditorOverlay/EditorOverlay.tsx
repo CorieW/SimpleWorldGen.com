@@ -33,38 +33,50 @@ function EditorOverlay(props: Props) {
                 <div className='btn-group menu-btns'>
                     <Button
                         id='save-btn'
+                        className={`tool-btn ${saveModalOpen ? 'active' : ''}`}
+                        aria-label='Save or load world'
+                        aria-pressed={saveModalOpen}
+                        title='Save / Load'
                         onClick={() => setSaveModalOpen(true)}
                     >
-                        <i className='fa-solid fa-save'></i>
+                        <i className='fa-solid fa-save' aria-hidden='true'></i>
                     </Button>
                     <Button
                         id='settings-btn'
+                        className={`tool-btn ${settingsSidebarOpen ? 'active' : ''}`}
+                        aria-label='Open world settings'
+                        aria-pressed={settingsSidebarOpen}
+                        title='World settings'
                         onClick={() =>
                             setSettingsSidebarOpen(!settingsSidebarOpen)
                         }
                     >
-                        <i className='fa-solid fa-cog'></i>
+                        <i className='fa-solid fa-cog' aria-hidden='true'></i>
                     </Button>
                     <Button
                         id='toggle-visualization-menu-btn'
+                        className={`tool-btn ${visualizationSidebarOpen ? 'active' : ''}`}
+                        aria-label='Open visualization settings'
+                        aria-pressed={visualizationSidebarOpen}
+                        title='Visualization settings'
                         onClick={() =>
                             setVisualizationSidebarOpen(
                                 !visualizationSidebarOpen
                             )
                         }
                     >
-                        <i className='fa-solid fa-palette'></i>
+                        <i className='fa-solid fa-palette' aria-hidden='true'></i>
                     </Button>
                 </div>
                 <div className='btn-group zoom-btns'>
-                    <Button id='zoom-in-btn' onClick={props.zoomIn}>
-                        <i className='fa-solid fa-magnifying-glass-plus'></i>
+                    <Button className='tool-btn' id='zoom-in-btn' aria-label='Zoom in' title='Zoom in' onClick={props.zoomIn}>
+                        <i className='fa-solid fa-magnifying-glass-plus' aria-hidden='true'></i>
                     </Button>
-                    <Button id='zoom-out-btn' onClick={props.zoomOut}>
-                        <i className='fa-solid fa-magnifying-glass-minus'></i>
+                    <Button className='tool-btn' id='zoom-out-btn' aria-label='Zoom out' title='Zoom out' onClick={props.zoomOut}>
+                        <i className='fa-solid fa-magnifying-glass-minus' aria-hidden='true'></i>
                     </Button>
-                    <Button id='reset-view-btn' onClick={props.resetView}>
-                        <i className="fa-solid fa-arrows-to-dot"></i>
+                    <Button className='tool-btn' id='reset-view-btn' aria-label='Reset view' title='Reset view' onClick={props.resetView}>
+                        <i className="fa-solid fa-arrows-to-dot" aria-hidden='true'></i>
                     </Button>
                 </div>
             </div>

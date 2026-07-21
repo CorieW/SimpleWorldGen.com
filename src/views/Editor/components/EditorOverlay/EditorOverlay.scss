@@ -1,75 +1,80 @@
 #editor-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
     #unsupported-resolution-cover {
         display: none;
     }
 
     .btn-group {
+        z-index: 70;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 7px;
+        padding: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: var(--ui-radius-md);
+        background: var(--ui-panel);
+        box-shadow: var(--ui-shadow);
+        pointer-events: all;
+        backdrop-filter: blur(12px);
 
         &.menu-btns {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 14px;
+            right: 14px;
         }
 
         &.zoom-btns {
             position: absolute;
-            bottom: 100px;
-            right: 10px;
+            right: 14px;
+            bottom: 76px;
         }
 
-        button {
-            width: 50px;
-            height: 50px;
+        .tool-btn {
+            width: 46px;
+            min-width: 46px;
+            height: 46px;
+            min-height: 46px;
+            padding: 0;
+            border-color: rgba(255, 255, 255, 0.42) !important;
+            border-radius: var(--ui-radius-sm) !important;
+            background: #09111e !important;
+            color: white !important;
+            font-size: 1.08rem;
 
-            background-color: black;
-            border: 2px solid white;
-
-            color: white;
-            font-size: 20px;
-
-            transition: background-color 0.3s, color 0.3s;
-
-            &:hover, &:active {
-                background-color: white;
-                color: black;
+            &:hover,
+            &:active,
+            &.active {
+                border-color: var(--ui-accent) !important;
+                background: var(--ui-accent) !important;
+                color: var(--ui-accent-ink) !important;
+                box-shadow: 0 0 0 2px var(--ui-accent-soft);
             }
         }
     }
 
-    // Phone-tablet view
     @media (max-width: 800px) {
-        >* {
-            display: none;
-        }
+        .btn-group {
+            padding: 4px;
+            gap: 4px;
 
-        #unsupported-resolution-cover {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            flex-direction: column;
-
-            position: absolute;
-            z-index: 1000;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-
-            background-color: rgba(255, 255, 255);
-            font-size: 5vw;
-
-            h1 {
-                color: white;
-                font-size: 30px;
+            &.menu-btns {
+                top: 8px;
+                right: 8px;
             }
 
-            p {
-                color: white;
-                font-size: 20px;
+            &.zoom-btns {
+                right: 8px;
+                bottom: 68px;
+            }
+
+            .tool-btn {
+                width: 42px;
+                min-width: 42px;
+                height: 42px;
+                min-height: 42px;
             }
         }
     }

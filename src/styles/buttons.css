@@ -1,0 +1,55 @@
+:where(#app-container) :is(.chakra-button, .ui-button) {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: var(--ui-radius-sm) !important;
+  background: var(--ui-panel-raised) !important;
+  color: var(--ui-text) !important;
+  font-size: 0.86rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+:where(#app-container) :is(.chakra-button, .ui-button):hover:not(:disabled) {
+  border-color: var(--ui-border-strong) !important;
+  background: #21344d !important;
+  transform: translateY(-1px);
+}
+
+:where(#app-container) :is(.chakra-button, .ui-button):active:not(:disabled) {
+  transform: translateY(0);
+}
+
+:where(#app-container) :is(.chakra-button, .ui-button):disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+}
+
+:where(#app-container) .primary-btn {
+  border-color: rgba(255, 225, 145, 0.48) !important;
+  background: var(--ui-accent) !important;
+  color: var(--ui-accent-ink) !important;
+  box-shadow: 0 7px 20px rgba(243, 200, 91, 0.13);
+}
+
+:where(#app-container) .primary-btn:hover:not(:disabled) {
+  border-color: #fff1be !important;
+  background: var(--ui-accent-hover) !important;
+}
+
+:where(#app-container) :is(.danger-btn, .delete-btn):hover:not(:disabled) {
+  border-color: rgba(255, 123, 114, 0.6) !important;
+  background: var(--ui-danger-soft) !important;
+  color: var(--ui-danger) !important;
+}
+
+:where(#app-container) .icon-btn {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+}

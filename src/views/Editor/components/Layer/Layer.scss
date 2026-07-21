@@ -1,104 +1,111 @@
 .layer-container {
-    --node-size: 150px;
+    --node-size: 136px;
 
+    position: relative;
     display: flex;
-    flex-direction: column-reverse;
-    justify-content: flex-end;
-    border-radius: 15px;
-    pointer-events: all;
-
     width: var(--node-size);
-
-    // disable highlighting
+    min-width: var(--node-size);
+    flex-direction: column;
+    gap: 7px;
+    padding-bottom: 2px;
+    border-radius: var(--ui-radius-md);
+    pointer-events: all;
     user-select: none;
 
     .inner-layer-container {
-        width: 100%;
         position: relative;
         display: flex;
-        flex-direction: row;
-
         width: var(--node-size);
         height: var(--node-size);
         min-height: var(--node-size);
-        border-radius: 15px;
         overflow: hidden;
-
-        border: 3px solid white;
+        border: 2px solid rgba(255, 255, 255, 0.72);
+        border-radius: var(--ui-radius-md);
+        background: #7f8b98;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+        transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
 
         canvas {
             width: 100%;
             height: 100%;
-
-            background-color: gray;
-        }
-
-        .bottom-bar {
-            position: absolute;
-            bottom: 0;
-
-            display: none;
-            width: 100%;
-            padding: 5px;
-            gap: 5px;
-            justify-content: space-between;
-
-            button {
-                border-radius: 15px;
-            }
+            background: #7f8b98;
         }
 
         .edit-btn {
             position: absolute;
-            width: 100%;
-            height: 100%;
-
+            inset: 0;
             display: flex;
+            gap: 8px;
             justify-content: center;
             align-items: center;
-
-            transition: background-color 0.3s;
-        }
-
-        .edit-node-icon {
-            opacity: 0;
-            font-size: 20px;
-
-            transition: opacity 0.3s;
-        }
-
-        &:hover {
+            border: 0;
+            background: rgba(8, 17, 29, 0);
+            color: white;
             cursor: pointer;
+            opacity: 0;
+            transition: background 140ms ease, opacity 140ms ease;
+
+            span {
+                font-size: 0.76rem;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+        }
+
+        &:hover,
+        &:focus-within {
+            border-color: var(--ui-accent);
+            box-shadow: 0 0 0 3px var(--ui-accent-soft), 0 10px 26px rgba(0, 0, 0, 0.28);
+            transform: translateY(-2px);
 
             .edit-btn {
-                background-color: white;
-            }
-
-            .edit-node-icon {
+                background: rgba(8, 17, 29, 0.76);
                 opacity: 1;
-                color: black;
-            }
-
-            .bottom-bar {
-                display: flex;
             }
         }
-
     }
 
     .btns-container {
-        display: none;
+        position: absolute;
+        top: 93px;
+        right: 5px;
+        left: 5px;
+        z-index: 2;
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(5px);
+        transition: opacity 140ms ease, transform 140ms ease;
+
+        .chakra-button {
+            width: 34px;
+            min-width: 34px;
+            height: 32px;
+            min-height: 32px;
+            padding: 0;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            background: rgba(8, 17, 29, 0.9) !important;
+            font-size: 0.75rem;
+        }
     }
 
-    * &:hover {
-        .nodes-container {
-            max-height: 500px; // A little hacky, but it works
-        }
+    &:hover .btns-container,
+    &:focus-within .btns-container {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 800px) {
+    .layer-container {
+        --node-size: 112px;
 
         .btns-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            top: 69px;
         }
     }
 }

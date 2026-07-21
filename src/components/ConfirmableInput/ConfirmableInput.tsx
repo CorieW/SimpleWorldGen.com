@@ -35,13 +35,26 @@ export default function ConfirmableInput(props: Props) {
         <div className='confirmable-input-container'>
             <input
                 className='confirmable-input-input'
+                aria-label='Layer name'
                 value={unconfirmedValue}
                 onClick={() => setUnconfirmedValue(value)}
                 onChange={(e) => setUnconfirmedValue(e.target.value)}
                 onBlur={shouldBlur}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                        updateInput();
+                        event.currentTarget.blur();
+                    }
+                    if (event.key === 'Escape') {
+                        setUnconfirmedValue(value);
+                        event.currentTarget.blur();
+                    }
+                }}
             />
             <Button
-                className='confirmable-input-change-btn'
+                className='confirmable-input-change-btn icon-btn'
+                aria-label='Confirm layer name'
+                title='Confirm name'
                 onClick={updateInput}
             >
                 <i className='fa-solid fa-check'></i>

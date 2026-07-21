@@ -32,7 +32,7 @@ export default function Notification({ notification, closeNotification }: Props)
         return () => {
             clearTimeout(timer);
         }
-    }, [isFading, !closeNotification]);
+    }, [isFading, closeNotification]);
 
     function getTypeIcon() {
         switch (type) {
@@ -50,14 +50,14 @@ export default function Notification({ notification, closeNotification }: Props)
     }
 
     return (
-        <div className={`notification-container ${type} ${isFading ? 'fading' : ''}`}>
+        <div className={`notification-container ${type} ${isFading ? 'fading' : ''}`} role={type === 'error' ? 'alert' : 'status'}>
             <div className='content-container'>
                 <i className={getTypeIcon()}></i>
                 <p dangerouslySetInnerHTML={{ __html: text }}></p>
             </div>
             <div className='close-container'>
-                <button className='close-btn' onClick={() => closeNotification()}>
-                    <i className='fas fa-times'></i>
+                <button className='close-btn' aria-label='Dismiss notification' onClick={() => closeNotification()}>
+                    <i className='fas fa-times' aria-hidden='true'></i>
                 </button>
             </div>
         </div>

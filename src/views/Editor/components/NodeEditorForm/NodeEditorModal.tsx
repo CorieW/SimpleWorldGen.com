@@ -50,7 +50,7 @@ export default function NodeEditorModal() {
         if (!ctx) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }, [activeFormNodeId]);
+    }, [activeFormNodeId, getNode]);
 
     useEffect(() => {
         // Update the canvas when the node changes
@@ -97,10 +97,10 @@ export default function NodeEditorModal() {
             placeholder='Select the node effect'
             size='md'
             value={currentNode && currentNode.effect || ''}
-            onChange={(val: any) =>
-                setCurrentNode({ ...currentNode, effect: val as NodeEffectEnum } as INode)
+            onChange={(value) =>
+                setCurrentNode({ ...currentNode, effect: value as NodeEffectEnum } as INode)
             }
-            options={Object.values(NodeEffectEnum).map((effectType: any) => ({
+            options={Object.values(NodeEffectEnum).map((effectType) => ({
                 value: effectType,
                 label: effectType,
             }))}
@@ -113,27 +113,28 @@ export default function NodeEditorModal() {
             type='select'
             size='md'
             value={currentNode && currentNode.type || ''}
-            onChange={(val: any) =>
-                setCurrentNode({ ...currentNode, type: val as NodeTypeEnum } as INode)
+            onChange={(value) =>
+                setCurrentNode({ ...currentNode, type: value as NodeTypeEnum } as INode)
             }
-            options={Object.values(NodeTypeEnum).map((nodeType: any) => ({
+            options={Object.values(NodeTypeEnum).map((nodeType) => ({
                 value: nodeType,
                 label: nodeType,
             }))}
         />
     );
 
-    console.log(nodeFirstInLayer);
-
-    const contentJSX = () => (
+    const renderContent = () => (
         <div id='node-editor-modal-content-container'>
+            <div className='node-editor-heading'>
+                <span>Node configuration</span>
+                <h1>Edit node</h1>
+            </div>
             <div className='display-container'>
                 <div className='inner-container'>
                     <canvas id='editor-form-canvas' ref={canvasRef}></canvas>
                 </div>
             </div>
             <div className='form-container'>
-                <h2 className='title'>Edit Node</h2>
                 <Stack gap={3}>
                     {!nodeFirstInLayer && nodeEffectSelectJSX()}
                     {nodeTypeSelectJSX()}
@@ -148,10 +149,13 @@ export default function NodeEditorModal() {
         </div>
     );
 
-    const bottomBarJSX = () => (
+    const renderFooter = () => (
         <div id='node-editor-modal-bottom-bar'>
             <div>
                 <Button
+                    className='danger-btn icon-btn'
+                    aria-label='Delete node'
+                    title='Delete node'
                     colorPalette='red'
                     size='md'
                     onClick={removeThisNode}
@@ -159,6 +163,9 @@ export default function NodeEditorModal() {
                     <i className='fa-solid fa-trash'></i>
                 </Button>
                 <Button
+                    className='move-btn icon-btn'
+                    aria-label='Move node up'
+                    title='Move node up'
                     colorPalette='blue'
                     size='md'
                     disabled={!canMoveNode(activeFormNodeId, 'up')}
@@ -167,6 +174,9 @@ export default function NodeEditorModal() {
                     <i className='fa-solid fa-arrow-up'></i>
                 </Button>
                 <Button
+                    className='move-btn icon-btn'
+                    aria-label='Move node down'
+                    title='Move node down'
                     colorPalette='blue'
                     size='md'
                     disabled={!canMoveNode(activeFormNodeId, 'down')}
@@ -177,6 +187,7 @@ export default function NodeEditorModal() {
             </div>
             <div>
                 <Button
+                    className='modal-btn'
                     colorPalette='gray'
                     size='md'
                     onClick={closeEditorForm}
@@ -184,6 +195,7 @@ export default function NodeEditorModal() {
                     Cancel
                 </Button>
                 <Button
+                    className='primary-btn'
                     colorPalette='green'
                     size='md'
                     onClick={applyChanges}
@@ -198,7 +210,9 @@ export default function NodeEditorModal() {
         <div
             id='node-editor-modal-container'
         >
-            <Modal modalOpen={activeFormNodeId !== -1} setModalOpen={closeForm} contentJSX={contentJSX()} bottomBarJSX={bottomBarJSX()} />
+            <Modal open={activeFormNodeId !== -1} onClose={closeForm} footer={renderFooter()}>
+                {renderContent()}
+            </Modal>
         </div>
     );
 }
@@ -232,10 +246,10 @@ function NoiseNodeEditorSection(props: {
                         step={1}
                         min={1}
                         max={8}
-                        onChange={(val: any) =>
+                        onChange={(value) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                octaves: val,
+                                octaves: value,
                             })
                         }
                     />
@@ -244,10 +258,10 @@ function NoiseNodeEditorSection(props: {
                         label='Persistence'
                         value={persistence}
                         step={0.1}
-                        onChange={(val: any) =>
+                        onChange={(value) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                persistence: val,
+                                persistence: value,
                             })
                         }
                     />
@@ -256,10 +270,10 @@ function NoiseNodeEditorSection(props: {
                         label='Lacunarity'
                         value={lacunarity}
                         step={0.1}
-                        onChange={(val: any) =>
+                        onChange={(value) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                lacunarity: val,
+                                lacunarity: value,
                             })
                         }
                     />
@@ -268,10 +282,10 @@ function NoiseNodeEditorSection(props: {
                         label='Frequency'
                         value={frequency}
                         step={0.1}
-                        onChange={(val: any) =>
+                        onChange={(value) =>
                             setNode({
                                 ...simplexNoiseNode,
-                                frequency: val,
+                                frequency: value,
                             })
                         }
                     />
@@ -281,10 +295,10 @@ function NoiseNodeEditorSection(props: {
                             label='Offset X'
                             value={offsetX}
                             step={1}
-                            onChange={(val: any) =>
+                            onChange={(value) =>
                                 setNode({
                                     ...simplexNoiseNode,
-                                    offsetX: val,
+                                    offsetX: value,
                                 })
                             }
                         />
@@ -293,10 +307,10 @@ function NoiseNodeEditorSection(props: {
                             label='Offset Y'
                             value={offsetY}
                             step={1}
-                            onChange={(val: any) =>
+                            onChange={(value) =>
                                 setNode({
                                     ...simplexNoiseNode,
-                                    offsetY: val,
+                                    offsetY: value,
                                 })
                             }
                         />
@@ -314,10 +328,10 @@ function NoiseNodeEditorSection(props: {
                 value={node && node.seed}
                 step={1000}
                 precision={0}
-                onChange={(val: any) =>
+                onChange={(value) =>
                     setNode({
                         ...node,
-                        seed: val,
+                        seed: value,
                     })
                 }
             />
@@ -327,13 +341,13 @@ function NoiseNodeEditorSection(props: {
                 placeholder='Select noise type'
                 size='md'
                 value={noiseType || ''}
-                onChange={(val: any) =>
+                onChange={(value) =>
                     setNode({
                         ...node,
-                        noiseType: val as NoiseTypeEnum,
+                        noiseType: value as NoiseTypeEnum,
                     })
                 }
-                options={Object.values(NoiseTypeEnum).map((noiseType: any) => ({
+                options={Object.values(NoiseTypeEnum).map((noiseType) => ({
                     value: noiseType,
                     label: noiseType,
                 }))}
@@ -343,10 +357,10 @@ function NoiseNodeEditorSection(props: {
                 label='Multiplier'
                 value={node && node.multiplier}
                 step={0.1}
-                onChange={(val: any) =>
+                onChange={(value) =>
                     setNode({
                         ...node,
-                        multiplier: val,
+                        multiplier: value,
                     })
                 }
             />

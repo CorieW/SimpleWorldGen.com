@@ -1,190 +1,120 @@
-import { useRef, useEffect } from 'react'
-import './ScrollContainer.scss'
+import { useCallback, useEffect, useRef, type ReactNode } from 'react';
+import './ScrollContainer.scss';
 
-interface Props {
-    mode?: 'horizontal' | 'vertical'
-    children: React.ReactNode
-}
+type ScrollMode = 'horizontal' | 'vertical';
 
-export default function ScrollContainer(props: Props) {
-    const { mode, children } = props
+type Props = {
+    mode?: ScrollMode;
+    children: ReactNode;
+};
 
-    const scrollRef = useRef<HTMLDivElement>(null)
-    const scrollBarRef = useRef<HTMLButtonElement>(null)
-    const scrollContainerRef = useRef<HTMLDivElement>(null)
-    const contentContainerRef = useRef<HTMLDivElement>(null)
+export default function ScrollContainer({ mode = 'vertical', children }: Props) {
+    const trackRef = useRef<HTMLDivElement>(null);
+    const thumbRef = useRef<HTMLButtonElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    const updateScrollBar = useCallback(() => {
+        const track = trackRef.current;
+        const thumb = thumbRef.current;
+        const content = contentRef.current;
+        if (!track || !thumb || !content) return;
+
+        const visibleSize = mode === 'horizontal' ? content.clientWidth : content.clientHeight;
+        const scrollSize = mode === 'horizontal' ? content.scrollWidth : content.scrollHeight;
+        const thumbPercentage = scrollSize === 0 ? 100 : Math.min((visibleSize / scrollSize) * 100, 100);
+
+        track.style.display = visibleSize >= scrollSize ? 'none' : 'block';
+        if (mode === 'horizontal') {
+            thumb.style.width = `${thumbPercentage}%`;
+        } else {
+            thumb.style.height = `${thumbPercentage}%`;
+        }
+    }, [mode]);
 
     useEffect(() => {
-        if (!scrollBarRef.current || !scrollContainerRef.current || !contentContainerRef.current) return
+        const track = trackRef.current;
+        const thumb = thumbRef.current;
+        const content = contentRef.current;
+        if (!track || !thumb || !content) return;
 
-        const scrollBar = scrollBarRef.current
-        const scrollContainer = scrollContainerRef.current
-        const contentContainer = contentContainerRef.current
+        let dragging = false;
+        let grabOffset = 0;
 
-        // Set up scroll bar initial position and width
-        updateScrollBar()
-
-        // Set up scroll bar position
-        scrollBar.style.left = '0'
-        scrollBar.style.top = '0'
-
-        let isDown = false
-        let startX: number
-        let startY: number
-
-        // Enable dragging of scroll bar when mouse is down on it
-        function onClickDown(e: MouseEvent | TouchEvent) {
-            const pageX = e instanceof MouseEvent ? e.pageX : e.touches[0].pageX
-            const pageY = e instanceof MouseEvent ? e.pageY : e.touches[0].pageY
-
-            isDown = true
-            startX = pageX - scrollBar.offsetLeft
-            startY = pageY - scrollBar.offsetTop
+        function startDragging(event: PointerEvent) {
+            dragging = true;
+            grabOffset = mode === 'horizontal'
+                ? event.clientX - thumb!.getBoundingClientRect().left
+                : event.clientY - thumb!.getBoundingClientRect().top;
+            thumb!.setPointerCapture(event.pointerId);
         }
 
-        // Disable dragging of scroll bar when mouse is up anywhere on the window
-        function onClickUp() {
-            isDown = false
+        function stopDragging(event: PointerEvent) {
+            dragging = false;
+            if (thumb!.hasPointerCapture(event.pointerId)) thumb!.releasePointerCapture(event.pointerId);
         }
 
-        // Handle dragging of scroll bar and scrolling of content container
-        function onMove(e: MouseEvent | TouchEvent) {
-            if (!isDown) return
-            e.preventDefault()
+        function drag(event: PointerEvent) {
+            if (!dragging) return;
+            event.preventDefault();
+
+            const trackBounds = track!.getBoundingClientRect();
+            const pointerPosition = mode === 'horizontal'
+                ? event.clientX - trackBounds.left
+                : event.clientY - trackBounds.top;
+            const trackSize = mode === 'horizontal' ? track!.clientWidth : track!.clientHeight;
+            const thumbSize = mode === 'horizontal' ? thumb!.offsetWidth : thumb!.offsetHeight;
+            const maxThumbPosition = Math.max(trackSize - thumbSize, 0);
+            const thumbPosition = Math.max(0, Math.min(pointerPosition - grabOffset, maxThumbPosition));
+            const scrollRatio = maxThumbPosition === 0 ? 0 : thumbPosition / maxThumbPosition;
 
             if (mode === 'horizontal') {
-                handleHorizontalScroll(e)
+                thumb!.style.left = `${thumbPosition}px`;
+                content!.scrollLeft = scrollRatio * (content!.scrollWidth - content!.clientWidth);
             } else {
-                handleVerticalScroll(e)
+                thumb!.style.top = `${thumbPosition}px`;
+                content!.scrollTop = scrollRatio * (content!.scrollHeight - content!.clientHeight);
             }
         }
 
-        function handleHorizontalScroll(e: MouseEvent | TouchEvent) {
-            const pageX = e instanceof MouseEvent ? e.pageX : e.touches[0].pageX
+        thumb.style.left = '0';
+        thumb.style.top = '0';
+        updateScrollBar();
 
-            const x = pageX - scrollContainer.offsetLeft
-            const scrollBarLeft = x - startX
-            const scrollBarWidth = scrollBar.offsetWidth
-            const scrollContainerWidth = scrollContainer.offsetWidth
-            const scrollContainerScrollWidth = contentContainer.scrollWidth
+        const mutationObserver = new MutationObserver(updateScrollBar);
+        const resizeObserver = new ResizeObserver(updateScrollBar);
+        mutationObserver.observe(content, { attributes: true, childList: true, subtree: true });
+        resizeObserver.observe(content);
 
-            const minScrollBarLeft = 0
-            const maxScrollBarLeft = scrollContainerWidth - scrollBarWidth
-
-            const newScrollBarLeft = Math.max(minScrollBarLeft, Math.min(maxScrollBarLeft, scrollBarLeft))
-            const newScrollLeft = newScrollBarLeft / scrollContainerWidth * scrollContainerScrollWidth
-
-            scrollBar.style.left = `${newScrollBarLeft}px`
-            contentContainer.scrollLeft = newScrollLeft
-        }
-
-        function handleVerticalScroll(e: MouseEvent | TouchEvent) {
-            const pageY = e instanceof MouseEvent ? e.pageY : e.touches[0].pageY
-
-            const y = pageY - scrollContainer.offsetTop
-            const scrollBarTop = y - startY
-            const scrollBarHeight = scrollBar.offsetHeight
-            const scrollContainerHeight = scrollContainer.offsetHeight
-            const scrollContainerScrollHeight = contentContainer.scrollHeight
-
-            const minScrollBarTop = 0
-            const maxScrollBarTop = scrollContainerHeight - scrollBarHeight
-
-            const newScrollBarTop = Math.max(minScrollBarTop, Math.min(maxScrollBarTop, scrollBarTop))
-            const newScrollTop = newScrollBarTop / scrollContainerHeight * scrollContainerScrollHeight
-
-            scrollBar.style.top = `${newScrollBarTop}px`
-            contentContainer.scrollTop = newScrollTop
-        }
-
-        // Update scroll bar width and position on change of content container
-        new MutationObserver(() => {
-            updateScrollBar()
-        }).observe(contentContainer, { attributes: true, childList: true, subtree: true })
-
-        // Update scroll bar width and position on resize of content container
-        new ResizeObserver(() => {
-            updateScrollBar()
-        }).observe(contentContainer)
-
-        // Support mouse events
-        scrollBar.addEventListener('mousedown', onClickDown)
-        window.addEventListener('mouseup', onClickUp)
-        window.addEventListener('mousemove', onMove)
-
-        // Support phone touch events
-        scrollBar.addEventListener('touchstart', onClickDown)
-        window.addEventListener('touchend', onClickUp)
-        window.addEventListener('touchmove', onMove)
+        thumb.addEventListener('pointerdown', startDragging);
+        thumb.addEventListener('pointermove', drag);
+        thumb.addEventListener('pointerup', stopDragging);
+        thumb.addEventListener('pointercancel', stopDragging);
 
         return () => {
-            scrollBar.removeEventListener('mousedown', onClickDown)
-            window.removeEventListener('mouseup', onClickUp)
-            window.removeEventListener('mousemove', onMove)
+            mutationObserver.disconnect();
+            resizeObserver.disconnect();
+            thumb.removeEventListener('pointerdown', startDragging);
+            thumb.removeEventListener('pointermove', drag);
+            thumb.removeEventListener('pointerup', stopDragging);
+            thumb.removeEventListener('pointercancel', stopDragging);
+        };
+    }, [mode, updateScrollBar]);
 
-            scrollBar.removeEventListener('touchstart', onClickDown)
-            window.removeEventListener('touchend', onClickUp)
-            window.removeEventListener('touchmove', onMove)
-        }
-    }, [])
-
-    // Update scroll bar width and position on change of content
     useEffect(() => {
-        updateScrollBar()
-    }, [children])
-
-    function updateScrollBar() {
-        if (mode === 'horizontal') {
-            handleHorizontalUpdate()
-        } else {
-            handleVerticalUpdate()
-        }
-    }
-
-    function handleHorizontalUpdate() {
-        if (!scrollRef.current || !scrollBarRef.current || !contentContainerRef.current) return
-
-        const scroll = scrollRef.current
-        const scrollBar = scrollBarRef.current
-        const contentContainer = contentContainerRef.current
-
-        const scrollContainerWidth = contentContainer.offsetWidth
-        const scrollContainerScrollWidth = contentContainer.scrollWidth
-        const scrollBarWidthPercentage = (scrollContainerWidth / scrollContainerScrollWidth) * 100
-        scrollBar.style.width = `${scrollBarWidthPercentage}%`
-
-        if (scrollContainerWidth === scrollContainerScrollWidth) {
-            scroll.style.display = 'none'
-        } else {
-            scroll.style.display = 'block'
-        }
-    }
-
-    function handleVerticalUpdate() {
-        if (!scrollRef.current || !scrollBarRef.current || !contentContainerRef.current) return
-
-        const scroll = scrollRef.current
-        const scrollBar = scrollBarRef.current
-        const contentContainer = contentContainerRef.current
-
-        const scrollContainerHeight = contentContainer.offsetHeight
-        const scrollContainerScrollHeight = contentContainer.scrollHeight
-        const scrollBarHeightPercentage = (scrollContainerHeight / scrollContainerScrollHeight) * 100
-        scrollBar.style.height = `${scrollBarHeightPercentage}%`
-
-        if (scrollContainerHeight === scrollContainerScrollHeight) {
-            scroll.style.display = 'none'
-        } else {
-            scroll.style.display = 'block'
-        }
-    }
+        updateScrollBar();
+    }, [children, updateScrollBar]);
 
     return (
-        <div className={`${mode}-scroll-container`} ref={scrollContainerRef}>
-            <div className='content-container' ref={contentContainerRef}>{children}</div>
-            <div className={`${mode}-scroll`} ref={scrollRef}>
-                <button className='scroll-bar' ref={scrollBarRef}></button>
+        <div className={`${mode}-scroll-container`}>
+            <div className='content-container' ref={contentRef}>{children}</div>
+            <div className={`${mode}-scroll`} ref={trackRef}>
+                <button
+                    type='button'
+                    className='scroll-bar'
+                    ref={thumbRef}
+                    aria-label={`Scroll ${mode} content`}
+                />
             </div>
         </div>
-    )
+    );
 }

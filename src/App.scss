@@ -10,20 +10,12 @@
     display: none !important;
 }
 
-.move-btn:hover, .move-btn:active {
-    &:not(:disabled) {
-        color: gold;
-    }
-
-    &:disabled {
-        cursor: default;
-    }
+.move-btn:hover:not(:disabled),
+.move-btn:active:not(:disabled) {
+    color: var(--ui-accent) !important;
 }
 
-.delete-btn:hover, .delete-btn:active {
-    color: red;
-}
-
-.add-btn:hover, .add-btn:active {
-    color: limegreen;
+.add-btn:hover:not(:disabled),
+.add-btn:active:not(:disabled) {
+    color: var(--ui-success) !important;
 }

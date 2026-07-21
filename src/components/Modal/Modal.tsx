@@ -1,36 +1,55 @@
 import './Modal.scss'
+import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 
 type Props = {
-    modalOpen: boolean
-    setModalOpen: (modalOpen: boolean) => void
-    contentJSX: ReactNode
-    bottomBarJSX: ReactNode
+    open: boolean
+    onClose: () => void
+    children: ReactNode
+    footer: ReactNode
 }
 
-export default function Modal(props: Props) {
-    const { modalOpen, setModalOpen, contentJSX, bottomBarJSX } = props
+export default function Modal({ open, onClose, children, footer }: Props) {
+
+    useEffect(() => {
+        if (!open) return
+
+        function closeOnEscape(event: KeyboardEvent) {
+            if (event.key === 'Escape') onClose()
+        }
+
+        window.addEventListener('keydown', closeOnEscape)
+        return () => window.removeEventListener('keydown', closeOnEscape)
+    }, [onClose, open])
 
     return (
-            <div
-            id='outer-modal-container'
-            className={!modalOpen ? 'hidden' : ''}
+        <div
+            className={`outer-modal-container ${!open ? 'hidden' : ''}`}
+            role='dialog'
+            aria-modal='true'
+            aria-hidden={!open}
+            aria-label='Editor dialog'
+            onMouseDown={(event) => {
+                if (event.target === event.currentTarget) onClose()
+            }}
         >
-            <div id='inner-modal-container'>
+            <div className='inner-modal-container'>
                 <div className='top-bar'>
-                    <p></p>
+                    <span className='modal-grip' aria-hidden='true'></span>
                     <button
-                        id='close-modal-btn'
-                        onClick={ () => setModalOpen(false) }
+                        className='close-modal-btn'
+                        aria-label='Close dialog'
+                        title='Close'
+                        onClick={onClose}
                     >
-                        <i className='fa-solid fa-xmark'></i>
+                        <i className='fa-solid fa-xmark' aria-hidden='true'></i>
                     </button>
                 </div>
                 <div className='content-container'>
-                    {contentJSX}
+                    {children}
                 </div>
                 <div className='bottom-bar'>
-                    {bottomBarJSX}
+                    {footer}
                 </div>
             </div>
         </div>

@@ -1,57 +1,33 @@
-import { useState } from 'react';
 import type { ReactNode } from 'react';
 import './Sidebar.scss';
-import { Button, Text } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 
 type Props = {
     open: boolean;
-    setOpen: (menuOpen: boolean) => void;
     onClose: () => void;
     title: string;
-    contentJSX: ReactNode;
-    bottomBarContentJSX: ReactNode;
+    children: ReactNode;
+    footer: ReactNode;
 };
 
-export default function Sidebar(props: Props) {
-    const { open, setOpen, onClose, title, contentJSX, bottomBarContentJSX } =
-        props;
-
-    const [expanded] = useState<boolean>(false);
-
-    function closeSidebar() {
-        setOpen(false);
-        onClose();
-    }
-
+export default function Sidebar({ open, onClose, title, children, footer }: Props) {
     return (
-        <div
-            className={`sidebar ${open ? '' : 'hidden'} ${
-                expanded ? 'expanded' : ''
-            }`}
+        <aside
+            className={`sidebar ${open ? '' : 'hidden'}`}
+            aria-hidden={!open}
+            aria-label={title}
         >
-            <div className='top-bar-container'>
-                {/* <Button // ! Temporarily removed expand button
-                    className='expand-btn'
-                    onClick={() => setExpanded(!expanded)}
-                >
-                    <i
-                        className={`fa-solid fa-${
-                            expanded ? 'compress' : 'expand'
-                        }`}
-                    ></i>
-                </Button> */}
-                <div></div>
-                <Button className='close-btn' onClick={() => closeSidebar()}>
-                    <i className='fa-solid fa-times'></i>
+            <div className='sidebar-header'>
+                <div>
+                    <span className='sidebar-eyebrow'>World tools</span>
+                    <h2>{title}</h2>
+                </div>
+                <Button className='close-btn icon-btn' aria-label={`Close ${title}`} title='Close' onClick={onClose}>
+                    <i className='fa-solid fa-times' aria-hidden='true'></i>
                 </Button>
             </div>
-            <div className='title-container'>
-                <Text fontSize='2xl' fontWeight={600}>
-                    {title}
-                </Text>
-            </div>
-            <div className='content-container'>{contentJSX}</div>
-            <div className='bottom-bar-container'>{bottomBarContentJSX}</div>
-        </div>
+            <div className='content-container'>{children}</div>
+            <div className='bottom-bar-container'>{footer}</div>
+        </aside>
     );
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { SketchPicker } from 'react-color'
+import { useState, type CSSProperties } from 'react'
+import { SketchPicker, type ColorResult } from 'react-color'
 import './ColorPicker.scss'
 import { Button } from '@chakra-ui/react';
 
@@ -15,10 +15,17 @@ export default function ColorPicker(props: Props) {
 
     return (
         <div className="color-picker-container">
-            <Button onClick={() => setDisplayColorPicker(!displayColorPicker)} style={{backgroundColor: color}}></Button>
+            <Button
+                className='color-swatch-btn'
+                aria-label={`Choose color, currently ${color}`}
+                aria-expanded={displayColorPicker}
+                title='Choose color'
+                onClick={() => setDisplayColorPicker(!displayColorPicker)}
+                style={{'--swatch-color': color} as CSSProperties}
+            />
             {displayColorPicker && (
                 <div className="color-picker">
-                    <SketchPicker color={color} onChange={(color: any) => setColor(color.hex)} />
+                    <SketchPicker color={color} onChange={(nextColor: ColorResult) => setColor(nextColor.hex)} />
                 </div>
             )}
         </div>

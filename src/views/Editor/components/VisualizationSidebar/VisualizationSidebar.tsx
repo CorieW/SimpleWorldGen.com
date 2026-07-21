@@ -48,8 +48,15 @@ export default function VisualizationSidebar(props: Props) {
         setVisualizationSettings(currentSettings);
     }
 
-    const contentJSX = (
+    const content = (
         <>
+            {currentSettings.length === 0 && (
+                <div className='empty-visualizations'>
+                    <i className='fa-solid fa-layer-group' aria-hidden='true'></i>
+                    <strong>No visualizations yet</strong>
+                    <span>Add one to start drawing this world.</span>
+                </div>
+            )}
             {currentSettings.map(
                 (_: IVisualizationSetting, index: number) => {
                     return (
@@ -65,15 +72,16 @@ export default function VisualizationSidebar(props: Props) {
         </>
     );
 
-    const bottomBarContentJSX = (
+    const actions = (
         <>
             <div>
-                <Button id='add-visualization-btn' onClick={addSetting}>
-                    Add
+                <Button className='add-visualization-btn' onClick={addSetting}>
+                    <i className='fa-solid fa-plus' aria-hidden='true'></i>
+                    Add visualization
                 </Button>
             </div>
             <div>
-                <Button id='apply-visualization-btn' onClick={applySettings}>
+                <Button className='apply-visualization-btn primary-btn' onClick={applySettings}>
                     Apply
                 </Button>
             </div>
@@ -83,11 +91,11 @@ export default function VisualizationSidebar(props: Props) {
     return (
         <Sidebar
             open={sidebarOpen}
-            setOpen={setSidebarOpen}
             onClose={closeMenu}
             title='Visualization Settings'
-            contentJSX={contentJSX}
-            bottomBarContentJSX={bottomBarContentJSX}
-        />
+            footer={actions}
+        >
+            {content}
+        </Sidebar>
     );
 }
