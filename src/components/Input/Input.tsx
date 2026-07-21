@@ -1,182 +1,81 @@
-import { useId, type ReactNode } from 'react';
+import { useId } from 'react';
 import './Input.scss';
 
-type InputSize = 'xs' | 'sm' | 'md' | 'lg';
 type InputValue = string | number;
-type InputOption = { value: InputValue; label: string };
-
-type BaseProps = {
+type Option = { value: InputValue; label: string };
+type CommonProps = {
     label?: string | null;
     id?: string;
     className?: string;
     placeholder?: string;
-    size?: InputSize;
-};
-
-type NumberInputProps = BaseProps & {
-    type: 'number';
     value?: InputValue;
+};
+type NumberProps = CommonProps & {
+    type: 'number';
     min?: number;
     max?: number;
     step?: number;
     precision?: number;
     onChange?: (value: number) => void;
 };
-
-type SelectInputProps = BaseProps & {
+type SelectProps = CommonProps & {
     type: 'select';
-    value?: InputValue;
-    options?: InputOption[];
+    options?: Option[];
     onChange?: (value: string) => void;
 };
-
-type TextInputProps = BaseProps & {
+type TextProps = CommonProps & {
     type?: 'text';
-    value?: InputValue;
     pattern?: string;
     onChange?: (value: string) => void;
 };
 
-type Props = NumberInputProps | SelectInputProps | TextInputProps;
-
-export default function Input(props: Props) {
+export default function Input(props: NumberProps | SelectProps | TextProps) {
     const generatedId = useId().replace(/:/g, '');
-    const labelSlug = props.label?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field';
-    const inputId = props.id || `${labelSlug}-${generatedId}`;
+    const inputId = props.id || `${props.label?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field'}-${generatedId}`;
+    const className = props.className || '';
 
-    let control: ReactNode;
-    if (props.type === 'number') {
-        control = <NumberControl {...props} inputId={inputId} />;
-    } else if (props.type === 'select') {
-        control = <SelectControl {...props} inputId={inputId} />;
-    } else {
-        control = <TextControl {...props} inputId={inputId} />;
-    }
-
-    return (
-        <div className='input-group'>
-            {props.label && <label htmlFor={inputId}>{props.label}</label>}
-            {control}
-        </div>
-    );
-}
-
-type ControlProps<T> = T & { inputId: string };
-
-function NumberControl(props: ControlProps<NumberInputProps>) {
-    const {
-        inputId,
-        value,
-        className = '',
-        placeholder,
-        size = 'md',
-        min,
-        max,
-        step = 1,
-        precision,
-        onChange,
-    } = props;
-
-    function normalizeValue(number: number) {
-        const clamped = Math.max(min ?? -Infinity, Math.min(max ?? Infinity, number));
-        const stepDecimals = (String(step).split('.')[1] || '').length;
-        return Number(clamped.toFixed(precision ?? stepDecimals));
-    }
-
-    function updateFromString(rawValue: string) {
-        if (rawValue === '') {
-            onChange?.(0);
-            return;
-        }
-
-        const number = Number(rawValue);
-        if (!Number.isNaN(number)) onChange?.(normalizeValue(number));
-    }
-
-    function nudge(direction: 1 | -1) {
-        const currentValue = Number(value);
-        const safeValue = Number.isFinite(currentValue) ? currentValue : 0;
-        onChange?.(normalizeValue(safeValue + step * direction));
-    }
-
-    return (
-        <div className={`number-input ${className}`} data-size={size}>
+    let control;
+    if (props.type === 'select') {
+        control = (
+            <select id={inputId} className={className} value={props.value ?? ''} onChange={(event) => props.onChange?.(event.target.value)}>
+                <option value='' disabled hidden>{props.placeholder || 'Select an option'}</option>
+                {(props.options || []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+        );
+    } else if (props.type === 'number') {
+        const updateNumber = (value: number) => {
+            if (!Number.isFinite(value)) return;
+            const clamped = Math.max(props.min ?? -Infinity, Math.min(props.max ?? Infinity, value));
+            const decimals = props.precision ?? (String(props.step ?? 1).split('.')[1] || '').length;
+            props.onChange?.(Number(clamped.toFixed(decimals)));
+        };
+        control = (
             <input
                 id={inputId}
+                className={className}
                 type='number'
                 inputMode='decimal'
-                value={value ?? ''}
-                min={min}
-                max={max}
-                step={step}
-                placeholder={placeholder}
-                onChange={(event) => updateFromString(event.target.value)}
+                value={props.value ?? ''}
+                min={props.min}
+                max={props.max}
+                step={props.step}
+                placeholder={props.placeholder}
+                onChange={(event) => updateNumber(event.target.valueAsNumber)}
             />
-            <div className='number-input-controls' aria-label='Adjust value'>
-                <button type='button' aria-label='Increase value' onClick={() => nudge(1)}>
-                    <i className='fa-solid fa-chevron-up' aria-hidden='true'></i>
-                </button>
-                <button type='button' aria-label='Decrease value' onClick={() => nudge(-1)}>
-                    <i className='fa-solid fa-chevron-down' aria-hidden='true'></i>
-                </button>
-            </div>
-        </div>
-    );
-}
-
-function SelectControl(props: ControlProps<SelectInputProps>) {
-    const {
-        inputId,
-        value,
-        className = '',
-        placeholder,
-        size = 'md',
-        options = [],
-        onChange,
-    } = props;
-
-    return (
-        <div className={`select-input ${className}`} data-size={size}>
-            <select
+        );
+    } else {
+        control = (
+            <input
                 id={inputId}
-                value={value ?? ''}
-                onChange={(event) => onChange?.(event.target.value)}
-            >
-                <option value='' disabled hidden>
-                    {placeholder || 'Select an option'}
-                </option>
-                {options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
-            <i className='fa-solid fa-chevron-down' aria-hidden='true'></i>
-        </div>
-    );
-}
+                className={className}
+                type='text'
+                value={props.value ?? ''}
+                pattern={props.pattern}
+                placeholder={props.placeholder}
+                onChange={(event) => props.onChange?.(event.target.value)}
+            />
+        );
+    }
 
-function TextControl(props: ControlProps<TextInputProps>) {
-    const {
-        inputId,
-        value,
-        className = '',
-        placeholder,
-        size = 'md',
-        pattern,
-        onChange,
-    } = props;
-
-    return (
-        <input
-            id={inputId}
-            className={`text-input ${className}`}
-            type='text'
-            placeholder={placeholder}
-            value={value ?? ''}
-            pattern={pattern}
-            data-size={size}
-            onChange={(event) => onChange?.(event.target.value)}
-        />
-    );
+    return <div className='input-group'>{props.label && <label htmlFor={inputId}>{props.label}</label>}{control}</div>;
 }

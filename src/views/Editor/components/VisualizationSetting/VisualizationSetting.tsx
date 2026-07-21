@@ -1,6 +1,6 @@
-import { Button } from '@chakra-ui/react';
 import Input from '../../../../components/Input/Input';
-import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
+import ColorField from '../../../../components/Input/ColorField';
+import IconButton from '../../../../components/IconButton/IconButton';
 import { ScalingTypeEnum } from '../../../../ts/enums/ScalingTypeEnum';
 import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
 import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
@@ -106,18 +106,7 @@ export default function VisualizationSetting({ index, settings, setSettings }: P
                     />
                 )}
 
-                <div className='color-setting-row'>
-                    <ColorPicker
-                        color={setting.color}
-                        setColor={(color) => updateSetting({ color })}
-                    />
-                    <Input
-                        className='color-input'
-                        value={setting.color}
-                        placeholder='Hex Color'
-                        onChange={(color) => updateSetting({ color })}
-                    />
-                </div>
+                <ColorField color={setting.color} onChange={(color) => updateSetting({ color })} />
 
                 <div className='conditions'>
                     <h4>Conditions <span>{setting.conditions.length}</span></h4>
@@ -136,36 +125,30 @@ export default function VisualizationSetting({ index, settings, setSettings }: P
 
             <div className='setting-actions'>
                 <div>
-                    <Button className='add-condition-btn' onClick={addCondition}>
+                    <button type='button' className='ui-button add-condition-btn' onClick={addCondition}>
                         <i className='fa-solid fa-plus' aria-hidden='true'></i>
                         Add condition
-                    </Button>
-                    <Button
+                    </button>
+                    <IconButton
+                        icon='fa-trash'
+                        label='Delete visualization'
                         className='delete-setting-btn danger-btn icon-btn'
-                        aria-label='Delete visualization'
-                        title='Delete visualization'
                         onClick={deleteSetting}
-                    >
-                        <i className='fa-solid fa-trash' aria-hidden='true'></i>
-                    </Button>
-                    <Button
+                    />
+                    <IconButton
+                        icon='fa-arrow-up'
+                        label='Move visualization up'
                         className='up-setting-btn icon-btn'
-                        aria-label='Move visualization up'
-                        title='Move up'
                         onClick={() => moveSetting('up')}
                         disabled={!canMoveUp}
-                    >
-                        <i className='fa-solid fa-arrow-up' aria-hidden='true'></i>
-                    </Button>
-                    <Button
+                    />
+                    <IconButton
+                        icon='fa-arrow-down'
+                        label='Move visualization down'
                         className='down-setting-btn icon-btn'
-                        aria-label='Move visualization down'
-                        title='Move down'
                         onClick={() => moveSetting('down')}
                         disabled={!canMoveDown}
-                    >
-                        <i className='fa-solid fa-arrow-down' aria-hidden='true'></i>
-                    </Button>
+                    />
                 </div>
             </div>
         </div>

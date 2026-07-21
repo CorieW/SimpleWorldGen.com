@@ -1,16 +1,15 @@
 .input-group {
     display: flex;
-    flex: 1;
     min-width: 0;
+    flex: 1;
     flex-direction: column;
     gap: 6px;
 
     label {
         color: var(--ui-muted);
-        font-size: 0.72rem;
-        font-weight: 750;
+        font-size: 0.7rem;
+        font-weight: 800;
         letter-spacing: 0.08em;
-        line-height: 1.2;
         text-transform: uppercase;
     }
 
@@ -19,116 +18,31 @@
         width: 100%;
         min-width: 0;
         height: 42px;
-        box-sizing: border-box;
+        padding: 0 11px;
         border: 2px solid var(--ui-border);
         border-radius: var(--ui-radius-sm);
         outline: none;
         background: var(--ui-field);
         color: var(--ui-text);
-        font: inherit;
         font-size: 0.86rem;
         font-weight: 800;
-        transition: border-color 80ms ease, box-shadow 80ms ease, background 80ms ease;
 
-        &::placeholder {
-            color: var(--ui-muted);
-        }
-
-        &:hover {
-            border-color: var(--ui-border-strong);
-            background: var(--ui-field-hover);
-        }
-
-        &:focus {
-            border-color: var(--ui-accent);
-            box-shadow: 3px 3px 0 var(--ui-accent-soft);
-        }
+        &:hover { border-color: var(--ui-border-strong); }
+        &:focus { border-color: var(--ui-accent); box-shadow: 3px 3px 0 var(--ui-accent-soft); }
+        &::placeholder { color: var(--ui-muted); }
     }
 
-    .text-input,
-    select,
-    .number-input input {
-        padding: 0 12px;
-    }
+    select { cursor: pointer; }
+    option { background: var(--ui-panel); }
 }
 
-.number-input,
-.select-input {
-    position: relative;
-    min-width: 0;
-}
+.color-field-control {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 8px;
 
-.number-input {
-    input {
-        padding-right: 43px !important;
-        appearance: textfield;
-
-        &::-webkit-inner-spin-button,
-        &::-webkit-outer-spin-button {
-            margin: 0;
-            appearance: none;
-        }
-    }
-
-    .number-input-controls {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        bottom: 2px;
-        display: grid;
-        width: 34px;
-        grid-template-rows: 1fr 1fr;
-        overflow: hidden;
-        border-left: 2px solid var(--ui-border);
-        border-radius: 0 calc(var(--ui-radius-sm) - 1px) calc(var(--ui-radius-sm) - 1px) 0;
-
-        button {
-            display: grid;
-            min-width: 0;
-            min-height: 0;
-            place-items: center;
-            border: 0;
-            border-radius: 0;
-            background: var(--ui-field-raised);
-            color: var(--ui-muted);
-            cursor: pointer;
-
-            &:first-child {
-                border-bottom: 2px solid var(--ui-border);
-            }
-
-            &:hover,
-            &:active {
-                background: var(--ui-accent);
-                color: var(--ui-accent-ink);
-            }
-
-            i {
-                font-size: 0.58rem;
-            }
-        }
-    }
-}
-
-.select-input {
-    select {
-        padding-right: 38px !important;
-        appearance: none;
+    input[type='color'] {
+        padding: 3px;
         cursor: pointer;
-
-        option {
-            background: var(--ui-panel-solid);
-            color: var(--ui-text);
-        }
-    }
-
-    > i {
-        position: absolute;
-        top: 50%;
-        right: 14px;
-        color: var(--ui-accent);
-        font-size: 0.7rem;
-        pointer-events: none;
-        transform: translateY(-50%);
     }
 }

@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@chakra-ui/react';
-import Sidebar from '../../../../components/Sidebar/Sidebar';
+import ToolPanel from '../../../../components/ToolPanel/ToolPanel';
 import Input from '../../../../components/Input/Input';
-import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
+import ColorField from '../../../../components/Input/ColorField';
 import { IWorldSettings } from '../../../../ts/interfaces/IWorldSettings';
 import useStore from '../../editorStore';
 import './SettingsSidebar.scss';
@@ -18,7 +17,6 @@ export default function SettingsSidebar({ sidebarOpen, setSidebarOpen }: Props) 
 
     const {
         worldWidth,
-        worldHeight,
         fadeOff,
         xFadeOffPercentage,
         yFadeOffPercentage,
@@ -50,8 +48,7 @@ export default function SettingsSidebar({ sidebarOpen, setSidebarOpen }: Props) 
                     <i className='fa-solid fa-expand' aria-hidden='true'></i>
                     World dimensions
                 </h3>
-                <Input label='Width' type='number' value={worldWidth} step={100} onChange={updateWorldSize} />
-                <Input label='Height' type='number' value={worldHeight} step={100} onChange={updateWorldSize} />
+                <Input label='World size' type='number' value={worldWidth} step={100} onChange={updateWorldSize} />
             </section>
 
             <section className='settings-section'>
@@ -59,18 +56,11 @@ export default function SettingsSidebar({ sidebarOpen, setSidebarOpen }: Props) 
                     <i className='fa-solid fa-fill-drip' aria-hidden='true'></i>
                     World appearance
                 </h3>
-                <div className='form-row color-field-row'>
-                    <ColorPicker
-                        color={backgroundColor}
-                        setColor={(color) => updateCurrentSettings({ backgroundColor: color })}
-                    />
-                    <Input
-                        className='color-input'
-                        value={backgroundColor}
-                        placeholder='Hex Color'
-                        onChange={(value) => updateCurrentSettings({ backgroundColor: value })}
-                    />
-                </div>
+                <ColorField
+                    label='Background color'
+                    color={backgroundColor}
+                    onChange={(color) => updateCurrentSettings({ backgroundColor: color })}
+                />
             </section>
 
             <section className='settings-section'>
@@ -116,30 +106,30 @@ export default function SettingsSidebar({ sidebarOpen, setSidebarOpen }: Props) 
                     <i className='fa-solid fa-wand-magic-sparkles' aria-hidden='true'></i>
                     Generation
                 </h3>
-                <Button className='wide-btn' onClick={randomizeSeeds}>
+                <button type='button' className='ui-button wide-btn' onClick={randomizeSeeds}>
                     <i className='fa-solid fa-dice' aria-hidden='true'></i>
                     Randomize seeds
-                </Button>
+                </button>
             </section>
         </>
     );
 
     const actions = (
-        <div>
-            <Button className='apply-settings-btn primary-btn' onClick={() => setWorldSettings(currentSettings)}>
+        <div className='panel-actions'>
+            <button type='button' className='ui-button apply-settings-btn primary-btn' onClick={() => setWorldSettings(currentSettings)}>
                 Apply
-            </Button>
+            </button>
         </div>
     );
 
     return (
-        <Sidebar
+        <ToolPanel
             open={sidebarOpen}
             onClose={closeMenu}
-            title='Settings'
+            title='World settings'
             footer={actions}
         >
             {content}
-        </Sidebar>
+        </ToolPanel>
     );
 }

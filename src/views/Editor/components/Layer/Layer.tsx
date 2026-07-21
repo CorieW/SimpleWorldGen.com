@@ -3,10 +3,9 @@ import './Layer.scss';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
 import editorStore from '../../editorStore';
 import appStore from '../../../../appStore';
-import { Button } from '@chakra-ui/react';
 import { Drawer } from '../../../../ts/utils/Drawer';
 import { NodeValueCalculator } from '../../../../ts/utils/LayerValueCalculator';
-import ConfirmableInput from '../../../../components/ConfirmableInput/ConfirmableInput';
+import IconButton from '../../../../components/IconButton/IconButton';
 
 export default function Layer(props: ILayer) {
     const { id, name, beginningNode } = props;
@@ -98,43 +97,41 @@ export default function Layer(props: ILayer) {
                     <span>Edit nodes</span>
                 </button>
             </div>
-            <ConfirmableInput
-                value={name}
-                changeValue={(value: string) => changeLayerName(value)}
+            <input
+                key={name}
+                className='layer-name-input'
+                aria-label='Layer name'
+                defaultValue={name}
+                onBlur={(event) => changeLayerName(event.currentTarget.value)}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter') event.currentTarget.blur();
+                    if (event.key === 'Escape') {
+                        event.currentTarget.value = name;
+                        event.currentTarget.blur();
+                    }
+                }}
             />
             <div className='btns-container'>
-                <Button
+                <IconButton
+                    icon='fa-arrow-left'
+                    label={`Move ${name} left`}
                     className='move-btn icon-btn'
-                    colorPalette='transparent'
-                    size='sm'
-                    aria-label={`Move ${name} left`}
-                    title='Move left'
                     disabled={!canMoveLayer(id, 'left')}
                     onClick={() => moveLayer(id, 'left')}
-                >
-                    <i className='fa-solid fa-arrow-left' aria-hidden='true'></i>
-                </Button>
-                <Button
+                />
+                <IconButton
+                    icon='fa-trash'
+                    label={`Delete ${name}`}
                     className='delete-btn icon-btn'
-                    colorPalette='transparent'
-                    size='sm'
-                    aria-label={`Delete ${name}`}
-                    title='Delete layer'
                     onClick={removeThisLayer}
-                >
-                    <i className='fa-solid fa-trash' aria-hidden='true'></i>
-                </Button>
-                <Button
+                />
+                <IconButton
+                    icon='fa-arrow-right'
+                    label={`Move ${name} right`}
                     className='move-btn icon-btn'
-                    colorPalette='transparent'
-                    size='sm'
-                    aria-label={`Move ${name} right`}
-                    title='Move right'
                     disabled={!canMoveLayer(id, 'right')}
                     onClick={() => moveLayer(id, 'right')}
-                >
-                    <i className='fa-solid fa-arrow-right' aria-hidden='true'></i>
-                </Button>
+                />
             </div>
         </li>
     );

@@ -1,58 +1,24 @@
-.save-modal-content {
-    display: flex;
-    width: 100%;
-    min-height: 430px;
-    flex: 1;
-    flex-direction: column;
-    gap: 16px;
+.file-picker {
+    display: grid;
+    min-height: 220px;
+    gap: 6px;
+    padding: 24px;
+    place-items: center;
+    align-content: center;
+    border: 3px dashed var(--ui-accent);
+    background: var(--ui-field);
+    color: var(--ui-text);
+    cursor: pointer;
+    text-align: center;
 
-    .modal-heading {
-        display: flex;
-        gap: 13px;
-        align-items: center;
+    input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    i { margin-bottom: 8px; color: var(--ui-accent); font-size: 1.5rem; }
+    strong { font-size: 0.86rem; text-transform: uppercase; }
+    span { color: var(--ui-muted); font-size: 0.7rem; }
 
-        .modal-heading-icon {
-            display: grid;
-            width: 42px;
-            min-width: 42px;
-            height: 42px;
-            place-items: center;
-            border: 2px solid var(--ui-accent);
-            border-radius: var(--ui-radius-sm);
-            background: var(--ui-accent-soft);
-            color: var(--ui-accent);
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 1.35rem;
-            font-weight: 800;
-        }
-
-        p {
-            margin: 3px 0 0;
-            color: var(--ui-muted);
-            font-size: 0.78rem;
-        }
-    }
-
-    .modal-btn {
-        width: 100%;
-    }
-}
-
-.modal-actions {
-    display: flex;
-    width: 100%;
-    gap: 10px;
-    justify-content: space-between;
-
-    > div {
-        display: flex;
-        gap: 6px;
-    }
-
-    .modal-btn {
-        gap: 8px;
+    &:hover,
+    &:focus-within {
+        border-style: solid;
+        background: var(--ui-panel-raised);
     }
 }

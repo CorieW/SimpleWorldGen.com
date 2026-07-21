@@ -1,5 +1,5 @@
-import { Button } from '@chakra-ui/react';
 import Input from '../../../../components/Input/Input';
+import IconButton from '../../../../components/IconButton/IconButton';
 import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
 import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
@@ -89,14 +89,12 @@ export default function VisualizationCondition({
             </div>
 
             <div className='condition-actions'>
-                <Button
+                <IconButton
+                    icon='fa-trash'
+                    label='Delete condition'
                     className='delete-condition-btn danger-btn icon-btn'
-                    aria-label='Delete condition'
-                    title='Delete condition'
                     onClick={onDelete}
-                >
-                    <i className='fa-solid fa-trash' aria-hidden='true'></i>
-                </Button>
+                />
             </div>
         </div>
     );

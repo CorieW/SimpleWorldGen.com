@@ -27,6 +27,11 @@
             box-shadow: var(--ui-shadow);
             pointer-events: all;
 
+            .layer-scroll {
+                overflow-x: auto;
+                padding: 0 5px 5px 0;
+            }
+
             .layer-list {
                 display: flex;
                 min-width: max-content;
@@ -51,9 +56,9 @@
                         flex-direction: column;
                         gap: 9px;
                         justify-content: center;
-                        border: 3px dashed var(--ui-accent) !important;
-                        background: var(--ui-field) !important;
-                        color: var(--ui-accent) !important;
+                        border: 3px dashed var(--ui-accent);
+                        background: var(--ui-field);
+                        color: var(--ui-accent);
 
                         i {
                             font-size: 1.45rem;
@@ -68,9 +73,9 @@
 
                         &:hover,
                         &:active {
-                            border-style: solid !important;
-                            background: var(--ui-accent) !important;
-                            color: var(--ui-accent-ink) !important;
+                            border-style: solid;
+                            background: var(--ui-accent);
+                            color: var(--ui-accent-ink);
 
                             span {
                                 color: var(--ui-accent-ink);
@@ -89,12 +94,12 @@
     min-height: 34px;
     gap: 9px;
     justify-content: center;
-    border-width: 3px 3px 0 !important;
-    border-color: var(--ui-border-strong) !important;
-    border-bottom: 0 !important;
-    border-radius: var(--ui-radius-sm) var(--ui-radius-sm) 0 0 !important;
-    background: var(--ui-panel) !important;
-    color: var(--ui-text) !important;
+    border-width: 3px 3px 0;
+    border-color: var(--ui-border-strong);
+    border-bottom: 0;
+    border-radius: var(--ui-radius-sm) var(--ui-radius-sm) 0 0;
+    background: var(--ui-panel);
+    color: var(--ui-text);
     pointer-events: all;
 
     span {
@@ -111,8 +116,8 @@
 
     &:hover,
     &:active {
-        background: var(--ui-accent) !important;
-        color: var(--ui-accent-ink) !important;
+        background: var(--ui-accent);
+        color: var(--ui-accent-ink);
 
         i {
             color: inherit;

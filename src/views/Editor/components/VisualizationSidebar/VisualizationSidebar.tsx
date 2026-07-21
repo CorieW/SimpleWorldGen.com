@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import './VisualizationSidebar.scss';
-import { Button } from '@chakra-ui/react';
 import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
 import useStore from '../../editorStore';
 import VisualizationSetting from '../VisualizationSetting/VisualizationSetting';
-import Sidebar from '../../../../components/Sidebar/Sidebar';
+import ToolPanel from '../../../../components/ToolPanel/ToolPanel';
 import { VisualizationColorTypeEnum } from '../../../../ts/enums/VisualizationColorTypeEnum';
 import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
 
@@ -51,10 +49,8 @@ export default function VisualizationSidebar(props: Props) {
     const content = (
         <>
             {currentSettings.length === 0 && (
-                <div className='empty-visualizations'>
-                    <i className='fa-solid fa-layer-group' aria-hidden='true'></i>
-                    <strong>No visualizations yet</strong>
-                    <span>Add one to start drawing this world.</span>
+                <div className='panel-empty'>
+                    <span>No visualizations yet. Add one to start drawing this world.</span>
                 </div>
             )}
             {currentSettings.map(
@@ -73,29 +69,25 @@ export default function VisualizationSidebar(props: Props) {
     );
 
     const actions = (
-        <>
-            <div>
-                <Button className='add-visualization-btn' onClick={addSetting}>
+        <div className='panel-actions'>
+                <button type='button' className='ui-button add-visualization-btn' onClick={addSetting}>
                     <i className='fa-solid fa-plus' aria-hidden='true'></i>
                     Add visualization
-                </Button>
-            </div>
-            <div>
-                <Button className='apply-visualization-btn primary-btn' onClick={applySettings}>
+                </button>
+                <button type='button' className='ui-button apply-visualization-btn primary-btn' onClick={applySettings}>
                     Apply
-                </Button>
-            </div>
-        </>
+                </button>
+        </div>
     );
 
     return (
-        <Sidebar
+        <ToolPanel
             open={sidebarOpen}
             onClose={closeMenu}
             title='Visualization Settings'
             footer={actions}
         >
             {content}
-        </Sidebar>
+        </ToolPanel>
     );
 }

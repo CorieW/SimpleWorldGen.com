@@ -1,10 +1,10 @@
-:where(#app-container) :is(.chakra-button, .ui-button) {
+:where(#app-container) .ui-button {
   min-height: 40px;
   padding: 0 15px;
-  border: 2px solid var(--ui-border) !important;
-  border-radius: var(--ui-radius-sm) !important;
-  background: var(--ui-panel-raised) !important;
-  color: var(--ui-text) !important;
+  border: 2px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-panel-raised);
+  color: var(--ui-text);
   box-shadow: 3px 3px 0 rgba(3, 8, 15, 0.7);
   font-size: 0.78rem;
   font-weight: 900;
@@ -15,39 +15,39 @@
   transition: transform 80ms ease, border-color 80ms ease, background 80ms ease, color 80ms ease, box-shadow 80ms ease;
 }
 
-:where(#app-container) :is(.chakra-button, .ui-button):hover:not(:disabled) {
-  border-color: var(--ui-border-strong) !important;
-  background: #21344d !important;
+:where(#app-container) .ui-button:hover:not(:disabled) {
+  border-color: var(--ui-border-strong);
+  background: #21344d;
   box-shadow: 4px 4px 0 rgba(3, 8, 15, 0.8);
   transform: translate(-1px, -1px);
 }
 
-:where(#app-container) :is(.chakra-button, .ui-button):active:not(:disabled) {
+:where(#app-container) .ui-button:active:not(:disabled) {
   box-shadow: 1px 1px 0 rgba(3, 8, 15, 0.8);
   transform: translate(2px, 2px);
 }
 
-:where(#app-container) :is(.chakra-button, .ui-button):disabled {
+:where(#app-container) .ui-button:disabled {
   opacity: 0.36;
   cursor: not-allowed;
 }
 
 :where(#app-container) .primary-btn {
-  border-color: rgba(255, 225, 145, 0.48) !important;
-  background: var(--ui-accent) !important;
-  color: var(--ui-accent-ink) !important;
+  border-color: rgba(255, 225, 145, 0.48);
+  background: var(--ui-accent);
+  color: var(--ui-accent-ink);
   box-shadow: 3px 3px 0 #8f6c19;
 }
 
 :where(#app-container) .primary-btn:hover:not(:disabled) {
-  border-color: #fff1be !important;
-  background: var(--ui-accent-hover) !important;
+  border-color: #fff1be;
+  background: var(--ui-accent-hover);
 }
 
 :where(#app-container) :is(.danger-btn, .delete-btn):hover:not(:disabled) {
-  border-color: rgba(255, 123, 114, 0.6) !important;
-  background: var(--ui-danger-soft) !important;
-  color: var(--ui-danger) !important;
+  border-color: rgba(255, 123, 114, 0.6);
+  background: var(--ui-danger-soft);
+  color: var(--ui-danger);
 }
 
 :where(#app-container) .icon-btn {

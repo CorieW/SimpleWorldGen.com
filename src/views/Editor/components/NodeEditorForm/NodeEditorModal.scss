@@ -1,85 +1,31 @@
-#node-editor-modal-content-container {
-    z-index: 101;
-    display: flex;
-    min-height: 0;
-    flex: 1;
-    flex-direction: column;
-    gap: 14px;
+.node-preview {
+    position: relative;
+    height: 180px;
+    flex: 0 0 180px;
+    overflow: hidden;
+    border: 3px solid var(--ui-border-strong);
+    background: #7f8b98;
+    box-shadow: 4px 4px 0 rgba(3, 8, 15, 0.78);
 
-    .node-editor-heading {
-        span {
-            color: var(--ui-accent);
-            font-size: 0.66rem;
-            font-weight: 850;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-        }
+    canvas { width: 100%; height: 100%; }
 
-        h1 {
-            margin: 2px 0 0;
-            font-size: 1.42rem;
-            font-weight: 800;
-        }
-    }
-
-    .display-container {
-        .inner-container {
-            position: relative;
-            display: flex;
-            width: 100%;
-            height: 184px;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 3px solid var(--ui-border-strong);
-            border-radius: var(--ui-radius-md);
-            background: #7f8b98;
-            box-shadow: 4px 4px 0 rgba(3, 8, 15, 0.78);
-
-            &::after {
-                position: absolute;
-                right: 9px;
-                bottom: 8px;
-                padding: 3px 7px;
-                border-radius: 0;
-                background: rgba(8, 17, 29, 0.72);
-                color: white;
-                content: 'PREVIEW';
-                font-size: 0.56rem;
-                font-weight: 850;
-                letter-spacing: 0.12em;
-            }
-
-            canvas {
-                position: absolute;
-                inset: 0;
-                width: 100%;
-                height: 100%;
-            }
-        }
-    }
-
-    .form-container {
-        min-height: 0;
-        flex: 1;
-        padding: 2px 1px 8px;
-        overflow-y: auto;
-
-        [data-scope='separator'] {
-            border-color: var(--ui-border);
-        }
+    span {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        padding: 3px 6px;
+        background: var(--ui-ink);
+        color: var(--ui-text);
+        font-size: 0.56rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
     }
 }
 
-#node-editor-modal-bottom-bar {
-    display: flex;
-    width: 100%;
-    gap: 10px;
-    justify-content: space-between !important;
+.node-editor-actions {
+    justify-content: space-between;
 
-    div {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-    }
+    > div { display: flex; gap: 6px; }
+    > button:last-child { flex: 0 1 120px; }
 }

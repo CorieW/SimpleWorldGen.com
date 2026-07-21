@@ -1,148 +1,83 @@
-import './NodesModal.scss'
-import { Fragment, type ReactNode } from 'react'
-import Modal from '../../../../components/Modal/Modal'
-import useStore from '../../editorStore'
-import { Button } from '@chakra-ui/react'
-import { INode } from '../../../../ts/interfaces/INode'
-import Node from './Node/Node'
-import { NodeEffectEnum } from '../../../../ts/enums/NodeEffectEnum'
+import { Fragment, type ReactNode } from 'react';
+import ToolPanel from '../../../../components/ToolPanel/ToolPanel';
+import IconButton from '../../../../components/IconButton/IconButton';
+import { INode } from '../../../../ts/interfaces/INode';
+import { NodeEffectEnum } from '../../../../ts/enums/NodeEffectEnum';
+import useStore from '../../editorStore';
+import Node from './Node/Node';
+import './NodesModal.scss';
 
 export default function NodesModal() {
-    const {
-        activeFormLayerId,
-        setActiveFormLayerId,
-        removeLayer,
-        canMoveLayer,
-        moveLayer,
-        addNode,
-        getLayer,
-    } = useStore()
+    const store = useStore();
+    const layer = store.getLayer(store.activeFormLayerId);
 
-    const layer = getLayer(activeFormLayerId)
-
-    function closeForm() {
-        setActiveFormLayerId(-1)
+    function closePanel() {
+        store.setActiveFormLayerId(-1);
     }
 
-    function removeThisLayer() {
-        removeLayer(activeFormLayerId)
-        closeForm()
+    function removeLayer() {
+        store.removeLayer(store.activeFormLayerId);
+        closePanel();
     }
 
     function getNodes(): INode[] {
-        const nodes: INode[] = []
-
-        if (!layer) return nodes
-
-        let currentNode: INode | null = layer.beginningNode
-        while (currentNode) {
-            nodes.push(currentNode)
-            currentNode = currentNode.nextNode
+        const nodes: INode[] = [];
+        let node = layer?.beginningNode || null;
+        while (node) {
+            nodes.push(node);
+            node = node.nextNode;
         }
-
-        return nodes
+        return nodes;
     }
 
-    function getEffectSymbol(effect: NodeEffectEnum | null): ReactNode {
-        switch (effect) {
-            case NodeEffectEnum.Add:
-                return <i className="fa-solid fa-plus"></i>
-            case NodeEffectEnum.Subtract:
-                return <i className="fa-solid fa-minus"></i>
-            case NodeEffectEnum.Multiply:
-                return <i className="fa-solid fa-times"></i>
-            case NodeEffectEnum.Divide:
-                return <i className="fa-solid fa-divide"></i>
-            default:
-                return ''
-        }
-    }
-
-    function renderContent() {
-        return (
-            <div className='nodes-modal-content'>
-                <div className='nodes-heading'>
-                    <span>Layer graph</span>
-                    <h1>{layer?.name || 'Layer'}</h1>
-                    <p>Select a node to tune how this layer is generated.</p>
-                </div>
-                <div className='nodes-container'>
-                    {getNodes().map((node, index) => (
-                        <Fragment key={node.id}>
-                            {index !== 0 && <span className='effect-symbol'>{getEffectSymbol(node.effect)}</span>}
-                            <Node {...node} />
-                        </Fragment>
-                    ))}
-                </div>
-            </div>
-        )
-    }
-
-    function renderFooter() {
-        return (
-            <div id='nodes-modal-bottom-bar'>
-                <div>
-                    <Button
-                        className='add-btn icon-btn'
-                        aria-label='Add node'
-                        title='Add node'
-                        colorPalette='green'
-                        size='md'
-                        onClick={() => addNode(null, activeFormLayerId)}
-                    >
-                        <i className='fa-solid fa-plus'></i>
-                    </Button>
-                    <Button
-                        className='danger-btn icon-btn'
-                        aria-label='Delete layer'
-                        title='Delete layer'
-                        colorPalette='red'
-                        size='md'
-                        onClick={removeThisLayer}
-                    >
-                        <i className='fa-solid fa-trash'></i>
-                    </Button>
-                    <Button
-                        className='move-btn icon-btn'
-                        aria-label='Move layer left'
-                        title='Move layer left'
-                        colorPalette='blue'
-                        size='md'
-                        disabled={!canMoveLayer(activeFormLayerId, 'left')}
-                        onClick={() => moveLayer(activeFormLayerId, 'left')}
-                    >
-                        <i className='fa-solid fa-arrow-left'></i>
-                    </Button>
-                    <Button
-                        className='move-btn icon-btn'
-                        aria-label='Move layer right'
-                        title='Move layer right'
-                        colorPalette='blue'
-                        size='md'
-                        disabled={!canMoveLayer(activeFormLayerId, 'right')}
-                        onClick={() => moveLayer(activeFormLayerId, 'right')}
-                    >
-                        <i className='fa-solid fa-arrow-right'></i>
-                    </Button>
-                </div>
-                <div>
-                    <Button
-                        colorPalette='gray'
-                        size='md'
-                        onClick={closeForm}
-                    >
-                        Close
-                    </Button>
-                </div>
-            </div>
-        )
-    }
+    const footer = (
+        <div className='panel-actions node-actions'>
+            <IconButton icon='fa-plus' label='Add node' onClick={() => store.addNode(null, store.activeFormLayerId)} />
+            <IconButton icon='fa-trash' label='Delete layer' className='danger-btn' onClick={removeLayer} />
+            <IconButton
+                icon='fa-arrow-left'
+                label='Move layer left'
+                disabled={!store.canMoveLayer(store.activeFormLayerId, 'left')}
+                onClick={() => store.moveLayer(store.activeFormLayerId, 'left')}
+            />
+            <IconButton
+                icon='fa-arrow-right'
+                label='Move layer right'
+                disabled={!store.canMoveLayer(store.activeFormLayerId, 'right')}
+                onClick={() => store.moveLayer(store.activeFormLayerId, 'right')}
+            />
+        </div>
+    );
 
     return (
-        <div id='nodes-modal-container'>
-            <Modal open={activeFormLayerId !== -1} onClose={closeForm} footer={renderFooter()}>
-                {renderContent()}
-            </Modal>
-        </div>
-    )
+        <ToolPanel
+            open={store.activeFormLayerId !== -1 && store.activeFormNodeId === -1}
+            onClose={closePanel}
+            title={layer?.name || 'Layer'}
+            eyebrow='Layer graph'
+            footer={footer}
+        >
+            <p className='panel-intro'>Select a node to tune how this layer is generated.</p>
+            <div className='nodes-container'>
+                {getNodes().map((node, index) => (
+                    <Fragment key={node.id}>
+                        {index > 0 && <span className='effect-symbol'>{effectSymbol(node.effect)}</span>}
+                        <Node {...node} />
+                    </Fragment>
+                ))}
+            </div>
+        </ToolPanel>
+    );
+}
+
+function effectSymbol(effect: NodeEffectEnum | null): ReactNode {
+    const icons: Partial<Record<NodeEffectEnum, string>> = {
+        [NodeEffectEnum.Add]: 'fa-plus',
+        [NodeEffectEnum.Subtract]: 'fa-minus',
+        [NodeEffectEnum.Multiply]: 'fa-times',
+        [NodeEffectEnum.Divide]: 'fa-divide',
+    };
+    return icons[effect as NodeEffectEnum]
+        ? <i className={`fa-solid ${icons[effect as NodeEffectEnum]}`} aria-hidden='true'></i>
+        : null;
 }

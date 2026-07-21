@@ -1,100 +1,75 @@
-import { useState } from 'react';
-import './EditorOverlay.scss';
+import { useEffect, useState } from 'react';
 import Layers from '../Layers/Layers';
 import NodeEditorModal from '../NodeEditorForm/NodeEditorModal';
-import { Button } from '@chakra-ui/react';
 import VisualizationSidebar from '../VisualizationSidebar/VisualizationSidebar';
 import SettingsSidebar from '../SettingsSidebar/SettingsSidebar';
 import NodesModal from '../NodesModal/NodesModal';
 import SaveModal from '../SaveModal/SaveModal';
+import useStore from '../../editorStore';
+import './EditorOverlay.scss';
 
-type Props = {
-    zoomIn: () => void;
-    zoomOut: () => void;
-    resetView: () => void;
-}
+type Props = { zoomIn: () => void; zoomOut: () => void; resetView: () => void };
+type Tool = 'save' | 'settings' | 'visualization';
 
-function EditorOverlay(props: Props) {
-    const [saveModalOpen, setSaveModalOpen] = useState(false);
-    const [settingsSidebarOpen, setSettingsSidebarOpen] = useState(false);
-    const [visualizationSidebarOpen, setVisualizationSidebarOpen] =
-        useState(false);
+export default function EditorOverlay({ zoomIn, zoomOut, resetView }: Props) {
+    const [activeTool, setActiveTool] = useState<Tool | null>(null);
+    const { activeFormLayerId, activeFormNodeId, setActiveFormLayerId, setActiveFormNodeId } = useStore();
+
+    useEffect(() => {
+        if (activeFormLayerId !== -1 || activeFormNodeId !== -1) setActiveTool(null);
+    }, [activeFormLayerId, activeFormNodeId]);
+
+    function toggleTool(tool: Tool) {
+        setActiveFormLayerId(-1);
+        setActiveFormNodeId(-1);
+        setActiveTool((current) => current === tool ? null : tool);
+    }
+
+    const menuTools: { tool: Tool; icon: string; label: string }[] = [
+        { tool: 'save', icon: 'fa-save', label: 'Save or load world' },
+        { tool: 'settings', icon: 'fa-cog', label: 'Open world settings' },
+        { tool: 'visualization', icon: 'fa-palette', label: 'Open visualization settings' },
+    ];
+    const viewTools = [
+        { icon: 'fa-magnifying-glass-plus', label: 'Zoom in', action: zoomIn },
+        { icon: 'fa-magnifying-glass-minus', label: 'Zoom out', action: zoomOut },
+        { icon: 'fa-arrows-to-dot', label: 'Reset view', action: resetView },
+    ];
 
     return (
         <div id='editor-overlay'>
-            <div id='unsupported-resolution-cover'>
-                <span>Unsupported Resolution</span>
-            </div>
-
+            <div id='unsupported-resolution-cover'><span>Unsupported Resolution</span></div>
             <Layers />
-            <NodesModal />
-            <NodeEditorModal />
             <div id='editor-overlay-btns'>
                 <div className='btn-group menu-btns'>
-                    <Button
-                        id='save-btn'
-                        className={`tool-btn ${saveModalOpen ? 'active' : ''}`}
-                        aria-label='Save or load world'
-                        aria-pressed={saveModalOpen}
-                        title='Save / Load'
-                        onClick={() => setSaveModalOpen(true)}
-                    >
-                        <i className='fa-solid fa-save' aria-hidden='true'></i>
-                    </Button>
-                    <Button
-                        id='settings-btn'
-                        className={`tool-btn ${settingsSidebarOpen ? 'active' : ''}`}
-                        aria-label='Open world settings'
-                        aria-pressed={settingsSidebarOpen}
-                        title='World settings'
-                        onClick={() =>
-                            setSettingsSidebarOpen(!settingsSidebarOpen)
-                        }
-                    >
-                        <i className='fa-solid fa-cog' aria-hidden='true'></i>
-                    </Button>
-                    <Button
-                        id='toggle-visualization-menu-btn'
-                        className={`tool-btn ${visualizationSidebarOpen ? 'active' : ''}`}
-                        aria-label='Open visualization settings'
-                        aria-pressed={visualizationSidebarOpen}
-                        title='Visualization settings'
-                        onClick={() =>
-                            setVisualizationSidebarOpen(
-                                !visualizationSidebarOpen
-                            )
-                        }
-                    >
-                        <i className='fa-solid fa-palette' aria-hidden='true'></i>
-                    </Button>
+                    {menuTools.map(({ tool, icon, label }) => (
+                        <button
+                            key={tool}
+                            type='button'
+                            className={`ui-button tool-btn ${activeTool === tool ? 'active' : ''}`}
+                            aria-label={label}
+                            aria-pressed={activeTool === tool}
+                            title={label}
+                            onClick={() => toggleTool(tool)}
+                        >
+                            <i className={`fa-solid ${icon}`} aria-hidden='true'></i>
+                        </button>
+                    ))}
                 </div>
                 <div className='btn-group zoom-btns'>
-                    <Button className='tool-btn' id='zoom-in-btn' aria-label='Zoom in' title='Zoom in' onClick={props.zoomIn}>
-                        <i className='fa-solid fa-magnifying-glass-plus' aria-hidden='true'></i>
-                    </Button>
-                    <Button className='tool-btn' id='zoom-out-btn' aria-label='Zoom out' title='Zoom out' onClick={props.zoomOut}>
-                        <i className='fa-solid fa-magnifying-glass-minus' aria-hidden='true'></i>
-                    </Button>
-                    <Button className='tool-btn' id='reset-view-btn' aria-label='Reset view' title='Reset view' onClick={props.resetView}>
-                        <i className="fa-solid fa-arrows-to-dot" aria-hidden='true'></i>
-                    </Button>
+                    {viewTools.map(({ icon, label, action }) => (
+                        <button key={label} type='button' className='ui-button tool-btn' aria-label={label} title={label} onClick={action}>
+                            <i className={`fa-solid ${icon}`} aria-hidden='true'></i>
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            <SaveModal
-                modalOpen={saveModalOpen}
-                setModalOpen={setSaveModalOpen}
-            />
-            <SettingsSidebar
-                sidebarOpen={settingsSidebarOpen}
-                setSidebarOpen={setSettingsSidebarOpen}
-            />
-            <VisualizationSidebar
-                sidebarOpen={visualizationSidebarOpen}
-                setSidebarOpen={setVisualizationSidebarOpen}
-            />
+            <SaveModal modalOpen={activeTool === 'save'} setModalOpen={(open) => setActiveTool(open ? 'save' : null)} />
+            <SettingsSidebar sidebarOpen={activeTool === 'settings'} setSidebarOpen={(open) => setActiveTool(open ? 'settings' : null)} />
+            <VisualizationSidebar sidebarOpen={activeTool === 'visualization'} setSidebarOpen={(open) => setActiveTool(open ? 'visualization' : null)} />
+            <NodesModal />
+            <NodeEditorModal />
         </div>
     );
 }
-
-export default EditorOverlay;
