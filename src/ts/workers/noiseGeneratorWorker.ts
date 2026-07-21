@@ -8,13 +8,17 @@ self.onmessage = function(event) {
         height,
         seed,
         multiplier,
-        octaves,
+        octaves: configuredOctaves,
         persistence,
         lacunarity,
         frequency,
         spread,
         offset
     } = data;
+    const requestedOctaves = Math.floor(Number(configuredOctaves));
+    const octaves = Number.isFinite(requestedOctaves) && requestedOctaves >= 1
+        ? requestedOctaves
+        : 1;
 
     const noise = makeNoise2D(seed);
     const noiseData: number[][] = [];
@@ -44,7 +48,7 @@ self.onmessage = function(event) {
                     (offset.y + y * spread) * currentFrequency
                 ) * amplitude;
 
-            totalAmplitude += amplitude;
+            totalAmplitude += Math.abs(amplitude);
             amplitude *= persistence;
         }
 

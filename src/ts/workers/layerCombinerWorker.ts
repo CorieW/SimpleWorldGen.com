@@ -12,7 +12,10 @@ self.onmessage = function(event) {
     const data = event.data;
     const { node, width, height, x, y, spread } = data;
 
-    if (!node) self.postMessage([]);
+    if (!node) {
+        self.postMessage([]);
+        return;
+    }
 
     const eachNodeNoiseValuesDict: { [key: string]: number[][] } = {};
     const promises: Promise<void>[] = [];
@@ -24,7 +27,7 @@ self.onmessage = function(event) {
         // This will remain the same.
         const iterationNode = currentNode;
 
-        switch (node.type) {
+        switch (iterationNode.type) {
             case NodeTypeEnum.Noise: {
                 const noiseNode = iterationNode as INoiseNode;
 
@@ -106,7 +109,7 @@ self.onmessage = function(event) {
 
     // ? Could this be generated on the GPU?
     function clampMap(map: number[][]): number[][] {
-        return map.map(row => row.map(val => Math.min(1, Math.max(0, val))));
+        return map.map(row => row.map(val => Number.isNaN(val) ? 0 : Math.min(1, Math.max(0, val))));
     }
 
     // ? Could this be generated on the GPU?
