@@ -220,7 +220,7 @@ const useStore: any = create<EditorStore>((set) => ({
 
             while (currentNode) {
                 if (currentNode.type === NodeTypeEnum.Noise) {
-                    let noiseNode = currentNode as INoiseNode;
+                    const noiseNode = currentNode as INoiseNode;
                     noiseNode.seed = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
                 }
 

@@ -50,7 +50,7 @@ export default function Node(props: INode) {
 
         const nodeValueCalculator = new NodeValueCalculator(layerCopy.beginningNode);
         nodeValueCalculator.calculateMap(width, height).then((map) => {
-            let array: number[] = [];
+            const array: number[] = [];
             map.forEach((row) => {
                 row.forEach((value) => {
                     array.push(value * 255);

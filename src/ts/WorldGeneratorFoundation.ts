@@ -25,34 +25,34 @@ export default abstract class WorldGeneratorFoundation {
         this._halfWorldWidth = worldDimensions.xKM / 2;
         this._halfWorldHeight = worldDimensions.yKM / 2;
 
-        let largestDimension = Math.max(worldDimensions.xKM, worldDimensions.yKM);
+        const largestDimension = Math.max(worldDimensions.xKM, worldDimensions.yKM);
         this._gridSystem = new GridSystem(largestDimension);
     }
 
     shouldUpdate(bounds: Bounds): boolean {
-        let leafs: QuadTreeNode<ChunkData>[] = [];
-        let shares: number[] = [];
+        const leafs: QuadTreeNode<ChunkData>[] = [];
+        const shares: number[] = [];
 
         this._gridSystem.update(bounds, (quadNode) => {
             leafs.push(quadNode);
             shares.push(quadNode.getSize() ^ this._sizeSignificance);
         });
 
-        let distributedShares: number[] = Utils.distributeInverseShares(shares, this._maxDisplayableTiles);
+        const distributedShares: number[] = Utils.distributeInverseShares(shares, this._maxDisplayableTiles);
 
         return this._previousDistributedShares.length !== distributedShares.length || !distributedShares.every((share, index) => share === this._previousDistributedShares[index]);
     }
 
     update(bounds: Bounds, onGenerated: (chunkData: ChunkData) => void) {
-        let leafs: QuadTreeNode<ChunkData>[] = [];
-        let shares: number[] = [];
+        const leafs: QuadTreeNode<ChunkData>[] = [];
+        const shares: number[] = [];
 
         this._gridSystem.update(bounds, (quadNode) => {
             leafs.push(quadNode);
             shares.push(quadNode.getSize() ^ this._sizeSignificance);
         });
 
-        let distributedShares: number[] = Utils.distributeInverseShares(shares, this._maxDisplayableTiles);
+        const distributedShares: number[] = Utils.distributeInverseShares(shares, this._maxDisplayableTiles);
         distributedShares.forEach((share, index) => {
             const bounds = leafs[index].getBounds();
             const detail = Math.round(Math.sqrt(share));

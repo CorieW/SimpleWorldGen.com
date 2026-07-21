@@ -1,4 +1,5 @@
 import './NodesModal.scss'
+import { Fragment, type ReactNode } from 'react'
 import Modal from '../../../../components/Modal/Modal'
 import useStore from '../../editorStore'
 import { Button } from '@chakra-ui/react'
@@ -6,9 +7,7 @@ import { INode } from '../../../../ts/interfaces/INode'
 import Node from './Node/Node'
 import { NodeEffectEnum } from '../../../../ts/enums/NodeEffectEnum'
 
-type Props = {}
-
-export default function NodesModal({}: Props) {
+export default function NodesModal() {
     const {
         activeFormLayerId,
         setActiveFormLayerId,
@@ -44,7 +43,7 @@ export default function NodesModal({}: Props) {
         return nodes
     }
 
-    function getEffectSymbol(effect: NodeEffectEnum | null): JSX.Element | string {
+    function getEffectSymbol(effect: NodeEffectEnum | null): ReactNode {
         switch (effect) {
             case NodeEffectEnum.Add:
                 return <i className="fa-solid fa-plus"></i>
@@ -63,10 +62,10 @@ export default function NodesModal({}: Props) {
         return (
             <div className='nodes-container'>
                 {getNodes().map((node, index) => (
-                    <>
+                    <Fragment key={node.id}>
                         {index !== 0 && getEffectSymbol(node.effect)}
-                        <Node key={index} {...node} />
-                    </>
+                        <Node {...node} />
+                    </Fragment>
                 ))}
             </div>
         )
@@ -77,31 +76,31 @@ export default function NodesModal({}: Props) {
             <div id='nodes-modal-bottom-bar'>
                 <div>
                     <Button
-                        colorScheme='green'
+                        colorPalette='green'
                         size='md'
                         onClick={() => addNode(null, activeFormLayerId)}
                     >
                         <i className='fa-solid fa-plus'></i>
                     </Button>
                     <Button
-                        colorScheme='red'
+                        colorPalette='red'
                         size='md'
                         onClick={removeThisLayer}
                     >
                         <i className='fa-solid fa-trash'></i>
                     </Button>
                     <Button
-                        colorScheme='blue'
+                        colorPalette='blue'
                         size='md'
-                        isDisabled={!canMoveLayer(activeFormLayerId, 'left')}
+                        disabled={!canMoveLayer(activeFormLayerId, 'left')}
                         onClick={() => moveLayer(activeFormLayerId, 'left')}
                     >
                         <i className='fa-solid fa-arrow-left'></i>
                     </Button>
                     <Button
-                        colorScheme='blue'
+                        colorPalette='blue'
                         size='md'
-                        isDisabled={!canMoveLayer(activeFormLayerId, 'right')}
+                        disabled={!canMoveLayer(activeFormLayerId, 'right')}
                         onClick={() => moveLayer(activeFormLayerId, 'right')}
                     >
                         <i className='fa-solid fa-arrow-right'></i>
@@ -109,7 +108,7 @@ export default function NodesModal({}: Props) {
                 </div>
                 <div>
                     <Button
-                        colorScheme='gray'
+                        colorPalette='gray'
                         size='md'
                         onClick={closeForm}
                     >
