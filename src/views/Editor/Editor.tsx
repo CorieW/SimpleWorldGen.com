@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import './Editor.scss';
 import paper from 'paper';
 import WorldDimensions from '../../ts/data/WorldDimensions';
@@ -21,6 +21,7 @@ function Editor() {
 
     const { worldWidth, worldHeight, fadeOff, xFadeOffPercentage, yFadeOffPercentage } = worldSettings;
 
+    const [isGenerating, setIsGenerating] = useState(true);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const positionRef = useRef<paper.Point>(new paper.Point(worldWidth / 2, worldHeight / 2));
     const zoomRef = useRef<number>(1);
@@ -63,13 +64,13 @@ function Editor() {
 
         canvasRef.current!.style.backgroundColor = worldSettings.backgroundColor;
         dragStartRef.current = null;
-        void updateWorld(true);
+        void updateWorld(true, true);
 
         return () => {
             invalidateGeneration(generationRequestRef);
             worldGenerator.cancelPendingGeneration();
         };
-    }, [worldSettings, layers]);
+    }, [worldSettings, layers, visualizationSettings]);
 
     useEffect(() => {
         function onResize() {
@@ -136,7 +137,7 @@ function Editor() {
         };
     });
 
-    async function updateWorld(force: boolean = false) {
+    async function updateWorld(force: boolean = false, showLoading: boolean = false) {
         const worldGenerator = worldRef.current;
         if (!worldGenerator) return;
 
@@ -147,6 +148,7 @@ function Editor() {
 
         const requestId = ++generationRequestRef.current;
         worldGenerator.cancelPendingGeneration();
+        if (showLoading) setIsGenerating(true);
 
         const previousLayer = renderedLayerRef.current;
         const nextLayer = new paper.Layer();
@@ -180,6 +182,10 @@ function Editor() {
             previousLayer?.activate();
             if (!(error instanceof DOMException && error.name === 'AbortError')) {
                 console.error('Failed to generate world:', error);
+            }
+        } finally {
+            if (requestId === generationRequestRef.current) {
+                setIsGenerating(false);
             }
         }
     }
@@ -392,6 +398,14 @@ function Editor() {
     return (
         <div id='editor'>
             <canvas id='worldCanvas' ref={canvasRef} />
+            <div
+                className={`loading-container-a ${isGenerating ? '' : 'hidden'}`}
+                role='status'
+                aria-label='Regenerating map'
+                aria-hidden={!isGenerating}
+            >
+                <i className='fa-solid fa-spinner fa-spin'></i>
+            </div>
             <EditorOverlay zoomIn={zoomIn} zoomOut={zoomOut} resetView={resetView} />
         </div>
     );

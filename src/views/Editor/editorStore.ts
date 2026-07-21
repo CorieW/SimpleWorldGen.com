@@ -151,7 +151,7 @@ const useStore: any = create<EditorStore>((set) => ({
     addLayer: (layer) =>
         set({ layers: [...useStore.getState().layers, layer] }),
     removeLayer: (layerId) => {
-        const currentLayers = useStore.getState().layers;
+        const currentLayers = [...useStore.getState().layers];
         const layerIndex = currentLayers.findIndex((l: ILayer) => l.id === layerId);
 
         if (layerIndex === -1) {
@@ -162,7 +162,7 @@ const useStore: any = create<EditorStore>((set) => ({
         set({ layers: currentLayers });
     },
     modifyLayer: (layerId, layer) => {
-        const currentLayers = useStore.getState().layers;
+        const currentLayers = [...useStore.getState().layers];
         const layerIndex = currentLayers.findIndex((l: ILayer) => l.id === layerId);
 
         if (layerIndex === -1) {
@@ -173,7 +173,7 @@ const useStore: any = create<EditorStore>((set) => ({
         set({ layers: currentLayers });
     },
     moveLayer: (layerId: number, direction: 'left' | 'right') => {
-        const currentLayers = useStore.getState().layers;
+        const currentLayers = [...useStore.getState().layers];
         const layerIndex = currentLayers.findIndex((l: ILayer) => l.id === layerId);
 
         if (layerIndex === -1) {
@@ -337,6 +337,8 @@ const useStore: any = create<EditorStore>((set) => ({
             previousNode = currentNode;
             currentNode = currentNode.nextNode;
         }
+
+        set({ layers: [...useStore.getState().layers] });
     },
     moveNode: (nodeId: number, direction: 'up' | 'down') => {
         const layer = getLayerWithNode(useStore.getState().layers, nodeId);
