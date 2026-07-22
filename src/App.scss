@@ -14,8 +14,3 @@
 .move-btn:active:not(:disabled) {
     color: var(--ui-accent) !important;
 }
-
-.add-btn:hover:not(:disabled),
-.add-btn:active:not(:disabled) {
-    color: var(--ui-success) !important;
-}
