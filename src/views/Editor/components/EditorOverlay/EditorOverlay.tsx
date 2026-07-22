@@ -5,6 +5,7 @@ import VisualizationSidebar from '../VisualizationSidebar/VisualizationSidebar';
 import SettingsSidebar from '../SettingsSidebar/SettingsSidebar';
 import NodesModal from '../NodesModal/NodesModal';
 import SaveModal from '../SaveModal/SaveModal';
+import IconButton from '../../../../components/IconButton/IconButton';
 import useStore from '../../editorStore';
 import './EditorOverlay.scss';
 
@@ -43,24 +44,19 @@ export default function EditorOverlay({ zoomIn, zoomOut, resetView }: Props) {
             <div id='editor-overlay-btns'>
                 <div className='btn-group menu-btns'>
                     {menuTools.map(({ tool, icon, label }) => (
-                        <button
+                        <IconButton
                             key={tool}
-                            type='button'
-                            className={`ui-button tool-btn ${activeTool === tool ? 'active' : ''}`}
-                            aria-label={label}
+                            icon={icon}
+                            label={label}
+                            className={`tool-btn ${activeTool === tool ? 'active' : ''}`}
                             aria-pressed={activeTool === tool}
-                            title={label}
                             onClick={() => toggleTool(tool)}
-                        >
-                            <i className={`fa-solid ${icon}`} aria-hidden='true'></i>
-                        </button>
+                        />
                     ))}
                 </div>
                 <div className='btn-group zoom-btns'>
                     {viewTools.map(({ icon, label, action }) => (
-                        <button key={label} type='button' className='ui-button tool-btn' aria-label={label} title={label} onClick={action}>
-                            <i className={`fa-solid ${icon}`} aria-hidden='true'></i>
-                        </button>
+                        <IconButton key={label} icon={icon} label={label} className='tool-btn' onClick={action} />
                     ))}
                 </div>
             </div>
