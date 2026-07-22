@@ -9,7 +9,7 @@
     "build": "tsc --noEmit && tsc -p tsconfig.node.json --noEmit && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check": "pnpm run lint && pnpm run build && pnpm --dir firebase/functions run check"
+    "check": "pnpm run lint && pnpm run build"
   },
   "engines": {
     "node": ">=22.13.0",

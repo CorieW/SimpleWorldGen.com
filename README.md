@@ -12,18 +12,14 @@ from the repository root before installing dependencies.
 ```sh
 corepack enable
 pnpm install
-pnpm --dir firebase/functions install
 pnpm run dev
 ```
 
-Run all frontend and Firebase Functions validation with:
+Run all frontend validation with:
 
 ```sh
 pnpm run check
 ```
-
-The Firebase Functions runtime is explicitly set to Node.js 22 in both
-`firebase/firebase.json` and `firebase/functions/package.json`.
 
 ## Version history
 [v0.4.0: Added saving and loading](https://gyazo.com/af2092afaf6c2b01e81148fdf5f07a33)
