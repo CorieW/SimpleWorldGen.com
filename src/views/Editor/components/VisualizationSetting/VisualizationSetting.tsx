@@ -6,6 +6,7 @@ import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnu
 import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
 import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
 import Shapes from '../../../../ts/utils/Shapes';
+import enumOptions from '../../../../ts/utils/enumOptions';
 import useStore from '../../editorStore';
 import VisualizationCondition from './VisualizationCondition';
 import './VisualizationSetting.scss';
@@ -86,10 +87,7 @@ export default function VisualizationSetting({ index, settings, setSettings }: P
                     className='visualization-type-input'
                     value={setting.type}
                     onChange={(value) => updateSetting({ type: value as VisualizationTypeEnum })}
-                    options={Object.values(VisualizationTypeEnum).map((type) => ({
-                        label: type,
-                        value: type,
-                    }))}
+                    options={enumOptions(VisualizationTypeEnum)}
                 />
 
                 {Shapes.getShape(setting.type).canScale && (
@@ -99,10 +97,7 @@ export default function VisualizationSetting({ index, settings, setSettings }: P
                         type='select'
                         value={setting.scalingType}
                         onChange={(value) => updateSetting({ scalingType: value as ScalingTypeEnum })}
-                        options={Object.values(ScalingTypeEnum).map((type) => ({
-                            label: type,
-                            value: type,
-                        }))}
+                        options={enumOptions(ScalingTypeEnum)}
                     />
                 )}
 

@@ -3,6 +3,7 @@ import IconButton from '../../../../components/IconButton/IconButton';
 import { VisualizationConditionalOperatorEnum } from '../../../../ts/enums/VisualizationConditionalOperatorEnum';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
 import { IVisualizationCondition } from '../../../../ts/interfaces/visualization/IVisualizationCondition';
+import enumOptions from '../../../../ts/utils/enumOptions';
 import './VisualizationCondition.scss';
 
 type Props = {
@@ -35,10 +36,7 @@ export default function VisualizationCondition({
                     onChange={(value) => updateCondition({
                         condOperator: value as VisualizationConditionalOperatorEnum,
                     })}
-                    options={Object.values(VisualizationConditionalOperatorEnum).map((operator) => ({
-                        label: operator,
-                        value: operator,
-                    }))}
+                    options={enumOptions(VisualizationConditionalOperatorEnum)}
                 />
             )}
 

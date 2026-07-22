@@ -10,6 +10,7 @@ import { INoiseNode } from '../../../../ts/interfaces/INoiseNode';
 import { ISimplexNoiseNode } from '../../../../ts/interfaces/ISimplexNoiseNode';
 import { Drawer } from '../../../../ts/utils/Drawer';
 import { NodeValueCalculator } from '../../../../ts/utils/LayerValueCalculator';
+import enumOptions from '../../../../ts/utils/enumOptions';
 import useStore from '../../editorStore';
 import './NodeEditorModal.scss';
 
@@ -157,8 +158,4 @@ function SimplexFields({ node, onChange }: { node: ISimplexNoiseNode; onChange: 
             onChange={(value) => onChange({ ...node, [field.key]: value })}
         />
     ));
-}
-
-function enumOptions(values: object) {
-    return Object.values(values).map((value) => ({ value, label: value }));
 }
