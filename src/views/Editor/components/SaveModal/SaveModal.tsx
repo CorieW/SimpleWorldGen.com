@@ -1,20 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import ToolPanel from '../../../../components/ToolPanel/ToolPanel';
 import useAppStore from '../../../../appStore';
-import { ILayer } from '../../../../ts/interfaces/ILayer';
-import { IWorldSettings } from '../../../../ts/interfaces/IWorldSettings';
-import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
+import { parseWorldSaveData, type WorldSaveData } from '../../../../ts/utils/worldSaveData';
 import useEditorStore from '../../editorStore';
 import './SaveModal.scss';
 
 const SAVE_NAME = 'world.json';
 
 type Props = { modalOpen: boolean; setModalOpen: (open: boolean) => void };
-type WorldSaveData = {
-    worldSettings: IWorldSettings;
-    layers: ILayer[];
-    visualizationSettings: IVisualizationSetting[];
-};
 type WorldSaveFile = WorldSaveData & { name: string };
 
 export default function SaveModal({ modalOpen, setModalOpen }: Props) {
@@ -55,8 +48,7 @@ export default function SaveModal({ modalOpen, setModalOpen }: Props) {
         const reader = new FileReader();
         reader.onload = (event) => {
             try {
-                const data: unknown = JSON.parse(String(event.target?.result));
-                if (!isWorldSaveData(data)) throw new Error('Invalid world');
+                const data = parseWorldSaveData(JSON.parse(String(event.target?.result)));
                 setWorldSaveFile({ name: file.name, ...data });
                 addNotification({ type: 'success', text: `Loaded <b>${file.name}</b> successfully` });
             } catch {
@@ -101,10 +93,4 @@ export default function SaveModal({ modalOpen, setModalOpen }: Props) {
             </label>
         </ToolPanel>
     );
-}
-
-function isWorldSaveData(value: unknown): value is WorldSaveData {
-    if (typeof value !== 'object' || value === null) return false;
-    const data = value as Partial<WorldSaveData>;
-    return !!data.worldSettings && Array.isArray(data.layers) && Array.isArray(data.visualizationSettings);
 }
