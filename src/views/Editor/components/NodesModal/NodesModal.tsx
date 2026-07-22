@@ -7,6 +7,13 @@ import useStore from '../../editorStore';
 import Node from './Node/Node';
 import './NodesModal.scss';
 
+const EFFECT_ICONS: Partial<Record<NodeEffectEnum, string>> = {
+    [NodeEffectEnum.Add]: 'fa-plus',
+    [NodeEffectEnum.Subtract]: 'fa-minus',
+    [NodeEffectEnum.Multiply]: 'fa-times',
+    [NodeEffectEnum.Divide]: 'fa-divide',
+};
+
 export default function NodesModal() {
     const store = useStore();
     const layer = store.getLayer(store.activeFormLayerId);
@@ -71,13 +78,6 @@ export default function NodesModal() {
 }
 
 function effectSymbol(effect: NodeEffectEnum | null): ReactNode {
-    const icons: Partial<Record<NodeEffectEnum, string>> = {
-        [NodeEffectEnum.Add]: 'fa-plus',
-        [NodeEffectEnum.Subtract]: 'fa-minus',
-        [NodeEffectEnum.Multiply]: 'fa-times',
-        [NodeEffectEnum.Divide]: 'fa-divide',
-    };
-    return icons[effect as NodeEffectEnum]
-        ? <i className={`fa-solid ${icons[effect as NodeEffectEnum]}`} aria-hidden='true'></i>
-        : null;
+    const icon = effect ? EFFECT_ICONS[effect] : undefined;
+    return icon ? <i className={`fa-solid ${icon}`} aria-hidden='true'></i> : null;
 }
