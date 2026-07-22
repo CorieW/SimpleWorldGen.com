@@ -1,9 +1,10 @@
-# Information
-Available at: https://simpleworldgen.com
+# SimpleWorldGen.com
 
-Tasks: https://www.notion.so/Projects-Tasks-95b90fccf4e24bd3968e3350049f3b42?pvs=4
+An interactive browser-based tool for generating and exploring procedural worlds.
 
-# Development
+[![Visit SimpleWorldGen.com](https://img.shields.io/badge/Visit-SimpleWorldGen.com-2ea44f)](https://simpleworldgen.com)
+
+## Development
 
 The project uses Node.js 22 and pnpm. With a Node version manager, run `nvm use`
 from the repository root before installing dependencies.
@@ -24,11 +25,11 @@ pnpm run check
 The Firebase Functions runtime is explicitly set to Node.js 22 in both
 `firebase/firebase.json` and `firebase/functions/package.json`.
 
-# Recent changes
-- Improved notifications for loading
-- Fixed issue with btn zooming not clamping to min/max zoom
+## Contributions
 
-# Version history
+Contributions are welcome. Please open an issue or submit a pull request.
+
+## Version history
 [v0.4.0: Added saving and loading](https://gyazo.com/af2092afaf6c2b01e81148fdf5f07a33)
 
 [v0.3.0: Added UI and customization](https://gyazo.com/bb5ba9ddf3790571e857bc8839ce7fec)
