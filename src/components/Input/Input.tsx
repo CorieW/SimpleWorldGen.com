@@ -8,10 +8,10 @@ type CommonProps = {
     id?: string;
     className?: string;
     placeholder?: string;
-    value?: InputValue;
 };
 type NumberProps = CommonProps & {
     type: 'number';
+    value?: number;
     min?: number;
     max?: number;
     step?: number;
@@ -20,11 +20,13 @@ type NumberProps = CommonProps & {
 };
 type SelectProps = CommonProps & {
     type: 'select';
+    value?: InputValue;
     options?: Option[];
     onChange?: (value: string) => void;
 };
 type TextProps = CommonProps & {
     type?: 'text';
+    value?: string;
     pattern?: string;
     onChange?: (value: string) => void;
 };
