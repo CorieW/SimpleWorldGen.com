@@ -30,7 +30,8 @@ export default function NodeEditorModal() {
 
     useEffect(() => {
         if (activeFormNodeId === -1) return;
-        setNode(structuredClone(getNode(activeFormNodeId)) as INode);
+        const sourceNode = getNode(activeFormNodeId);
+        setNode(sourceNode ? structuredClone(sourceNode) : null);
     }, [activeFormNodeId, getNode]);
 
     useEffect(() => {
