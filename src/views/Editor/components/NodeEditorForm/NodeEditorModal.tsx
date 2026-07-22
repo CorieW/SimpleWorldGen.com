@@ -83,7 +83,7 @@ export default function NodeEditorModal() {
             eyebrow='Node configuration'
             footer={footer}
         >
-            <div className='node-preview'>
+            <div className='node-preview preview-surface'>
                 <canvas ref={canvasRef}></canvas>
                 <span>Preview</span>
             </div>

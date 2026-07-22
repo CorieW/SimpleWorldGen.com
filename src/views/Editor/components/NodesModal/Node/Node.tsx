@@ -50,9 +50,9 @@ export default function Node(props: INode) {
     }, [getLayerWithNode, id, node]);
 
     return (
-        <div className='node-container'>
+        <div className='node-container preview-surface preview-surface--interactive'>
             <canvas ref={canvasRef} className='node-canvas'></canvas>
-            <button className='edit-btn' aria-label={`Edit node ${id}`} onClick={() => setActiveFormNodeId(id)}>
+            <button className='edit-btn preview-edit' aria-label={`Edit node ${id}`} onClick={() => setActiveFormNodeId(id)}>
                 <i className='fa-solid fa-sliders' aria-hidden='true'></i>
                 <span>Edit node</span>
             </button>

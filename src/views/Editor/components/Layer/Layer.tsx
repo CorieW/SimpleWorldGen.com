@@ -84,11 +84,11 @@ export default function Layer(props: ILayer) {
 
     return (
         <li className='layer-container'>
-            <div className='inner-layer-container'>
+            <div className='inner-layer-container preview-surface preview-surface--interactive'>
                 <canvas width={100} height={100}
                 ref={canvasRef} className='node-canvas'></canvas>
                 <button
-                    className='edit-btn'
+                    className='edit-btn preview-edit'
                     aria-label={`Edit ${name}`}
                     title={`Edit ${name}`}
                     onClick={() => setActiveFormLayerId(id)}

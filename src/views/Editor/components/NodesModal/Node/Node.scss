@@ -1,34 +1,11 @@
 .node-container {
-    position: relative;
     display: flex;
     min-height: 100px;
-    overflow: hidden;
-    border: 3px solid var(--ui-border-strong);
     border-radius: var(--ui-radius-md);
-    background: #7f8b98;
-    box-shadow: 4px 4px 0 rgba(3, 8, 15, 0.78);
     transition: border-color 80ms ease, box-shadow 80ms ease;
 
-    canvas {
-        width: 100%;
-        height: 100%;
-        background: #7f8b98;
-    }
-
     .edit-btn {
-        position: absolute;
-        inset: 0;
-        display: flex;
         gap: 9px;
-        align-items: center;
-        justify-content: center;
-        border: 0;
-        background: rgba(8, 17, 29, 0);
-        color: white;
-        cursor: pointer;
-        opacity: 0;
-        transition: opacity 140ms ease, background 140ms ease;
-
         span {
             font-size: 0.74rem;
             font-weight: 850;
@@ -37,14 +14,4 @@
         }
     }
 
-    &:hover,
-    &:focus-within {
-        border-color: var(--ui-accent);
-        box-shadow: 5px 5px 0 #8f6c19;
-
-        .edit-btn {
-            background: rgba(8, 17, 29, 0.75);
-            opacity: 1;
-        }
-    }
 }
