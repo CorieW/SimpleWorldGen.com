@@ -2,8 +2,6 @@
 
 An interactive browser-based tool for generating and exploring procedural worlds.
 
-This project is simply a portfolio piece.
-
 [![Visit SimpleWorldGen.com](https://img.shields.io/badge/Visit-SimpleWorldGen.com-2ea44f)](https://simpleworldgen.com)
 
 ## Development
@@ -47,3 +45,7 @@ The Firebase Functions runtime is explicitly set to Node.js 22 in both
 [v0.0.2: Using chunking system with basic noise](https://gyazo.com/4379fa8573ecb0024522b1bcde1a52c2)
 
 [v0.0.1: Basic chunking system](https://gyazo.com/0c5e9109ef345a71506cadc2f073017b)
+
+## Contributions
+
+This project is a portfolio piece, so please do not contribute.
