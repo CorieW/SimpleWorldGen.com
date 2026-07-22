@@ -127,20 +127,20 @@ export default function VisualizationSetting({ index, settings, setSettings }: P
                     <IconButton
                         icon='fa-trash'
                         label='Delete visualization'
-                        className='delete-setting-btn danger-btn icon-btn'
+                        className='delete-setting-btn danger-btn'
                         onClick={deleteSetting}
                     />
                     <IconButton
                         icon='fa-arrow-up'
                         label='Move visualization up'
-                        className='up-setting-btn icon-btn'
+                        className='up-setting-btn'
                         onClick={() => moveSetting('up')}
                         disabled={!canMoveUp}
                     />
                     <IconButton
                         icon='fa-arrow-down'
                         label='Move visualization down'
-                        className='down-setting-btn icon-btn'
+                        className='down-setting-btn'
                         onClick={() => moveSetting('down')}
                         disabled={!canMoveDown}
                     />

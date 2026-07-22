@@ -115,20 +115,20 @@ export default function Layer(props: ILayer) {
                 <IconButton
                     icon='fa-arrow-left'
                     label={`Move ${name} left`}
-                    className='move-btn icon-btn'
+                    className='move-btn'
                     disabled={!canMoveLayer(id, 'left')}
                     onClick={() => moveLayer(id, 'left')}
                 />
                 <IconButton
                     icon='fa-trash'
                     label={`Delete ${name}`}
-                    className='delete-btn icon-btn'
+                    className='delete-btn'
                     onClick={removeThisLayer}
                 />
                 <IconButton
                     icon='fa-arrow-right'
                     label={`Move ${name} right`}
-                    className='move-btn icon-btn'
+                    className='move-btn'
                     disabled={!canMoveLayer(id, 'right')}
                     onClick={() => moveLayer(id, 'right')}
                 />

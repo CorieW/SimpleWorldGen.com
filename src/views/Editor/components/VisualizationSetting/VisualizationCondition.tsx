@@ -90,7 +90,7 @@ export default function VisualizationCondition({
                 <IconButton
                     icon='fa-trash'
                     label='Delete condition'
-                    className='delete-condition-btn danger-btn icon-btn'
+                    className='delete-condition-btn danger-btn'
                     onClick={onDelete}
                 />
             </div>
