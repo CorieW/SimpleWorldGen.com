@@ -1,104 +1,101 @@
 .layer-container {
-    --node-size: 150px;
+    --node-size: 136px;
 
+    position: relative;
     display: flex;
-    flex-direction: column-reverse;
-    justify-content: flex-end;
-    border-radius: 15px;
-    pointer-events: all;
-
     width: var(--node-size);
-
-    // disable highlighting
+    min-width: var(--node-size);
+    flex-direction: column;
+    gap: 7px;
+    padding-bottom: 2px;
+    border-radius: var(--ui-radius-md);
+    pointer-events: all;
     user-select: none;
 
     .inner-layer-container {
-        width: 100%;
-        position: relative;
-        display: flex;
-        flex-direction: row;
+        --preview-overlay-background: rgba(8, 17, 29, 0.76);
 
+        display: flex;
         width: var(--node-size);
         height: var(--node-size);
         min-height: var(--node-size);
-        border-radius: 15px;
-        overflow: hidden;
-
-        border: 3px solid white;
-
-        canvas {
-            width: 100%;
-            height: 100%;
-
-            background-color: gray;
-        }
-
-        .bottom-bar {
-            position: absolute;
-            bottom: 0;
-
-            display: none;
-            width: 100%;
-            padding: 5px;
-            gap: 5px;
-            justify-content: space-between;
-
-            button {
-                border-radius: 15px;
-            }
-        }
+        border-radius: var(--ui-radius-md);
+        transition: border-color 80ms ease, transform 80ms ease, box-shadow 80ms ease;
 
         .edit-btn {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            transition: background-color 0.3s;
-        }
-
-        .edit-node-icon {
-            opacity: 0;
-            font-size: 20px;
-
-            transition: opacity 0.3s;
-        }
-
-        &:hover {
-            cursor: pointer;
-
-            .edit-btn {
-                background-color: white;
-            }
-
-            .edit-node-icon {
-                opacity: 1;
-                color: black;
-            }
-
-            .bottom-bar {
-                display: flex;
+            gap: 8px;
+            span {
+                font-size: 0.76rem;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
             }
         }
 
+        &:hover,
+        &:focus-within {
+            transform: translate(-1px, -1px);
+        }
     }
 
     .btns-container {
-        display: none;
+        position: absolute;
+        top: 93px;
+        right: 5px;
+        left: 5px;
+        z-index: 2;
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(5px);
+            transition: opacity 80ms ease, transform 80ms ease;
+
+        .icon-btn {
+            width: 34px;
+            min-width: 34px;
+            height: 32px;
+            min-height: 32px;
+            padding: 0;
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(8, 17, 29, 0.9);
+            font-size: 0.75rem;
+        }
     }
 
-    * &:hover {
-        .nodes-container {
-            max-height: 500px; // A little hacky, but it works
+    .layer-name-input {
+        width: 100%;
+        height: 27px;
+        padding: 0 6px;
+        border: 2px solid transparent;
+        background: transparent;
+        color: var(--ui-text);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-align: center;
+
+        &:hover,
+        &:focus {
+            border-color: var(--ui-border);
+            background: var(--ui-field);
         }
+    }
+
+    &:hover .btns-container,
+    &:focus-within .btns-container {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 800px) {
+    .layer-container {
+        --node-size: 112px;
 
         .btns-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            top: 69px;
         }
     }
 }

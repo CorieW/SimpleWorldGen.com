@@ -3,9 +3,7 @@ import './Layers.scss';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
 import useStore from '../../editorStore';
 import Layer from '../Layer/Layer';
-import { Button } from '@chakra-ui/react';
 import { NodeTypeEnum } from '../../../../ts/enums/NodeTypeEnum';
-import ScrollContainer from '../../../../components/ScrollContainer/ScrollContainer';
 
 export default function Layers() {
     const { layers, getNewLayerId, getNewNodeId, addLayer } = useStore();
@@ -30,33 +28,38 @@ export default function Layers() {
 
     const listJSX = (
         <div className='list-container'>
-            <ScrollContainer mode='horizontal'>
+            <div className='layer-scroll'>
                 <ul className='layer-list'>
                     {layers.map((layer: ILayer) => (
                         <Layer key={layer.id} {...layer} />
                     ))}
-                    <li id='add-layer-listing'>
-                        <Button size='sm' onClick={addNewLayer}>
-                            <i className='fa-solid fa-plus'></i>
-                        </Button>
+                    <li className='add-layer-listing'>
+                        <button type='button' className='ui-button add-layer-btn' onClick={addNewLayer} aria-label='Add a new layer'>
+                            <i className='fa-solid fa-plus' aria-hidden='true'></i>
+                            <span>New layer</span>
+                        </button>
                     </li>
                 </ul>
-            </ScrollContainer>
+            </div>
         </div>
     );
 
     return (
         <div id='layers-container'>
             <div className='inner-container'>
-                <Button
-                    id='toggle-layers-btn'
-                    size='sm'
+                <button
+                    type='button'
+                    className='ui-button toggle-layers-btn'
+                    aria-expanded={expanded}
+                    aria-label={expanded ? 'Collapse layers' : 'Expand layers'}
                     onClick={() => setExpanded(!expanded)}
                 >
+                    <span>Layers</span>
                     <i
-                        className={`fa-solid fa-arrow-${expanded ? 'down' : 'up'}`}
+                        className={`fa-solid fa-chevron-${expanded ? 'down' : 'up'}`}
+                        aria-hidden='true'
                     ></i>
-                </Button>
+                </button>
                 {expanded && listJSX}
             </div>
         </div>

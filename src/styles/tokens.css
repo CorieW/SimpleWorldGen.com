@@ -1,0 +1,33 @@
+:root {
+  color: #edf5ff;
+  background: #0b1422;
+  font-family: "Trebuchet MS", Verdana, ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --ui-canvas: #4a90e2;
+  --ui-ink: #0b1422;
+  --ui-panel: #101927;
+  --ui-panel-solid: #101927;
+  --ui-panel-raised: #1b2a3d;
+  --ui-field: #0a1421;
+  --ui-field-hover: #132337;
+  --ui-field-raised: #213650;
+  --ui-text: #f4f8fc;
+  --ui-muted: #9eb0c5;
+  --ui-border: rgba(208, 228, 247, 0.32);
+  --ui-border-strong: rgba(238, 247, 255, 0.82);
+  --ui-accent: #f3c85b;
+  --ui-accent-hover: #ffda74;
+  --ui-accent-ink: #162033;
+  --ui-accent-soft: rgba(243, 200, 91, 0.18);
+  --ui-danger: #ff7b72;
+  --ui-danger-soft: rgba(255, 123, 114, 0.15);
+  --ui-success: #70d6a6;
+  --ui-focus: #76b8ff;
+  --ui-radius-xs: 0;
+  --ui-radius-sm: 2px;
+  --ui-radius-md: 3px;
+  --ui-radius-lg: 4px;
+  --ui-shadow: 6px 6px 0 rgba(3, 8, 15, 0.72);
+}

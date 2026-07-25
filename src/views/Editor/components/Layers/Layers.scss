@@ -1,64 +1,86 @@
 #layers-container {
     position: absolute;
+    right: 76px;
     bottom: 0;
-    width: 100%;
+    left: 0;
+    z-index: 60;
+    display: flex;
+    justify-content: center;
     pointer-events: none;
 
     .inner-container {
         display: flex;
+        width: min(100%, 1120px);
+        min-width: 0;
         flex-direction: column-reverse;
-        justify-content: center;
         align-items: center;
-        padding: 0 75px;
-        width: 100%;
-        box-sizing: border-box;
+        padding: 0 18px;
 
         .list-container {
-            position: relative;
             width: 100%;
-            margin-bottom: 10px;
+            min-width: 0;
+            margin-bottom: 9px;
+            padding: 12px 12px 9px;
+            border: 3px solid var(--ui-border-strong);
+            border-radius: var(--ui-radius-lg);
+            background: var(--ui-panel);
+            box-shadow: var(--ui-shadow);
+            pointer-events: all;
+
+            .layer-scroll {
+                overflow-x: auto;
+                padding: 0 5px 5px 0;
+            }
 
             .layer-list {
                 display: flex;
-                gap: 20px;
-                flex-direction: row;
-                align-items: flex-end;
-                height: 500px;
+                min-width: max-content;
+                height: auto;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 0;
                 margin: 0;
+                list-style: none;
 
-                // Todo: Simplify this
-                #add-layer-listing {
+                .add-layer-listing {
                     display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 5px;
-                    flex-direction: column-reverse;
-                    justify-content: flex-end;
+                    width: 136px;
+                    min-width: 136px;
+                    height: 136px;
                     pointer-events: all;
 
-                    width: 75px;
-                    height: 150px;
+                    .add-layer-btn {
+                        display: flex;
+                        width: 100%;
+                        height: 100%;
+                        flex-direction: column;
+                        gap: 9px;
+                        justify-content: center;
+                        border: 3px dashed var(--ui-accent);
+                        background: var(--ui-field);
+                        color: var(--ui-accent);
 
-                    button {
-                        width: 50px;
-                        height: 50px;
-                        background-color: white;
-                        font-size: 25px;
-
-                        border-radius: 15px;
-
-                        &:hover, &:active {
-                            background-color: gold;
+                        i {
+                            font-size: 1.45rem;
                         }
-                    }
 
-                    p {
-                        height: 40px;
+                        span {
+                            color: var(--ui-muted);
+                            font-size: 0.72rem;
+                            letter-spacing: 0.06em;
+                            text-transform: uppercase;
+                        }
 
-                        color: white;
-                        font-size: 20px;
-                        text-shadow: black 1px 1px 1px;
-                        text-align: center;
+                        &:hover,
+                        &:active {
+                            border-style: solid;
+                            background: var(--ui-accent);
+                            color: var(--ui-accent-ink);
+
+                            span {
+                                color: var(--ui-accent-ink);
+                            }
+                        }
                     }
                 }
             }
@@ -66,18 +88,64 @@
     }
 }
 
-#toggle-layers-btn {
+#app-container .toggle-layers-btn {
+    display: flex;
+    width: 112px;
+    min-height: 34px;
+    gap: 9px;
+    align-items: center;
+    justify-content: center;
+    border-width: 3px 3px 0;
+    border-color: var(--ui-border-strong);
+    border-bottom: 0;
+    border-radius: var(--ui-radius-sm) var(--ui-radius-sm) 0 0;
+    background: var(--ui-panel);
+    color: var(--ui-text);
     pointer-events: all;
-    background-color: transparent;
-    border-radius: 0;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    background-color: white;
-    color: black;
-    width: 100px;
 
-    &:hover, &:active {
-        background-color: gold;
-        color: black;
+    span {
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    i {
+        color: var(--ui-accent);
+        font-size: 0.68rem;
+    }
+
+    &:hover,
+    &:active {
+        background: var(--ui-accent);
+        color: var(--ui-accent-ink);
+
+        i {
+            color: inherit;
+        }
+    }
+}
+
+@media (max-width: 800px) {
+    #layers-container {
+        right: 58px;
+
+        .inner-container {
+            padding: 0 8px;
+
+            .list-container {
+                padding: 8px;
+
+                .layer-list {
+                    gap: 8px;
+
+                    .add-layer-listing {
+                        width: 112px;
+                        min-width: 112px;
+                        height: 112px;
+                    }
+                }
+            }
+        }
     }
 }

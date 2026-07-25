@@ -1,0 +1,24 @@
+.file-picker {
+    display: grid;
+    min-height: 220px;
+    gap: 6px;
+    padding: 24px;
+    place-items: center;
+    align-content: center;
+    border: 3px dashed var(--ui-accent);
+    background: var(--ui-field);
+    color: var(--ui-text);
+    cursor: pointer;
+    text-align: center;
+
+    input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    i { margin-bottom: 8px; color: var(--ui-accent); font-size: 1.5rem; }
+    strong { font-size: 0.86rem; text-transform: uppercase; }
+    span { color: var(--ui-muted); font-size: 0.7rem; }
+
+    &:hover,
+    &:focus-within {
+        border-style: solid;
+        background: var(--ui-panel-raised);
+    }
+}
