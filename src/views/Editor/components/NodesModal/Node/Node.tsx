@@ -49,7 +49,11 @@ export default function Node(props: INode) {
         }
 
         const nodeValueCalculator = new NodeValueCalculator(layerCopy.beginningNode);
+        let cancelled = false;
+
         nodeValueCalculator.calculateMap(width, height).then((map) => {
+            if (cancelled) return;
+
             const array: number[] = [];
             map.forEach((row) => {
                 row.forEach((value) => {
@@ -64,16 +68,29 @@ export default function Node(props: INode) {
             nodeDrawer.drawNode();
 
             setLoaded(true);
+        }).catch((error: unknown) => {
+            if (!cancelled) {
+                console.error('Unable to render the node preview.', error);
+                setLoaded(true);
+            }
         });
-    }, [node]);
+
+        return () => {
+            cancelled = true;
+            nodeValueCalculator.terminateWorker();
+        };
+    }, [getLayerWithNode, id, node]);
 
     return (
-        <div className='node-container'>
+        <div className='node-container preview-surface preview-surface--interactive'>
             <canvas ref={canvasRef} className='node-canvas'></canvas>
             <div className={`loading-container-a ${loaded ? 'hidden' : ''}`}>
-                <i className="fa-solid fa-spinner fa-spin"></i>
+                <i className='fa-solid fa-spinner fa-spin'></i>
             </div>
-            <button className='edit-btn' onClick={() => setActiveFormNodeId(id)}></button>
+            <button className='edit-btn preview-edit' aria-label={`Edit node ${id}`} onClick={() => setActiveFormNodeId(id)}>
+                <i className='fa-solid fa-sliders' aria-hidden='true'></i>
+                <span>Edit node</span>
+            </button>
         </div>
     );
 }

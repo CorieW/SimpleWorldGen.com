@@ -3,10 +3,9 @@ import './Layer.scss';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
 import editorStore from '../../editorStore';
 import appStore from '../../../../appStore';
-import { Button } from '@chakra-ui/react';
 import { Drawer } from '../../../../ts/utils/Drawer';
 import { NodeValueCalculator } from '../../../../ts/utils/LayerValueCalculator';
-import ConfirmableInput from '../../../../components/ConfirmableInput/ConfirmableInput';
+import IconButton from '../../../../components/IconButton/IconButton';
 
 export default function Layer(props: ILayer) {
     const { id, name, beginningNode } = props;
@@ -47,7 +46,11 @@ export default function Layer(props: ILayer) {
         setLoaded(false);
 
         const nodeValueCalculator = new NodeValueCalculator(layer.beginningNode);
+        let cancelled = false;
+
         nodeValueCalculator.calculateMap(width, height).then((map) => {
+            if (cancelled) return;
+
             const array: number[] = [];
             map.forEach((row) => {
                 row.forEach((value) => {
@@ -62,8 +65,18 @@ export default function Layer(props: ILayer) {
             nodeDrawer.drawNode();
 
             setLoaded(true);
+        }).catch((error: unknown) => {
+            if (!cancelled) {
+                console.error('Unable to render the layer preview.', error);
+                setLoaded(true);
+            }
         });
-    }, [node]);
+
+        return () => {
+            cancelled = true;
+            nodeValueCalculator.terminateWorker();
+        };
+    }, [getLayer, id, node]);
 
     function removeThisLayer() {
         removeLayer(id);
@@ -101,48 +114,59 @@ export default function Layer(props: ILayer) {
     }
 
     return (
-        <div className='layer-container'>
-            <ConfirmableInput
-                value={name}
-                changeValue={(value: string) => changeLayerName(value)}
-            />
-            <div className='inner-layer-container'>
-                <canvas width={100} height={100} ref={canvasRef} className='node-canvas'></canvas>
+        <li className='layer-container'>
+            <div className='inner-layer-container preview-surface preview-surface--interactive'>
+                <canvas width={100} height={100}
+                ref={canvasRef} className='node-canvas'></canvas>
                 <div className={`loading-container-a ${loaded ? 'hidden' : ''}`}>
-                    <i className="fa-solid fa-spinner fa-spin"></i>
+                    <i className='fa-solid fa-spinner fa-spin'></i>
                 </div>
-                <button className='edit-btn' onClick={() => setActiveFormLayerId(id)}>
-                    <i className='fa-solid fa-pen edit-node-icon'></i>
+                <button
+                    className='edit-btn preview-edit'
+                    aria-label={`Edit ${name}`}
+                    title={`Edit ${name}`}
+                    onClick={() => setActiveFormLayerId(id)}
+                >
+                    <i className='fa-solid fa-pen edit-node-icon' aria-hidden='true'></i>
+                    <span>Edit nodes</span>
                 </button>
             </div>
+            <input
+                key={name}
+                className='layer-name-input'
+                aria-label='Layer name'
+                defaultValue={name}
+                onBlur={(event) => changeLayerName(event.currentTarget.value)}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter') event.currentTarget.blur();
+                    if (event.key === 'Escape') {
+                        event.currentTarget.value = name;
+                        event.currentTarget.blur();
+                    }
+                }}
+            />
             <div className='btns-container'>
-                <Button
+                <IconButton
+                    icon='fa-arrow-left'
+                    label={`Move ${name} left`}
                     className='move-btn'
-                    colorPalette='transparent'
-                    size='sm'
                     disabled={!canMoveLayer(id, 'left')}
                     onClick={() => moveLayer(id, 'left')}
-                >
-                    <i className='fa-solid fa-arrow-left'></i>
-                </Button>
-                <Button
+                />
+                <IconButton
+                    icon='fa-trash'
+                    label={`Delete ${name}`}
                     className='delete-btn'
-                    colorPalette='transparent'
-                    size='sm'
                     onClick={removeThisLayer}
-                >
-                    <i className='fa-solid fa-trash'></i>
-                </Button>
-                <Button
+                />
+                <IconButton
+                    icon='fa-arrow-right'
+                    label={`Move ${name} right`}
                     className='move-btn'
-                    colorPalette='transparent'
-                    size='sm'
                     disabled={!canMoveLayer(id, 'right')}
                     onClick={() => moveLayer(id, 'right')}
-                >
-                    <i className='fa-solid fa-arrow-right'></i>
-                </Button>
+                />
             </div>
-        </div>
+        </li>
     );
 }

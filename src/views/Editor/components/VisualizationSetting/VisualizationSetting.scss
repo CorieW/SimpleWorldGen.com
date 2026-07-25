@@ -1,76 +1,76 @@
 .visualization-setting {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
+    padding: 18px;
+    border: 2px solid var(--ui-border-strong);
+    border-radius: var(--ui-radius-md);
+    background: var(--ui-panel-raised);
 
-    padding: 0 0 10px 10px;
-
-    border-bottom: 1px solid rgba($color: #000000, $alpha: 0.1);
-
-    &:last-child {
-        border-bottom: none;
+    .setting-label {
+        width: fit-content;
+        padding: 4px 8px;
+        border: 2px solid var(--ui-accent);
+        border-radius: 0;
+        background: var(--ui-accent);
+        color: var(--ui-accent-ink);
+        font-size: 0.62rem;
+        font-weight: 850;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
     }
 
     .setting-content {
         display: flex;
-        gap: 10px;
         flex-direction: column;
+        gap: 14px;
 
         .conditions {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
 
-            .condition {
+            h4 {
                 display: flex;
-                flex-direction: column;
-                gap: 10px;
-                padding: 0 0 0 10px;
-                border-left: 3px solid rgba($color: #000000, $alpha: 0.1);
+                gap: 7px;
+                align-items: center;
+                margin: 5px 0 0;
+                color: var(--ui-text);
+                font-size: 0.78rem;
+                font-weight: 800;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
 
-                .condition-range {
-                    display: flex;
-                    gap: 10px;
-                    align-items: center;
-
-                    .condition-range-label {
-                        width: 100px;
-                    }
-
-                    .condition-range-input {
-                        width: 100px;
-                    }
-
-                    .condition-separator {
-                        font-weight: bold;
-                        padding-top: 20px;
-                    }
-                }
-
-                .condition-actions {
-                    display: flex;
-                    gap: 10px;
-                    justify-content: flex-end;
+                span {
+                    display: grid;
+                    min-width: 20px;
+                    height: 20px;
+                    padding: 0 5px;
+                    place-items: center;
+                    border-radius: 0;
+                    background: var(--ui-field-raised);
+                    color: var(--ui-muted);
+                    font-size: 0.65rem;
                 }
             }
+
         }
     }
 
     .setting-actions {
         display: flex;
+        padding-top: 2px;
         justify-content: space-between;
 
-        >div {
+        > div {
             display: flex;
-            gap: 5px;
-            justify-content: flex-end;
+            width: 100%;
+            gap: 6px;
 
-            .apply-setting-btn {
-                background-color: gold;
-
-                &:hover, &:active {
-                    background-color: white;
-                }
+            .add-condition-btn {
+                flex: 1;
+                gap: 7px;
             }
         }
     }

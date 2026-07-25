@@ -1,9 +1,10 @@
-# Information
-Available at: https://simpleworldgen.com
+# SimpleWorldGen.com
 
-Tasks: https://www.notion.so/Projects-Tasks-95b90fccf4e24bd3968e3350049f3b42?pvs=4
+An interactive browser-based tool for generating and exploring procedural worlds.
 
-# Development
+[![Visit SimpleWorldGen.com](https://img.shields.io/badge/Visit-SimpleWorldGen.com-2ea44f)](https://simpleworldgen.com)
+
+## Development
 
 The project uses Node.js 22 and pnpm. With a Node version manager, run `nvm use`
 from the repository root before installing dependencies.
@@ -11,24 +12,18 @@ from the repository root before installing dependencies.
 ```sh
 corepack enable
 pnpm install
-pnpm --dir firebase/functions install
 pnpm run dev
 ```
 
-Run all frontend and Firebase Functions validation with:
+Run all frontend validation with:
 
 ```sh
 pnpm run check
 ```
 
-The Firebase Functions runtime is explicitly set to Node.js 22 in both
-`firebase/firebase.json` and `firebase/functions/package.json`.
-
-# Recent changes
-- Improved notifications for loading
-- Fixed issue with btn zooming not clamping to min/max zoom
-
 # Version history
+[v0.5.0: Overhaul UI](https://gyazo.com/495bd1d659502f4abe17e81a3321edbc)
+
 [v0.4.0: Added saving and loading](https://gyazo.com/af2092afaf6c2b01e81148fdf5f07a33)
 
 [v0.3.0: Added UI and customization](https://gyazo.com/bb5ba9ddf3790571e857bc8839ce7fec)
@@ -48,3 +43,7 @@ The Firebase Functions runtime is explicitly set to Node.js 22 in both
 [v0.0.2: Using chunking system with basic noise](https://gyazo.com/4379fa8573ecb0024522b1bcde1a52c2)
 
 [v0.0.1: Basic chunking system](https://gyazo.com/0c5e9109ef345a71506cadc2f073017b)
+
+## Contributions
+
+This project is a portfolio piece, so please do not contribute.

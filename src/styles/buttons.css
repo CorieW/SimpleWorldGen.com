@@ -1,0 +1,59 @@
+:where(#app-container) .ui-button {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 2px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-panel-raised);
+  color: var(--ui-text);
+  box-shadow: 3px 3px 0 rgba(3, 8, 15, 0.7);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 80ms ease, border-color 80ms ease, background 80ms ease, color 80ms ease, box-shadow 80ms ease;
+}
+
+:where(#app-container) .ui-button:hover:not(:disabled) {
+  border-color: var(--ui-border-strong);
+  background: #21344d;
+  box-shadow: 4px 4px 0 rgba(3, 8, 15, 0.8);
+  transform: translate(-1px, -1px);
+}
+
+:where(#app-container) .ui-button:active:not(:disabled) {
+  box-shadow: 1px 1px 0 rgba(3, 8, 15, 0.8);
+  transform: translate(2px, 2px);
+}
+
+:where(#app-container) .ui-button:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+}
+
+:where(#app-container) .primary-btn {
+  border-color: rgba(255, 225, 145, 0.48);
+  background: var(--ui-accent);
+  color: var(--ui-accent-ink);
+  box-shadow: 3px 3px 0 #8f6c19;
+}
+
+:where(#app-container) .primary-btn:hover:not(:disabled) {
+  border-color: #fff1be;
+  background: var(--ui-accent-hover);
+}
+
+:where(#app-container) :is(.danger-btn, .delete-btn):hover:not(:disabled) {
+  border-color: rgba(255, 123, 114, 0.6);
+  background: var(--ui-danger-soft);
+  color: var(--ui-danger);
+}
+
+:where(#app-container) .icon-btn {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+}

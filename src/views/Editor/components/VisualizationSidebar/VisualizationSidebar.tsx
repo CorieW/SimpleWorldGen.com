@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import './VisualizationSidebar.scss';
-import { Button } from '@chakra-ui/react';
 import { IVisualizationSetting } from '../../../../ts/interfaces/visualization/IVisualizationSetting';
 import useStore from '../../editorStore';
 import VisualizationSetting from '../VisualizationSetting/VisualizationSetting';
-import Sidebar from '../../../../components/Sidebar/Sidebar';
+import ToolPanel from '../../../../components/ToolPanel/ToolPanel';
 import { VisualizationColorTypeEnum } from '../../../../ts/enums/VisualizationColorTypeEnum';
 import { VisualizationTypeEnum } from '../../../../ts/enums/VisualizationTypeEnum';
 
@@ -48,8 +46,13 @@ export default function VisualizationSidebar(props: Props) {
         setVisualizationSettings(currentSettings);
     }
 
-    const contentJSX = (
+    const content = (
         <>
+            {currentSettings.length === 0 && (
+                <div className='panel-empty'>
+                    <span>No visualizations yet. Add one to start drawing this world.</span>
+                </div>
+            )}
             {currentSettings.map(
                 (_: IVisualizationSetting, index: number) => {
                     return (
@@ -65,29 +68,26 @@ export default function VisualizationSidebar(props: Props) {
         </>
     );
 
-    const bottomBarContentJSX = (
-        <>
-            <div>
-                <Button id='add-visualization-btn' onClick={addSetting}>
-                    Add
-                </Button>
-            </div>
-            <div>
-                <Button id='apply-visualization-btn' onClick={applySettings}>
+    const actions = (
+        <div className='panel-actions'>
+                <button type='button' className='ui-button add-visualization-btn' onClick={addSetting}>
+                    <i className='fa-solid fa-plus' aria-hidden='true'></i>
+                    Add visualization
+                </button>
+                <button type='button' className='ui-button apply-visualization-btn primary-btn' onClick={applySettings}>
                     Apply
-                </Button>
-            </div>
-        </>
+                </button>
+        </div>
     );
 
     return (
-        <Sidebar
+        <ToolPanel
             open={sidebarOpen}
-            setOpen={setSidebarOpen}
             onClose={closeMenu}
             title='Visualization Settings'
-            contentJSX={contentJSX}
-            bottomBarContentJSX={bottomBarContentJSX}
-        />
+            footer={actions}
+        >
+            {content}
+        </ToolPanel>
     );
 }

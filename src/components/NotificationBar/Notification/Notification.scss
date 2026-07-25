@@ -1,92 +1,72 @@
 .notification-container {
     display: flex;
-    gap: 20px;
-    width: 100%;
     width: fit-content;
-    max-width: 400px;
-    height: fit-content;
-    min-height: 40px;
+    max-width: min(400px, calc(100vw - 24px));
+    min-height: 48px;
+    gap: 10px;
+    overflow: hidden;
+    border: 3px solid var(--ui-border-strong);
+    border-left: 4px solid var(--notice-color, var(--ui-focus));
+    border-radius: var(--ui-radius-sm);
+    background: var(--ui-panel);
+    box-shadow: var(--ui-shadow);
+    color: var(--ui-text);
     opacity: 1;
-
-    border-radius: 10px;
-
-    transition: opacity 0.5s;
-
-    &:hover, &:active {
-        .close-container .close-btn {
-            opacity: 1;
-            transition: opacity 0s;
-            // animation: fadeIn 0.5s;
-
-            // @keyframes fadeIn {
-            //     from {
-            //         opacity: 0;
-            //     }
-            //     to {
-            //         opacity: 1;
-            //     }
-            // }
-        }
-    }
+    transition: opacity 0.5s, transform 0.5s;
 
     &.fading {
         opacity: 0;
+        transform: translateX(-10px);
     }
 
     .content-container {
-        flex: 1;
         display: flex;
+        min-width: 0;
+        flex: 1;
+        gap: 11px;
         align-items: center;
-        gap: 20px;
-        padding: 5px 15px;
-        box-sizing: border-box;
+        padding: 9px 5px 9px 12px;
+
+        > i {
+            color: var(--notice-color, var(--ui-focus));
+        }
 
         p {
             flex: 1;
+            margin: 0;
+            font-size: 0.8rem;
+            line-height: 1.4;
         }
     }
 
     .close-container {
         display: flex;
-        justify-content: center;
+        width: 38px;
         align-items: center;
-        cursor: pointer;
-
-        width: 40px;
+        justify-content: center;
 
         .close-btn {
-            width: 30px;
-            height: 30px;
-            padding: 5px;
-            border-radius: 50%;
-            font-size: 15px;
-            opacity: 0;
+            display: grid;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            place-items: center;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: var(--ui-muted);
+            cursor: pointer;
 
-            transition: opacity 3s;
-
-            &:hover, &:active {
-                background-color: rgba(0, 0, 0, 0.1);
+            &:hover,
+            &:active {
+                background: var(--ui-danger-soft);
+                color: var(--ui-danger);
             }
         }
     }
 
-    &.info {
-        background-color: darkcyan;
-        color: white;
-    }
-
-    &.warning {
-        background-color: orange;
-        color: white;
-    }
-
-    &.error {
-        background-color: orangered;
-        color: white;
-    }
-
-    &.success {
-        background-color: limegreen;
-        color: white;
-    }
+    &.info { --notice-color: var(--ui-focus); }
+    &.warning { --notice-color: var(--ui-accent); }
+    &.error { --notice-color: var(--ui-danger); }
+    &.success { --notice-color: var(--ui-success); }
 }
