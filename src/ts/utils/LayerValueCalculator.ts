@@ -1,71 +1,66 @@
-import { NodeEffectEnum } from "../enums/NodeEffectEnum";
-import { NodeTypeEnum } from "../enums/NodeTypeEnum";
-import { NoiseTypeEnum } from "../enums/NoiseTypeEnum";
 import { INode } from "../interfaces/INode"
-import { INoiseNode } from "../interfaces/INoiseNode";
-import { ISimplexNoiseNode } from "../interfaces/ISimplexNoiseNode";
-import Noise from "./Noise";
 
 export class NodeValueCalculator {
     private node: INode;
+    private worker: Worker | null;
+    private rejectPending: ((reason?: unknown) => void) | null;
 
     constructor(node: INode) {
         this.node = node;
+        this.worker = null;
+        this.rejectPending = null;
     }
 
-    calculateValue(x: number, y: number): number {
-        let currentNode: INode | null = this.node;
-        let noiseVal = 0;
+    /**
+     * Calculate the map of values for the given node.
+     * Does this work on a separate thread.
+     * @param width width of the map
+     * @param height height of the map
+     * @returns a map of values for the given node
+     */
+    calculateMap(width: number, height: number, x: number = 0, y: number = 0, spread: number = 1): Promise<number[][]> {
+        if (this.worker) {
+            this.terminateWorker();
+        }
 
-        if (!currentNode) return noiseVal;
+        const worker = new Worker(new URL('../workers/layerCombinerWorker.ts', import.meta.url), { type: 'module' });
+        this.worker = worker;
 
-        let effect: NodeEffectEnum | null = null;
+        const promise = new Promise<number[][]>((resolve, reject) => {
+            this.rejectPending = reject;
 
-        do {
-            const currentNoiseVal = this.calculateNodeValue(currentNode, x, y);
+            worker.onmessage = (event) => {
+                this.finishWorker(worker);
+                resolve(event.data);
+            };
 
-            switch (effect) {
-                case NodeEffectEnum.Add:
-                    noiseVal += currentNoiseVal;
-                    break;
-                case NodeEffectEnum.Subtract:
-                    noiseVal -= currentNoiseVal;
-                    break;
-                case NodeEffectEnum.Multiply:
-                    noiseVal *= currentNoiseVal;
-                    break;
-                case NodeEffectEnum.Divide:
-                    noiseVal /= currentNoiseVal;
-                    break;
-                default:
-                    noiseVal = currentNoiseVal;
-                    break;
-            }
+            worker.onerror = (error) => {
+                this.finishWorker(worker);
+                reject(error);
+            };
+        });
 
-            currentNode = currentNode.nextNode;
-            effect = currentNode && currentNode.effect;
-        } while (currentNode);
+        worker.postMessage({ node: this.node, width, height, x, y, spread });
 
-        return Math.min(1, Math.max(0, noiseVal));
+        return promise;
     }
 
-    private calculateNodeValue(node: INode, x: number, y: number): number {
-        switch (node.type) {
-            case NodeTypeEnum.Noise: {
-                const noiseNode = node as INoiseNode;
+    terminateWorker() {
+        if (!this.worker) return;
 
-                switch (noiseNode.noiseType) {
-                    case NoiseTypeEnum.Simplex: {
-                        const simplexNoiseNode = noiseNode as ISimplexNoiseNode;
-                        const { octaves, persistence, lacunarity, frequency, offsetX, offsetY } = simplexNoiseNode;
-                        return new Noise(noiseNode.seed).generateOctaveNoise(x, y, octaves, persistence, lacunarity, frequency, { x: offsetX, y: offsetY }) * noiseNode.multiplier;
-                    }
-                    default:
-                        return 0;
-                }
-            }
-            default:
-                return 0;
+        const reject = this.rejectPending;
+        this.finishWorker(this.worker);
+        reject?.(new DOMException('World generation was cancelled.', 'AbortError'));
+    }
+
+    private finishWorker(worker: Worker) {
+        worker.onmessage = null;
+        worker.onerror = null;
+        worker.terminate();
+
+        if (this.worker === worker) {
+            this.worker = null;
+            this.rejectPending = null;
         }
     }
 }

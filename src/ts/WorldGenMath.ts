@@ -6,6 +6,7 @@ export default class WorldGenMath {
     }
 
     static clamp01(val: number): number {
+        if (Number.isNaN(val)) return 0;
         return this.clamp(0, 1, val);
     }
 
@@ -14,10 +15,12 @@ export default class WorldGenMath {
     }
 
     static invLerp(min: number, max: number, val: number): number {
-        return Math.min((val - min) / (max - min), 1)
+        if (min === max) return val >= max ? 1 : 0;
+        return this.clamp01((val - min) / (max - min));
     }
 
     static invLerpWithoutMin(min: number, max: number, val: number): number {
+        if (min === max) return val >= max ? 1 : 0;
         return (val - min) / (max - min);
     }
 
@@ -49,26 +52,35 @@ export default class WorldGenMath {
         let scale = configuredScale;
         let normalizeMode = configuredNormalizeMode;
 
+        noise.seed(seed);
+
         if (scale <= 0) scale = 0.0001;
 
         if (normalizeMode !== 'global' && normalizeMode !== 'local')
             normalizeMode = 'local';
 
-        const octaveOffsets = new Array(octaves);
+        const configuredOctaveCount = Math.floor(Number(octaves));
+        const octaveCount = Number.isFinite(configuredOctaveCount) && configuredOctaveCount >= 1
+            ? configuredOctaveCount
+            : 1;
+        const octaveOffsets = new Array(octaveCount);
 
         let maxVal = 0;
         let amplitude = 1;
 
-        for (let i = 0; i < octaves; i++) {
-            const offsetX = seed + offset.x;
-            const offsetY = seed + offset.y;
+        for (let i = 0; i < octaveCount; i++) {
+            const offsetX = offset.x;
+            const offsetY = offset.y;
             octaveOffsets[i] = { x: offsetX, y: offsetY };
 
-            maxVal += amplitude;
+            maxVal += Math.abs(amplitude);
             amplitude *= persistence;
         }
 
-        const noiseMap: number[][] = new Array(width);
+        const noiseMap: number[][] = Array.from(
+            { length: height },
+            () => new Array<number>(width)
+        );
 
         let minLocalVal = 9999999;
         let maxLocalVal = -9999999;
@@ -76,15 +88,13 @@ export default class WorldGenMath {
         const halfWidth = width / 2;
         const halfHeight = height / 2;
 
-        for (let x = 0; x < width; x++) {
-            noiseMap[x] = new Array(height);
-
-            for (let y = 0; y < height; y++) {
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
                 let noiseHeight = 0;
                 let frequency = 1;
                 amplitude = 1;
 
-                for (let i = 0; i < octaves; i++) {
+                for (let i = 0; i < octaveCount; i++) {
                     const sampleX =
                         ((x - halfWidth + octaveOffsets[i].x) / scale) *
                         frequency;
@@ -92,33 +102,33 @@ export default class WorldGenMath {
                         ((y - halfHeight + octaveOffsets[i].y) / scale) *
                         frequency;
 
-                    const pNoise = noise.simplex2(sampleX, sampleY) * 2 - 1;
+                    const pNoise = noise.simplex2(sampleX, sampleY);
                     noiseHeight += pNoise * amplitude;
 
                     amplitude *= persistence;
                     frequency *= lacunarity;
                 }
 
-                noiseMap[x][y] = noiseHeight;
+                noiseMap[y][x] = noiseHeight;
 
-                if (minLocalVal > noiseMap[x][y]) minLocalVal = noiseMap[x][y];
-                if (maxLocalVal < noiseMap[x][y]) maxLocalVal = noiseMap[x][y];
+                if (minLocalVal > noiseMap[y][x]) minLocalVal = noiseMap[y][x];
+                if (maxLocalVal < noiseMap[y][x]) maxLocalVal = noiseMap[y][x];
             }
         }
 
-        for (let x = 0; x < width; x++) {
-            for (let y = 0; y < height; y++) {
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
                 if (normalizeMode === 'local')
-                    noiseMap[x][y] = this.invLerp(
+                    noiseMap[y][x] = this.invLerp(
                         minLocalVal,
                         maxLocalVal,
-                        noiseMap[x][y]
+                        noiseMap[y][x]
                     );
                 else
-                    noiseMap[x][y] =
-                        (noiseMap[x][y] + maxVal) / (2 * maxVal);
+                    noiseMap[y][x] =
+                        (noiseMap[y][x] + maxVal) / (2 * maxVal);
 
-                noiseMap[x][y] = this.clamp01(noiseMap[x][y] * multiplier);
+                noiseMap[y][x] = this.clamp01(noiseMap[y][x] * multiplier);
             }
         }
 
@@ -131,6 +141,6 @@ export default class WorldGenMath {
     }
 
     static distance(a: { x: number; y: number }, b: { x: number; y: number }) {
-        return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+        return Math.hypot(a.x - b.x, a.y - b.y);
     }
 }

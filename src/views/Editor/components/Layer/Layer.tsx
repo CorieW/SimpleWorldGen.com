@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './Layer.scss';
 import { ILayer } from '../../../../ts/interfaces/ILayer';
 import editorStore from '../../editorStore';
@@ -16,16 +16,16 @@ export default function Layer(props: ILayer) {
         layers,
         modifyLayer,
         removeLayer,
-        getNode,
-        getLayerWithNode,
+        getLayer,
         canMoveLayer,
         moveLayer,
         setActiveFormLayerId,
     } = editorStore();
 
+    const [loaded, setLoaded] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    const node = getNode(beginningNode.id);
+    const node = beginningNode;
 
     useEffect(() => {
         // Update the canvas when the node changes
@@ -34,18 +34,49 @@ export default function Layer(props: ILayer) {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
+        const width = canvas.width;
+        const height = canvas.height;
+
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const nodeDrawer = new Drawer(canvas, (x, y) => {
-            const layer = getLayerWithNode(id);
-            if (!layer) return 0;
+        const layer = getLayer(id);
+        if (!layer) return;
 
-            const nodeValueCalculator = new NodeValueCalculator(layer.beginningNode);
-            return nodeValueCalculator.calculateValue(x, y);
+        setLoaded(false);
+
+        const nodeValueCalculator = new NodeValueCalculator(layer.beginningNode);
+        let cancelled = false;
+
+        nodeValueCalculator.calculateMap(width, height).then((map) => {
+            if (cancelled) return;
+
+            const array: number[] = [];
+            map.forEach((row) => {
+                row.forEach((value) => {
+                    array.push(value * 255);
+                    array.push(value * 255);
+                    array.push(value * 255);
+                    array.push(255);
+                });
+            });
+
+            const nodeDrawer = new Drawer(canvas, array);
+            nodeDrawer.drawNode();
+
+            setLoaded(true);
+        }).catch((error: unknown) => {
+            if (!cancelled) {
+                console.error('Unable to render the layer preview.', error);
+                setLoaded(true);
+            }
         });
-        nodeDrawer.drawNode();
-    }, [getLayerWithNode, id, node]);
+
+        return () => {
+            cancelled = true;
+            nodeValueCalculator.terminateWorker();
+        };
+    }, [getLayer, id, node]);
 
     function removeThisLayer() {
         removeLayer(id);
@@ -87,6 +118,9 @@ export default function Layer(props: ILayer) {
             <div className='inner-layer-container preview-surface preview-surface--interactive'>
                 <canvas width={100} height={100}
                 ref={canvasRef} className='node-canvas'></canvas>
+                <div className={`loading-container-a ${loaded ? 'hidden' : ''}`}>
+                    <i className='fa-solid fa-spinner fa-spin'></i>
+                </div>
                 <button
                     className='edit-btn preview-edit'
                     aria-label={`Edit ${name}`}

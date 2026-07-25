@@ -39,4 +39,37 @@ export default class Utils {
     static clamp(val: number, min: number, max: number): number {
         return Math.min(Math.max(val, min), max);
     }
+
+    /**
+     * Distributes a total value based on the inverse of given shares.
+     *
+     * This function weights each share by its reciprocal and distributes a given total value according
+     * to those weights. The last share receives any floating-point remainder so the total is preserved.
+     *
+     * @param shares - An array of numbers representing the original shares.
+     * @param totalValue - The total value that needs to be split based on the inverse of the shares.
+     * @returns An array of numbers showing how much of the total value each share gets, based on their inverses.
+     */
+    static distributeInverseShares(shares: number[], totalValue: number): number[] {
+        if (shares.length === 0) return [];
+
+        const inverseShares = shares.map((share) => {
+            if (!Number.isFinite(share) || share <= 0) {
+                throw new RangeError('Shares must be finite, positive numbers.');
+            }
+            return 1 / share;
+        });
+        const totalInverseShares = inverseShares.reduce((acc, share) => acc + share, 0);
+        let remainingValue = totalValue;
+
+        return inverseShares.map((inverseShare, index) => {
+            if (index === shares.length - 1) {
+                return remainingValue;
+            }
+
+            const value = inverseShare / totalInverseShares * totalValue;
+            remainingValue -= value;
+            return value;
+        });
+    }
 }

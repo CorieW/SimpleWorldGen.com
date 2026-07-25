@@ -39,59 +39,59 @@ class MarchingSquares {
     }
 
     private getPointsForState(x: number, y: number, state: number): Point[] {
-        const top = new Point(x + 0.5, y + 1);
-        const bottom = new Point(x + 0.5, y);
-        const left = new Point(x, y + 0.5);
-        const right = new Point(x + 1, y + 0.5);
+        const bottomLeft = new Point(x, y);
+        const bottomRight = new Point(x + 1, y);
+        const topLeft = new Point(x, y + 1);
+        const topRight = new Point(x + 1, y + 1);
 
         const lbFromLT = this.interpolate(
-            left,
-            new Point(left.x, y + 1),
+            bottomLeft,
+            topLeft,
             this.valueAt(x, y),
             this.valueAt(x, y + 1)
         );
         const ltFromLB = this.interpolate(
-            left,
-            new Point(left.x, y),
+            topLeft,
+            bottomLeft,
             this.valueAt(x, y + 1),
             this.valueAt(x, y)
         );
 
         const lbFromRB = this.interpolate(
-            bottom,
-            new Point(x + 1, bottom.y),
+            bottomLeft,
+            bottomRight,
             this.valueAt(x, y),
             this.valueAt(x + 1, y)
         );
         const rbFromLB = this.interpolate(
-            bottom,
-            new Point(x, bottom.y),
+            bottomRight,
+            bottomLeft,
             this.valueAt(x + 1, y),
             this.valueAt(x, y)
         );
 
         const rtFromRB = this.interpolate(
-            right,
-            new Point(right.x, y),
+            topRight,
+            bottomRight,
             this.valueAt(x + 1, y + 1),
             this.valueAt(x + 1, y)
         );
         const rbFromRT = this.interpolate(
-            right,
-            new Point(right.x, y + 1),
+            bottomRight,
+            topRight,
             this.valueAt(x + 1, y),
             this.valueAt(x + 1, y + 1)
         );
 
         const ltFromRT = this.interpolate(
-            top,
-            new Point(x + 1, top.y),
+            topLeft,
+            topRight,
             this.valueAt(x, y + 1),
             this.valueAt(x + 1, y + 1)
         );
         const rtFromLT = this.interpolate(
-            top,
-            new Point(x, top.y),
+            topRight,
+            topLeft,
             this.valueAt(x + 1, y + 1),
             this.valueAt(x, y + 1)
         );
@@ -133,64 +133,59 @@ class MarchingSquares {
     }
 
     private getPointsForState2(x: number, y: number, state: number): Point[] {
-        const top = new Point(x + 0.5, y + 1);
-        const bottom = new Point(x + 0.5, y);
-        const left = new Point(x, y + 0.5);
-        const right = new Point(x + 1, y + 0.5);
-
         const bottomLeft = new Point(x, y);
         const bottomRight = new Point(x + 1, y);
         const topLeft = new Point(x, y + 1);
         const topRight = new Point(x + 1, y + 1);
 
         const lbFromLT = this.interpolate(
-            left,
-            new Point(left.x, y + 1),
+            bottomLeft,
+            topLeft,
             this.valueAt(x, y),
             this.valueAt(x, y + 1)
         );
         const ltFromLB = this.interpolate(
-            left,
-            new Point(left.x, y),
+            topLeft,
+            bottomLeft,
             this.valueAt(x, y + 1),
             this.valueAt(x, y)
         );
 
         const lbFromRB = this.interpolate(
-            bottom,
-            new Point(x + 1, bottom.y),
+            bottomLeft,
+            bottomRight,
             this.valueAt(x, y),
             this.valueAt(x + 1, y)
         );
         const rbFromLB = this.interpolate(
-            bottom,
-            new Point(x, bottom.y),
+            bottomRight,
+            bottomLeft,
             this.valueAt(x + 1, y),
             this.valueAt(x, y)
         );
 
         const rtFromRB = this.interpolate(
-            right,
-            new Point(right.x, y),
+            topRight,
+            bottomRight,
             this.valueAt(x + 1, y + 1),
             this.valueAt(x + 1, y)
         );
         const rbFromRT = this.interpolate(
-            right,
-            new Point(right.x, y + 1),
+            bottomRight,
+            topRight,
             this.valueAt(x + 1, y),
             this.valueAt(x + 1, y + 1)
         );
 
         const ltFromRT = this.interpolate(
-            top,
-            new Point(x + 1, top.y),
+            topLeft,
+            topRight,
             this.valueAt(x, y + 1),
             this.valueAt(x + 1, y + 1)
         );
         const rtFromLT = this.interpolate(
-            top,
-            new Point(x, top.y),
+            topRight,
+            topLeft,
             this.valueAt(x + 1, y + 1),
             this.valueAt(x, y + 1)
         );
@@ -234,11 +229,16 @@ class MarchingSquares {
     public getContours(): Point[][] {
         const contours: Point[][] = [];
 
-        for (let x = 0; x < this.rows - 1; x++) {
-            for (let y = 0; y < this.cols - 1; y++) {
+        for (let y = 0; y < this.rows - 1; y++) {
+            for (let x = 0; x < this.cols - 1; x++) {
                 const cellState = this.getCellState(x, y);
                 if (cellState === 0 || cellState === 15) continue;
-                contours.push(this.getPointsForState(x, y, cellState));
+                const points = this.getPointsForState(x, y, cellState);
+                if (cellState === 5 || cellState === 10) {
+                    contours.push(points.slice(0, 2), points.slice(2, 4));
+                } else {
+                    contours.push(points);
+                }
             }
         }
 
@@ -248,11 +248,19 @@ class MarchingSquares {
     public getShapes(): Point[][] {
         const shapes: Point[][] = [];
 
-        for (let x = 0; x < this.rows - 1; x++) {
-            for (let y = 0; y < this.cols - 1; y++) {
+        for (let y = 0; y < this.rows - 1; y++) {
+            for (let x = 0; x < this.cols - 1; x++) {
                 const cellState = this.getCellState(x, y);
                 if (cellState === 0) continue;
-                shapes.push(this.getPointsForState2(x, y, cellState));
+                const points = this.getPointsForState2(x, y, cellState);
+                if (cellState === 5 || cellState === 10) {
+                    shapes.push(
+                        [points[0], points[1], points[5]],
+                        [points[3], points[4], points[2]]
+                    );
+                } else {
+                    shapes.push(points);
+                }
             }
         }
 

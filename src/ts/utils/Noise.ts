@@ -1,49 +1,57 @@
-import { makeNoise2D } from 'open-simplex-noise';
-
 export default class Noise {
     private _seed: number;
-    private _noise2D: any;
+    private _multiplier: number;
+    private _octaves: number;
+    private _persistence: number;
+    private _lacunarity: number;
+    private _frequency: number;
+    private _spread: number;
 
-    constructor(seed: number) {
+    constructor(seed: number, multiplier: number = 1, octaves: number = 1, persistence: number = 0.5, lacunarity: number = 2, frequency: number = 1, spread: number = 1) {
         this._seed = seed;
-        this._noise2D = makeNoise2D(this._seed);
+        this._multiplier = multiplier;
+        this._octaves = octaves;
+        this._persistence = persistence;
+        this._lacunarity = lacunarity;
+        this._frequency = frequency;
+        this._spread = spread;
     }
 
-    generateNoise(x: number, y: number): number {
-        return this._noise2D(x, y);
-    }
+    /**
+     * Generate a noise map on a separate thread
+     * @param width width of the noise map
+     * @param height height of the noise map
+     * @param offset offset of the noise map
+     * @param onGenerated callback function when the noise map is generated
+     */
+    generateNoiseMap(width: number, height: number, offset: { x: number; y: number } = { x: 0, y: 0 }): Promise<number[][]> {
+        const worker = new Worker(new URL('../workers/noiseGeneratorWorker.ts', import.meta.url), { type: 'module' });
 
-    generateOctaveNoise(
-        x: number,
-        y: number,
-        octaves: number,
-        persistence: number,
-        lacunarity: number,
-        frequency: number,
-        offset: { x: number; y: number } = { x: 0, y: 0 }
-    ): number {
-        let noiseValue = 0;
-        let amplitude = 1;
-        let totalAmplitude = 0;
+        const promise = new Promise<number[][]>((resolve, reject) => {
+            worker.onmessage = (event) => {
+                worker.terminate();
+                resolve(event.data);
+            };
 
-        for (let i = 0; i < octaves; i++) {
-            const currentFrequency = frequency * Math.pow(lacunarity, i);
-            const offsetX = offset.x * currentFrequency;
-            const offsetY = offset.y * currentFrequency;
+            worker.onerror = (error) => {
+                worker.terminate();
+                reject(error);
+            };
+        });
 
-            noiseValue +=
-                this.generateNoise(
-                    (x + offsetX) * currentFrequency,
-                    (y + offsetY) * currentFrequency
-                ) * amplitude;
+        worker.postMessage({
+            width,
+            height,
+            seed: this._seed,
+            multiplier: this._multiplier,
+            octaves: this._octaves,
+            persistence: this._persistence,
+            lacunarity: this._lacunarity,
+            frequency: this._frequency,
+            spread: this._spread,
+            offset
+        });
 
-            totalAmplitude += amplitude;
-            amplitude *= persistence;
-        }
-
-        // Normalize the result
-        noiseValue = (noiseValue + totalAmplitude) / (2 * totalAmplitude);
-
-        return noiseValue;
+        return promise;
     }
 }

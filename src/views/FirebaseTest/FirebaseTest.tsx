@@ -33,11 +33,11 @@ export default function FirebaseTest() {
     }
 
     function updateUserDetails() {
-        
+
     }
 
     function logout() {
-        
+
     }
 
     function getWorlds(): WorldSummary[] {

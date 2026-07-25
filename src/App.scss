@@ -14,3 +14,39 @@
 .move-btn:active:not(:disabled) {
     color: var(--ui-accent) !important;
 }
+
+.add-btn:hover, .add-btn:active {
+    color: limegreen;
+}
+
+.loading-container-a {
+    z-index: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    transition: 0.2s ease-in-out;
+
+    &.hidden {
+        display: flex !important;
+        background-color: transparent;
+
+        i {
+            opacity: 0;
+        }
+    }
+
+    i {
+        font-size: 50px;
+        color: white;
+
+        transition: 0.2s ease-in-out;
+    }
+}

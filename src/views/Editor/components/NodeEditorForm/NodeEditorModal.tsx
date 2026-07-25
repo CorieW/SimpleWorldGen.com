@@ -27,6 +27,7 @@ export default function NodeEditorModal() {
     } = useStore();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [node, setNode] = useState<INode | null>(null);
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         if (activeFormNodeId === -1) return;
@@ -35,10 +36,50 @@ export default function NodeEditorModal() {
     }, [activeFormNodeId, getNode]);
 
     useEffect(() => {
-        if (!node || !canvasRef.current) return;
-        new Drawer(canvasRef.current, (x, y) => (
-            new NodeValueCalculator({ ...node, nextNode: null }).calculateValue(x, y)
-        )).drawNode();
+        if (!node) return;
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        setLoaded(false);
+
+        const nodeValueCalculator = new NodeValueCalculator({ ...node, nextNode: null });
+        let cancelled = false;
+
+        nodeValueCalculator.calculateMap(width, height).then((map) => {
+            if (cancelled) return;
+
+            const array: number[] = [];
+            map.forEach((row) => {
+                row.forEach((value) => {
+                    array.push(value * 255);
+                    array.push(value * 255);
+                    array.push(value * 255);
+                    array.push(255);
+                });
+            });
+
+            const nodeDrawer = new Drawer(canvas, array);
+            nodeDrawer.drawNode();
+
+            setLoaded(true);
+        }).catch((error: unknown) => {
+            if (!cancelled) {
+                console.error('Unable to render the node editor preview.', error);
+                setLoaded(true);
+            }
+        });
+
+        return () => {
+            cancelled = true;
+            nodeValueCalculator.terminateWorker();
+        };
     }, [node]);
 
     function closePanel() {
@@ -86,6 +127,9 @@ export default function NodeEditorModal() {
             footer={footer}
         >
             <div className='node-preview preview-surface'>
+                <div className={`loading-container-a ${loaded ? 'hidden' : ''}`}>
+                    <i className='fa-solid fa-spinner fa-spin'></i>
+                </div>
                 <canvas ref={canvasRef}></canvas>
                 <span>Preview</span>
             </div>

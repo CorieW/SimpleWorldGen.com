@@ -1,82 +1,83 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import './Editor.scss';
 import paper from 'paper';
-import WorldGenerator from '../../ts/WorldGenerator';
 import WorldDimensions from '../../ts/data/WorldDimensions';
 import MarchingSquares from '../../ts/utils/MarchingSquares';
 import Bounds from '../../ts/data/Bounds';
 import ChunkData from '../../ts/data/ChunkData';
 import EditorOverlay from './components/EditorOverlay/EditorOverlay';
 import useStore from './editorStore';
-import { NodeValueCalculator } from '../../ts/utils/LayerValueCalculator';
 import { IVisualizationCondition } from '../../ts/interfaces/visualization/IVisualizationCondition';
 import { IVisualizationSetting } from '../../ts/interfaces/visualization/IVisualizationSetting';
 import IDictionary from '../../ts/utils/IDictionary';
 import WorldGenMath from '../../ts/WorldGenMath';
-import { ILayer } from '../../ts/interfaces/ILayer';
 import { VisualizationTypeEnum } from '../../ts/enums/VisualizationTypeEnum';
 import { ScalingTypeEnum } from '../../ts/enums/ScalingTypeEnum';
 import Utils from '../../ts/utils/Utils';
+import WorldGenerator from '../../ts/WorldGenerator';
 
 function Editor() {
     const { worldSettings, visualizationSettings, layers } = useStore();
 
     const { worldWidth, worldHeight, fadeOff, xFadeOffPercentage, yFadeOffPercentage } = worldSettings;
 
+    const [isGenerating, setIsGenerating] = useState(true);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const positionRef = useRef<paper.Point>(new paper.Point(worldWidth / 2, worldHeight / 2));
     const zoomRef = useRef<number>(1);
     const dragStartRef = useRef<paper.Point | null>(null);
     const worldRef = useRef<WorldGenerator | null>(null);
+    const renderedLayerRef = useRef<paper.Layer | null>(null);
+    const generationRequestRef = useRef<number>(0);
+    const zoomGenerationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const maxZoom = 1000;
     const minZoom = 0.01;
 
     useEffect(() => {
-        // Create a node value calculator for each layer here
-        const nodeValueCalculators: NodeValueCalculator[] = layers.map((layer: ILayer) => new NodeValueCalculator(layer.beginningNode));
-
-        // Create the world generator
-        const worldDimensions = new WorldDimensions(
-            worldWidth,
-            worldHeight
-        );
-        const worldGenerator = new WorldGenerator(worldDimensions, generateNoiseValueFunc);
-        worldGenerator.xFadeOffEndRange = fadeOff ? WorldGenMath.lerp(-1, 1, xFadeOffPercentage) : 1;
-        worldGenerator.yFadeOffEndRange = fadeOff ? WorldGenMath.lerp(-1, 1, yFadeOffPercentage) : 1;
-        worldRef.current = worldGenerator;
-
-        // Setup paper.js and set the view
         paper.setup(canvasRef.current!);
         paper.view.viewSize.width = window.innerWidth;
         paper.view.viewSize.height = window.innerHeight;
         paper.view.center = positionRef.current;
         paper.view.zoom = zoomRef.current;
+        renderedLayerRef.current = paper.project.activeLayer;
 
-        // Set background color
+        return () => {
+            if (zoomGenerationTimeoutRef.current !== null) {
+                clearTimeout(zoomGenerationTimeoutRef.current);
+            }
+            invalidateGeneration(generationRequestRef);
+            worldRef.current?.cancelPendingGeneration();
+            renderedLayerRef.current = null;
+        };
+    }, []);
+
+    useEffect(() => {
+        const worldDimensions = new WorldDimensions(
+            worldWidth,
+            worldHeight
+        );
+        const worldGenerator = new WorldGenerator(worldDimensions, layers);
+        worldGenerator.xFadeOffEndRange = fadeOff ? Utils.clamp(xFadeOffPercentage, 0, 1) : 1;
+        worldGenerator.yFadeOffEndRange = fadeOff ? Utils.clamp(yFadeOffPercentage, 0, 1) : 1;
+        worldRef.current = worldGenerator;
+
         canvasRef.current!.style.backgroundColor = worldSettings.backgroundColor;
-
         dragStartRef.current = null;
+        void updateWorld(true, true);
 
-        updateWorld();
-
-        function generateNoiseValueFunc(globalX: number, globalY: number): IDictionary<number> {
-            const values: IDictionary<number> = {};
-
-            layers.forEach((layer: ILayer, index: number) => {
-                const calculator = nodeValueCalculators[index];
-                values[layer.id] = calculator.calculateValue(globalX, globalY);
-            });
-
-            return values;
-        }
-    }, [worldSettings, layers.map((layer: ILayer) => layer.beginningNode)]);
+        return () => {
+            invalidateGeneration(generationRequestRef);
+            worldGenerator.cancelPendingGeneration();
+        };
+    }, [worldSettings, layers, visualizationSettings]);
 
     useEffect(() => {
         function onResize() {
             // Resize the canvas to fill browser window dynamically
             paper.view.viewSize.width = window.innerWidth;
             paper.view.viewSize.height = window.innerHeight;
+            void updateWorld();
         }
 
         function onMouseDown(event: paper.MouseEvent) {
@@ -96,23 +97,24 @@ function Editor() {
                 return;
             }
 
-            // clear the canvas
             const view = paper.view;
 
             const oldZoom = zoomRef.current;
-            const newZoom = oldZoom * (1 + event.deltaY * -0.001);
-            setZoom(newZoom);
-            const zoom = zoomRef.current;
-
-            const beta = oldZoom / zoom;
-
             const mousePosition = new paper.Point(event.offsetX, event.offsetY);
             const viewPosition = view.viewToProject(mousePosition);
+            const newZoom = oldZoom * Math.exp(event.deltaY * -0.001);
+            setZoom(newZoom, false);
+            const zoom = zoomRef.current;
+            if (zoom === oldZoom) return;
+
+            const beta = oldZoom / zoom;
             let move = viewPosition.subtract(positionRef.current);
             move = move.multiply(1 - beta);
             const newCenter = positionRef.current.add(move);
 
-            setPosition(newCenter);
+            setPosition(newCenter, false);
+            cancelPendingGeneration();
+            scheduleWorldUpdate();
         }
 
         window.addEventListener('resize', onResize);
@@ -125,39 +127,96 @@ function Editor() {
             window.removeEventListener('resize', onResize);
             window.removeEventListener('wheel', zoom);
 
+            if (zoomGenerationTimeoutRef.current !== null) {
+                clearTimeout(zoomGenerationTimeoutRef.current);
+                zoomGenerationTimeoutRef.current = null;
+            }
+
             paper.view.onMouseDown = null;
             paper.view.onMouseDrag = null;
         };
     });
 
-    function updateWorld() {
+    async function updateWorld(force: boolean = false, showLoading: boolean = false) {
+        const worldGenerator = worldRef.current;
+        if (!worldGenerator) return;
+
         const bounds = paper.view.bounds;
         const boundsData = new Bounds(bounds.x, bounds.y, bounds.width, bounds.height);
 
-        if (!worldRef.current!.shouldUpdate(boundsData)) return;
+        if (!force && !worldGenerator.shouldUpdate(boundsData)) return;
 
-        paper.project.activeLayer.removeChildren();
+        const requestId = ++generationRequestRef.current;
+        worldGenerator.cancelPendingGeneration();
+        if (showLoading) setIsGenerating(true);
 
-        worldRef.current!.update(
-            boundsData,
-            (chunkData: ChunkData) => {
+        const previousLayer = renderedLayerRef.current;
+        const nextLayer = new paper.Layer();
+        nextLayer.visible = false;
+
+        try {
+            await worldGenerator.update(boundsData, (chunkData) => {
+                if (requestId !== generationRequestRef.current || worldGenerator !== worldRef.current) {
+                    return;
+                }
+
+                nextLayer.activate();
                 draw(chunkData);
+            });
+
+            if (requestId !== generationRequestRef.current || worldGenerator !== worldRef.current) {
+                nextLayer.remove();
+                return;
             }
-        );
+
+            previousLayer?.remove();
+            nextLayer.visible = true;
+            nextLayer.activate();
+            renderedLayerRef.current = nextLayer;
+            paper.view.update();
+        } catch (error) {
+            nextLayer.remove();
+            if (requestId !== generationRequestRef.current) return;
+
+            worldGenerator.cancelPendingGeneration();
+            previousLayer?.activate();
+            if (!(error instanceof DOMException && error.name === 'AbortError')) {
+                console.error('Failed to generate world:', error);
+            }
+        } finally {
+            if (requestId === generationRequestRef.current) {
+                setIsGenerating(false);
+            }
+        }
     }
 
-    function setZoom(zoom: number) {
-        console.log(zoom);
+    function cancelPendingGeneration() {
+        invalidateGeneration(generationRequestRef);
+        worldRef.current?.cancelPendingGeneration();
+    }
+
+    function scheduleWorldUpdate() {
+        if (zoomGenerationTimeoutRef.current !== null) {
+            clearTimeout(zoomGenerationTimeoutRef.current);
+        }
+
+        zoomGenerationTimeoutRef.current = setTimeout(() => {
+            zoomGenerationTimeoutRef.current = null;
+            void updateWorld();
+        }, 120);
+    }
+
+    function setZoom(zoom: number, regenerate: boolean = true) {
         zoom = Math.max(minZoom, Math.min(zoom, maxZoom));
         zoomRef.current = zoom;
         paper.view.zoom = zoom;
-        updateWorld();
+        if (regenerate) void updateWorld();
     }
 
-    function setPosition(point: paper.Point) {
+    function setPosition(point: paper.Point, regenerate: boolean = true) {
         positionRef.current = point;
         paper.view.center = point;
-        updateWorld();
+        if (regenerate) void updateWorld();
     }
 
     function zoomIn() {
@@ -169,7 +228,7 @@ function Editor() {
     }
 
     function resetView() {
-        setZoom(1);
+        setZoom(1, false);
         setPosition(new paper.Point(worldWidth / 2, worldHeight / 2));
     }
 
@@ -182,52 +241,40 @@ function Editor() {
                     drawPolygons(setting);
                     break;
                 case VisualizationTypeEnum.Square:
-                    drawSquares(setting, 'Square', setting.scalingType);
+                    drawShapes(setting, 'Square', setting.scalingType);
                     break;
                 case VisualizationTypeEnum.Circle:
-                    drawSquares(setting, 'Circle', setting.scalingType);
+                    drawShapes(setting, 'Circle', setting.scalingType);
                     break;
                 case VisualizationTypeEnum.Triangle:
-                    drawSquares(setting, 'Triangle', setting.scalingType);
+                    drawShapes(setting, 'Triangle', setting.scalingType);
                     break;
             }
         });
 
         function drawPolygons(setting: IVisualizationSetting) {
-            let avgCenter = 0;
-            setting.conditions.forEach((condition: IVisualizationCondition) => {
-                avgCenter += (condition.min + condition.max) / 2;
-            });
-            avgCenter = 0;
-
             const shapes = new MarchingSquares(chunkData.getData().length, chunkData.getData().length,
                 (x, y) => {
-                    const values = chunkData.getData()[x][y];
+                    const values = chunkData.getData()[y][x];
                     return evaluationFunction(setting, values);
                 },
                 (x, y) => {
-                    let closestValue = Number.MAX_VALUE;
-                    let outputValue = 0;
+                    let outputValue = Number.NEGATIVE_INFINITY;
                     setting.conditions.forEach((condition: IVisualizationCondition) => {
                         const center = (condition.min + condition.max) / 2;
                         const border = Math.abs(condition.max - condition.min) / 2;
-                        const value = chunkData.getData()[x][y][condition.layerId];
+                        const value = chunkData.getData()[y][x][condition.layerId];
+                        const signedDistance = border === 0
+                            ? Math.abs(center - value)
+                            : Math.abs(center - value) / border - 1;
 
-                        const dist = Math.abs(center - value) / border;
-                        const distRev = dist - 1;
-
-                        if (dist < closestValue) {
-                            closestValue = dist;
-                            outputValue = distRev;
-                        }
+                        outputValue = Math.max(outputValue, signedDistance);
                     });
-                    return outputValue;
+                    return Number.isFinite(outputValue) ? outputValue : 0;
                 },
                 (aVal, bVal) => {
-                    let val = (avgCenter - aVal) / (bVal - aVal);
-                    val = Math.max(0, val);
-                    val = Math.min(1, val);
-                    return val;
+                    if (aVal === bVal) return 0.5;
+                    return Utils.clamp(-aVal / (bVal - aVal), 0, 1);
                 }
             ).getShapes();
 
@@ -240,25 +287,15 @@ function Editor() {
                 });
 
                 const path = new paper.Path(points);
-                path.strokeWidth = 0;
-                path.fillColor = new paper.Color(setting.color);
+                applyFill(path, setting.color, true);
                 path.closed = true;
             });
         }
 
-        function drawSquares(setting: IVisualizationSetting, shape: 'Square' | 'Circle' | 'Triangle' = 'Square', scalingType: ScalingTypeEnum = ScalingTypeEnum.NONE) {
-            let avgMin = 0;
-            let avgMax = 0;
-            setting.conditions.forEach((condition: IVisualizationCondition) => {
-                avgMin += condition.min;
-                avgMax += condition.max;
-            });
-            avgMin /= setting.conditions.length;
-            avgMax /= setting.conditions.length;
-
-            for (let x = 0; x < chunkData.getData().length; x++) {
-                for (let y = 0; y < chunkData.getData().length; y++) {
-                    const values = chunkData.getData()[x][y];
+        function drawShapes(setting: IVisualizationSetting, shape: 'Square' | 'Circle' | 'Triangle' = 'Square', scalingType: ScalingTypeEnum = ScalingTypeEnum.NONE) {
+            for (let y = 0; y < chunkData.getData().length - 1; y++) {
+                for (let x = 0; x < chunkData.getData()[y].length - 1; x++) {
+                    const values = chunkData.getData()[y][x];
                     if (evaluationFunction(setting, values)) {
                         const point = new paper.Point(
                             chunkData.getX() + x * tileSize,
@@ -281,7 +318,7 @@ function Editor() {
                             );
                         } else if (shape === 'Triangle') {
                             point.x += tileSize / 2;
-                            point.y += tileSize / 1.6;
+                            point.y += tileSize / 2;
 
                             rect = new paper.Path.RegularPolygon(
                                 point,
@@ -292,30 +329,44 @@ function Editor() {
 
                         if (rect === null) return;
 
-                        const maxScale = setting.maxScale || 1;
-                        const minScale = setting.minScale || 0;
+                        const maxScale = setting.maxScale ?? 1;
+                        const minScale = setting.minScale ?? 0;
                         let valueScale = 1;
                         if (scalingType === ScalingTypeEnum.VALUE || scalingType === ScalingTypeEnum.BOTH) {
-                            let avg = 0;
-                            setting.conditions.forEach((condition: IVisualizationCondition) => {
-                                avg += values[condition.layerId];
-                            });
-                            avg /= setting.conditions.length;
-                            valueScale = WorldGenMath.invLerp(avgMin, avgMax, avg);
+                            const normalizedValues = setting.conditions.map((condition) =>
+                                WorldGenMath.invLerp(
+                                    condition.min,
+                                    condition.max,
+                                    values[condition.layerId]
+                                )
+                            );
+                            valueScale = normalizedValues.length === 0
+                                ? 1
+                                : normalizedValues.reduce((sum, value) => sum + value, 0) / normalizedValues.length;
                         }
 
                         let zoomScale = 1;
                         if (scalingType === ScalingTypeEnum.ZOOM || scalingType === ScalingTypeEnum.BOTH) {
-                            zoomScale = WorldGenMath.invLerp(minZoom, maxZoom, zoomRef.current);
+                            zoomScale = WorldGenMath.invLerp(
+                                Math.log(minZoom),
+                                Math.log(maxZoom),
+                                Math.log(zoomRef.current)
+                            );
                         }
                         const scale = Math.max(valueScale, zoomScale);
 
-                        rect.strokeWidth = 0;
-                        rect.fillColor = new paper.Color(setting.color);
                         rect.scale(Utils.clamp(scale, minScale, maxScale));
+                        applyFill(rect, setting.color, shape === 'Square');
                     }
                 }
             }
+        }
+
+        function applyFill(path: paper.Path, color: string, coverSeams: boolean) {
+            const fillColor = new paper.Color(color);
+            path.fillColor = fillColor;
+            path.strokeColor = coverSeams ? fillColor : null;
+            path.strokeWidth = coverSeams ? 2 / zoomRef.current : 0;
         }
     }
 
@@ -347,9 +398,21 @@ function Editor() {
     return (
         <div id='editor'>
             <canvas id='worldCanvas' ref={canvasRef} />
+            <div
+                className={`loading-container-a ${isGenerating ? '' : 'hidden'}`}
+                role='status'
+                aria-label='Regenerating map'
+                aria-hidden={!isGenerating}
+            >
+                <i className='fa-solid fa-spinner fa-spin'></i>
+            </div>
             <EditorOverlay zoomIn={zoomIn} zoomOut={zoomOut} resetView={resetView} />
         </div>
     );
+}
+
+function invalidateGeneration(requestRef: { current: number }) {
+    requestRef.current++;
 }
 
 export default Editor;

@@ -2,12 +2,16 @@
 export class Drawer {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D | null;
-    private valueFunc: (globalX: number, globalY: number) => number;
+    /**
+     * Pixel data to draw on the canvas
+     * Each value should be between 0 and 255
+     */
+    private pixelData: number[];
 
-    constructor(canvas: HTMLCanvasElement, valueFunc: (globalX: number, globalY: number) => number) {
+    constructor(canvas: HTMLCanvasElement, pixelData: number[]) {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
-        this.valueFunc = valueFunc;
+        this.pixelData = pixelData;
     }
 
     drawNode(): void {
@@ -19,29 +23,10 @@ export class Drawer {
 
         this.ctx.clearRect(0, 0, width, height);
 
-        // Get the draw data for the node
-        const pixelData = this.getPixelData();
+        // Create an ImageData object directly with the pixel data length
+        const imageData = new ImageData(new Uint8ClampedArray(this.pixelData), width, height);
 
-        if (pixelData.length === 0) return;
-
-        const imageData = this.ctx.createImageData(width, height);
-        for (let i = 0; i < pixelData.length; i++) {
-            imageData.data[i] = pixelData[i];
-        }
-
+        // Draw the ImageData onto the canvas
         this.ctx.putImageData(imageData, 0, 0);
-    }
-
-    private getPixelData(): number[] {
-        const pixelData: number[] = [];
-
-        for (let y = 0; y < this.canvas.height; y++) {
-            for (let x = 0; x < this.canvas.width; x++) {
-                const value = this.valueFunc(x, y);
-                pixelData.push(value * 255, value * 255, value * 255, 255);
-            }
-        }
-
-        return pixelData;
     }
 }

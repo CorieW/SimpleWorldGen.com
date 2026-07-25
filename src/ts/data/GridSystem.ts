@@ -21,6 +21,8 @@ export default class GridSystem<T> {
         iterativelySplitQuad(this._quadTreeNode, bounds);
 
         function iterativelySplitQuad(quadNode: QuadTreeNode<T>, bounds: Bounds) {
+            if (!bounds.intersects(quadNode.getBounds())) return;
+
             if (GridSystem.shouldSplitQuad<T>(quadNode, bounds)) {
                 if (!quadNode.hasChildren()) quadNode.split(4);
 
@@ -37,18 +39,8 @@ export default class GridSystem<T> {
         quadNode: QuadTreeNode<T>,
         bounds: Bounds
     ): boolean {
-        const x = quadNode.getX();
-        const y = quadNode.getY();
         const size = quadNode.getSize();
-
-        const isOverlappingBounds = bounds.intersects(
-            new Bounds(x, y, size, size)
-        );
-
-        return (
-            isOverlappingBounds &&
-            (bounds.width < size || bounds.height < size)
-        );
+        return bounds.width < size || bounds.height < size;
     }
 
     public getQuadTreeNode(): QuadTreeNode<T> {
