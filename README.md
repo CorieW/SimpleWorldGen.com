@@ -29,6 +29,8 @@ The Firebase Functions runtime is explicitly set to Node.js 22 in both
 - Fixed issue with btn zooming not clamping to min/max zoom
 
 # Version history
+[v0.5.0: Overhaul UI](https://gyazo.com/495bd1d659502f4abe17e81a3321edbc)
+
 [v0.4.0: Added saving and loading](https://gyazo.com/af2092afaf6c2b01e81148fdf5f07a33)
 
 [v0.3.0: Added UI and customization](https://gyazo.com/bb5ba9ddf3790571e857bc8839ce7fec)
